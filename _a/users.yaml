@@ -1,0 +1,23 @@
+users
+------
+property_leased
+num_properties
+contact_number
+lease_end_date
+next_rent_payment_due_date
+contract_status
+
+features
+--------
+- add property
+
+
+Done
+----
+- add emergency contact
+  - add address
+- add employer information
+- add past rental history
+  - add address
+- add address
+- add account

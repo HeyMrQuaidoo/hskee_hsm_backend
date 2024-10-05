@@ -1,0 +1,16 @@
+property
+--------
+property_name
+type
+rental_price
+status
+landlord
+num of units
+floor space
+
+features
+--------
+- add amenity
+  - add media
+- add media
+- add address information
