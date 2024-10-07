@@ -1,8 +1,9 @@
 services:
 - type: web
-  name: backend-hskee
+  name: hskee_hsm_backend_test
   runtime: python
-  repo: https://github.com/DaCardinal/backend-hsm
+  repo: https://github.com/HeyMrQuaidoo/hskee_hsm_backend
+  branch: dev-daniel
   plan: starter
   envVars:
   - key: EMAIL_SERVER
