@@ -21,7 +21,7 @@ get_db = db_manager.db_module.get_db
 cache_region = make_region().configure(
     "dogpile.cache.dbm",
     expiration_time=300,
-    arguments={"filename": "./cachefile.dbm"},
+    arguments={"filename": "/opt/render/project/src/cachefile.dbm"},
 )
 
 

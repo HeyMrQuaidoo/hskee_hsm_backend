@@ -11,7 +11,7 @@ from app.modules.common.models.model_association import AssociationProcessor
 cache_region = make_region().configure(
     "dogpile.cache.dbm",
     expiration_time=300,
-    arguments={"filename": "./cachefile.dbm"},
+    arguments={"filename": "/opt/render/project/src/cachefile.dbm"},
 )
 
 
