@@ -8,9 +8,15 @@ landlord
 num of units
 floor space
 
+Done
+-----
+- units
+- add address information
+
 features
 --------
 - add amenity
   - add media
 - add media
-- add address information
+- add billable (utility)
+- add document

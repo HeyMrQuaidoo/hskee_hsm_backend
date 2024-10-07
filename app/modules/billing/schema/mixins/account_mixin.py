@@ -1,8 +1,14 @@
-from typing import List, Union
+from typing import List, Optional, Union
+
+from pydantic import UUID4
 
 # schemas
 from app.modules.common.schema.base_schema import BaseSchema
+from app.modules.address.schema.address_schema import AddressBase
 from app.modules.address.schema.address_mixin import AddressMixin
+
+# enums
+from app.modules.billing.enums.billing_enums import AccountTypeEnum
 
 # models
 from app.modules.billing.models.account import Account as AccountModel
@@ -51,3 +57,20 @@ class AccountMixin(BaseSchema, AddressMixin):
                     "account_type": entity_account.account_type,
                 }
         return result
+
+
+class AccountBase(AccountMixin):
+    account_id: Optional[UUID4] = None
+    account_type: Optional[Union[AccountTypeEnum | List[AccountTypeEnum]]] = None
+    bank_account_name: str
+    bank_account_number: str
+    account_branch_name: str
+    address: Optional[List[AddressBase]] = []
+
+    @classmethod
+    def model_validate(cls, accounts: Union[AccountModel | List[AccountModel]]):
+        return cls.get_account_info(accounts)
+
+
+class Account(AccountBase):
+    account_id: UUID4

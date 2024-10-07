@@ -37,9 +37,6 @@ class Property(PropertyUnitAssoc):
         ForeignKey("property_unit_assoc.property_unit_assoc_id", ondelete="CASCADE"),
         primary_key=True,
     )
-    address_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("address.address_id"), nullable=True
-    )
     property_type: Mapped[PropertyType] = mapped_column(Enum(PropertyType))
     amount: Mapped[float] = mapped_column(Numeric(10, 2))
     security_deposit: Mapped[float] = mapped_column(Numeric(10, 2))
@@ -98,9 +95,10 @@ class Property(PropertyUnitAssoc):
     # units
     units: Mapped[List["Units"]] = relationship(
         "Units",
-        primaryjoin="Units.property_id == Property.property_unit_assoc_id",
+        primaryjoin="Property.property_unit_assoc_id == Units.property_id",
         back_populates="property",
         lazy="selectin",
+        viewonly=True,
     )
 
     # media

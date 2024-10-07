@@ -33,7 +33,7 @@ class EntityMedia(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "entity_type IN ('property', 'user', 'amenities', 'entityamenities')",
+            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities')",
             name="check_entity_type_media",
         ),
     )

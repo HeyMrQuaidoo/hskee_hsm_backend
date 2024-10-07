@@ -150,4 +150,3 @@ class BaseModelCollection(InstrumentedList):
 
         # flush the session to ensure the collection is persisted
         await session.flush()
-        super().append(item)

@@ -20,24 +20,24 @@ class PropertyUnitAssoc(Base):
         "polymorphic_identity": "property_unit_assoc",
     }
 
-    # units
-    units: Mapped[List["Property"]] = relationship(
+    # property
+    property: Mapped[List["Property"]] = relationship(
         "Property",
         primaryjoin="and_(PropertyUnitAssoc.property_unit_type == 'Property', Property.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id)",
         foreign_keys="[Property.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
-        lazy="selectin",
+        # lazy="selectin",
         viewonly=True,
     )
 
-    # property
-    property: Mapped[List["Units"]] = relationship(
+    # units
+    units: Mapped[List["Units"]] = relationship(
         "Units",
         primaryjoin="and_(PropertyUnitAssoc.property_unit_type == 'Units', Units.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id)",
         foreign_keys="[Units.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
-        lazy="selectin",
-        viewonly=True,
+        # lazy="selectin",
+        # viewonly=True,
     )
 
     # members
@@ -54,7 +54,7 @@ class PropertyUnitAssoc(Base):
     utilities: Mapped[List["Utilities"]] = relationship(
         "Utilities",
         secondary="entity_billable",
-        primaryjoin="and_(EntityBillable.entity_id==PropertyUnitAssoc.property_unit_assoc_id,  EntityBillable.entity_type=='Property',  EntityBillable.billable_type=='Utilities')",
+        primaryjoin="and_(EntityBillable.entity_id==PropertyUnitAssoc.property_unit_assoc_id,  EntityBillable.entity_type=='property',  EntityBillable.billable_type=='utilities')",
         secondaryjoin="and_(EntityBillable.billable_id == Utilities.utility_id)",
         foreign_keys="[EntityBillable.entity_id, Utilities.utility_id]",
         lazy="selectin",
@@ -63,9 +63,9 @@ class PropertyUnitAssoc(Base):
     )
 
     # property_assignments
-    assignments: Mapped[List["User"]] = relationship(
-        "User", secondary="property_assignment", back_populates="property_assignments"
-    )
+    # assignments: Mapped[List["User"]] = relationship(
+    #     "User", secondary="property_assignment", back_populates="property_assignment"
+    # )
 
     # amenities
     amenities: Mapped[List["Amenities"]] = relationship(

@@ -1,4 +1,5 @@
 from uuid import UUID
+from pydantic import UUID4
 from typing import List, Optional, Union
 
 # enums
@@ -13,6 +14,64 @@ from app.modules.address.schema.address_mixin import AddressMixin
 from app.modules.properties.models.property_unit_association import (
     PropertyUnitAssoc as PropertyUnitAssocModel,
 )
+
+
+class PropertyUnitBase(BaseSchema):
+    property_id: Optional[UUID] = None
+    property_unit_code: Optional[str] = None
+    property_unit_floor_space: Optional[int] = None
+    property_unit_amount: Optional[float] = None
+    property_floor_id: Optional[int] = None
+    property_status: PropertyStatus
+    property_unit_notes: Optional[str] = None
+    property_unit_security_deposit: Optional[float] = None
+    property_unit_commission: Optional[float] = None
+    has_amenities: Optional[bool] = False
+
+
+class PropertyUnit(PropertyUnitBase):
+    property_unit_assoc_id: Optional[UUID]
+
+
+class PropertyUnitInfoMixin:
+    @classmethod
+    def get_property_unit_info(
+        cls, property_unit: Union[PropertyUnit | List[PropertyUnit]]
+    ) -> PropertyUnit:
+        result = []
+
+        if not isinstance(property_unit, list):
+            return PropertyUnit(
+                property_unit_assoc_id=property_unit.property_unit_assoc_id,
+                property_unit_code=property_unit.property_unit_code,
+                property_unit_floor_space=property_unit.property_unit_floor_space,
+                property_unit_amount=property_unit.property_unit_amount,
+                property_floor_id=property_unit.property_floor_id,
+                property_unit_notes=property_unit.property_unit_notes,
+                has_amenities=property_unit.has_amenities,
+                property_id=property_unit.property_id,
+                property_unit_security_deposit=property_unit.property_unit_security_deposit,
+                property_unit_commission=property_unit.property_unit_commission,
+                property_status=property_unit.property_status,
+            )
+        else:
+            for property_unit_item in property_unit:
+                result.append(
+                    PropertyUnit(
+                        property_unit_assoc_id=property_unit_item.property_unit_assoc_id,
+                        property_unit_code=property_unit_item.property_unit_code,
+                        property_unit_floor_space=property_unit_item.property_unit_floor_space,
+                        property_unit_amount=property_unit_item.property_unit_amount,
+                        property_floor_id=property_unit_item.property_floor_id,
+                        property_unit_notes=property_unit_item.property_unit_notes,
+                        has_amenities=property_unit_item.has_amenities,
+                        property_id=property_unit_item.property_id,
+                        property_unit_security_deposit=property_unit_item.property_unit_security_deposit,
+                        property_unit_commission=property_unit_item.property_unit_commission,
+                        property_status=property_unit_item.property_status,
+                    )
+                )
+        return result
 
 
 class PropertyBase(BaseSchema):
@@ -30,22 +89,20 @@ class PropertyBase(BaseSchema):
     pets_allowed: bool = False
     description: Optional[str] = None
     property_status: PropertyStatus
+    address: Optional[List[AddressBase]] = []
+    units: Optional[List[PropertyUnit] | List[PropertyUnitBase]] = []
 
 
 class Property(PropertyBase):
-    """
-    Model for representing a property with additional details.
-
-    Attributes:
-        property_unit_assoc_id (Optional[UUID]): The unique identifier for the property unit association.
-        address (Optional[List[Address] | Address]): The address(es) associated with the property.
-    """
-
     property_unit_assoc_id: Optional[UUID]
-    address: Optional[List[AddressBase]] = []
 
 
-class PropertyInfoMixin(AddressMixin):
+class PropertyUnitAssocBase(BaseSchema):
+    property_unit_assoc_id: UUID4
+    property_unit_type: str
+
+
+class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
     @classmethod
     def get_property_info(cls, property: Property) -> Property:
         return Property(
@@ -65,46 +122,12 @@ class PropertyInfoMixin(AddressMixin):
             description=property.description,
             property_status=property.property_status,
             address=cls.get_address_base(property.address),
-        )
-
-
-class PropertyUnitBase(BaseSchema):
-    property_id: UUID
-    property_unit_code: Optional[str] = None
-    property_unit_floor_space: Optional[int] = None
-    property_unit_amount: Optional[float] = None
-    property_floor_id: Optional[int] = None
-    property_status: PropertyStatus
-    property_unit_notes: Optional[str] = None
-    property_unit_security_deposit: Optional[float] = None
-    property_unit_commission: Optional[float] = None
-    has_amenities: Optional[bool] = False
-
-
-class PropertyUnit(PropertyUnitBase):
-    property_unit_assoc_id: Optional[UUID]
-
-
-class PropertyUnitInfoMixin:
-    @classmethod
-    def get_property_unit_info(cls, property_unit: PropertyUnit) -> PropertyUnit:
-        return PropertyUnit(
-            property_unit_assoc_id=property_unit.property_unit_assoc_id,
-            property_unit_code=property_unit.property_unit_code,
-            property_unit_floor_space=property_unit.property_unit_floor_space,
-            property_unit_amount=property_unit.property_unit_amount,
-            property_floor_id=property_unit.property_floor_id,
-            property_unit_notes=property_unit.property_unit_notes,
-            has_amenities=property_unit.has_amenities,
-            property_id=property_unit.property_id,
-            property_unit_security_deposit=property_unit.property_unit_security_deposit,
-            property_unit_commission=property_unit.property_unit_commission,
-            property_status=property_unit.property_status,
-        )
+            units=cls.get_property_unit_info(property.units),
+        ).model_dump()
 
 
 class PropertyDetailsMixin(PropertyInfoMixin, PropertyUnitInfoMixin):
-    PROPERTY_TYPE_DEFAULT = "Units"
+    _PROPERTY_TYPE_DEFAULT: str = "Units"
 
     # @classmethod
     # def get_property_details_from_contract(cls, contract_details: List[ContractModel]):
@@ -146,7 +169,7 @@ class PropertyDetailsMixin(PropertyInfoMixin, PropertyUnitInfoMixin):
                 continue
             if (
                 property_unit_assoc.property_unit_type
-                == PropertyDetailsMixin.PROPERTY_TYPE_DEFAULT
+                == PropertyDetailsMixin._PROPERTY_TYPE_DEFAULT
             ):
                 result.append(cls.get_property_unit_info(property_unit_assoc))
             else:

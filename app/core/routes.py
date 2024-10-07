@@ -8,6 +8,7 @@ from app.modules.auth.router.user_router import UserRouter
 from app.modules.auth.router.permission_router import PermissionRouter
 
 from app.modules.properties.router.property_router import PropertyRouter
+from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.billing.router.account_router import AccountRouter
 
 router = APIRouter()
@@ -55,6 +56,9 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of PropertyRouter
     app.include_router(PropertyRouter(prefix="/property", tags=["Property"]).router)
+
+    # Create an instance of UnitRouter
+    app.include_router(UnitRouter(prefix="/unit", tags=["Unit"]).router)
 
     # Create an instance of AccountRouter
     app.include_router(AccountRouter(prefix="/account", tags=["Account"]).router)
