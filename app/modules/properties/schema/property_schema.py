@@ -30,18 +30,10 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
     _property_unit_status = BaseFaker.random_choices(
         ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
     )
-    _amount = round(
-        BaseFaker.random_number(digits=5), 2
-    )  # Random property price or rent
-    _security_deposit = round(
-        BaseFaker.random_number(digits=4), 2
-    )  # Random security deposit
-    _commission = round(
-        BaseFaker.random_number(digits=3), 2
-    )  # Random commission amount
-    _floor_space = BaseFaker.random_number(
-        digits=3
-    )  # Random floor space in square feet/meters
+    _amount = round(BaseFaker.random_number(digits=5), 2)
+    _security_deposit = round(BaseFaker.random_number(digits=4), 2)
+    _commission = round(BaseFaker.random_number(digits=3), 2)
+    _floor_space = BaseFaker.random_number(digits=3)
     _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
 
     model_config = ConfigDict(
@@ -51,28 +43,20 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={
             "example": {
-                "name": BaseFaker.company(),  # Random company name or property name
-                "property_type": _property_type[
-                    0
-                ],  # Random property type from the list
-                "amount": _amount,  # Random price or rent
-                "security_deposit": _security_deposit,  # Random security deposit
-                "commission": _commission,  # Random commission
-                "floor_space": _floor_space,  # Random floor space
-                "num_units": BaseFaker.random_int(
-                    min=1, max=10
-                ),  # Random number of units
-                "num_bathrooms": BaseFaker.random_int(
-                    min=1, max=4
-                ),  # Random number of bathrooms
-                "num_garages": BaseFaker.random_int(
-                    min=0, max=2
-                ),  # Random number of garages
-                "has_balconies": BaseFaker.boolean(),  # Random boolean for balconies
-                "has_parking_space": BaseFaker.boolean(),  # Random boolean for parking space
-                "pets_allowed": BaseFaker.boolean(),  # Random boolean for pets allowed
-                "description": BaseFaker.text(max_nb_chars=200),  # Random description
-                "property_status": _property_status[0],  # Random property status
+                "name": BaseFaker.company(),
+                "property_type": _property_type[0],
+                "amount": _amount,
+                "security_deposit": _security_deposit,
+                "commission": _commission,
+                "floor_space": _floor_space,
+                "num_units": BaseFaker.random_int(min=1, max=10),
+                "num_bathrooms": BaseFaker.random_int(min=1, max=4),
+                "num_garages": BaseFaker.random_int(min=0, max=2),
+                "has_balconies": BaseFaker.boolean(),
+                "has_parking_space": BaseFaker.boolean(),
+                "pets_allowed": BaseFaker.boolean(),
+                "description": BaseFaker.text(max_nb_chars=200),
+                "property_status": _property_status[0],
                 "address": [
                     {
                         "address_1": BaseFaker.address(),
@@ -123,18 +107,10 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
     _property_unit_status = BaseFaker.random_choices(
         ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
     )
-    _amount = round(
-        BaseFaker.random_number(digits=5), 2
-    )  # Random property price or rent
-    _security_deposit = round(
-        BaseFaker.random_number(digits=4), 2
-    )  # Random security deposit
-    _commission = round(
-        BaseFaker.random_number(digits=3), 2
-    )  # Random commission amount
-    _floor_space = BaseFaker.random_number(
-        digits=3
-    )  # Random floor space in square feet/meters
+    _amount = round(BaseFaker.random_number(digits=5), 2)
+    _security_deposit = round(BaseFaker.random_number(digits=4), 2)
+    _commission = round(BaseFaker.random_number(digits=3), 2)
+    _floor_space = BaseFaker.random_number(digits=3)
     _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
 
     model_config = ConfigDict(
@@ -144,28 +120,20 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={
             "example": {
-                "name": BaseFaker.company(),  # Random company name or property name
-                "property_type": _property_type[
-                    0
-                ],  # Random property type from the list
-                "amount": _amount,  # Random price or rent
-                "security_deposit": _security_deposit,  # Random security deposit
-                "commission": _commission,  # Random commission
-                "floor_space": _floor_space,  # Random floor space
-                "num_units": BaseFaker.random_int(
-                    min=1, max=10
-                ),  # Random number of units
-                "num_bathrooms": BaseFaker.random_int(
-                    min=1, max=4
-                ),  # Random number of bathrooms
-                "num_garages": BaseFaker.random_int(
-                    min=0, max=2
-                ),  # Random number of garages
-                "has_balconies": BaseFaker.boolean(),  # Random boolean for balconies
-                "has_parking_space": BaseFaker.boolean(),  # Random boolean for parking space
-                "pets_allowed": BaseFaker.boolean(),  # Random boolean for pets allowed
-                "description": BaseFaker.text(max_nb_chars=200),  # Random description
-                "property_status": _property_status[0],  # Random property status
+                "name": BaseFaker.company(),
+                "property_type": _property_type[0],
+                "amount": _amount,
+                "security_deposit": _security_deposit,
+                "commission": _commission,
+                "floor_space": _floor_space,
+                "num_units": BaseFaker.random_int(min=1, max=10),
+                "num_bathrooms": BaseFaker.random_int(min=1, max=4),
+                "num_garages": BaseFaker.random_int(min=0, max=2),
+                "has_balconies": BaseFaker.boolean(),
+                "has_parking_space": BaseFaker.boolean(),
+                "pets_allowed": BaseFaker.boolean(),
+                "description": BaseFaker.text(max_nb_chars=200),
+                "property_status": _property_status[0],
                 "address": [
                     {
                         "address_1": BaseFaker.address(),

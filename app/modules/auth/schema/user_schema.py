@@ -2,7 +2,7 @@ from uuid import uuid4
 from typing import Any, List, Optional, Union
 from datetime import date, timedelta, datetime
 
-from pydantic import UUID4, ConfigDict, Field, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
 # models
 from app.modules.auth.models.user import User as UserModel
@@ -32,8 +32,6 @@ from app.modules.billing.schema.account_schema import AccountBase
 from app.modules.communication.schema.tour_schema import TourBase
 from app.modules.address.schema.address_schema import AddressBase
 from app.modules.resources.schema.document_schema import DocumentBase
-from app.modules.properties.schema.property_schema import PropertyBase
-from app.modules.properties.schema.unit_schema import PropertyUnitBase
 from app.modules.billing.schema.transaction_schema import TransactionBase
 from app.modules.communication.schema.calendar_event_schema import CalendarEventBase
 from app.modules.communication.schema.maintenance_request_schema import (

@@ -31,18 +31,10 @@ class UnitCreateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):
     _property_unit_status = BaseFaker.random_choices(
         ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
     )
-    _amount = round(
-        BaseFaker.random_number(digits=5), 2
-    )  # Random property price or rent
-    _security_deposit = round(
-        BaseFaker.random_number(digits=4), 2
-    )  # Random security deposit
-    _commission = round(
-        BaseFaker.random_number(digits=3), 2
-    )  # Random commission amount
-    _floor_space = BaseFaker.random_number(
-        digits=3
-    )  # Random floor space in square feet/meters
+    _amount = round(BaseFaker.random_number(digits=5), 2)
+    _security_deposit = round(BaseFaker.random_number(digits=4), 2)
+    _commission = round(BaseFaker.random_number(digits=3), 2)
+    _floor_space = BaseFaker.random_number(digits=3)
     _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
 
     # Model configuration with Faker-generated example

@@ -18,12 +18,8 @@ from app.modules.properties.models.property_assignment import (
 
 
 class PropertyAssignmentCreate(PropertyAssignmentBase):
-    _date_from = BaseFaker.date_time_between(
-        start_date="-2y", end_date="now"
-    )  # Generate random datetime
-    _date_to = _date_from + timedelta(
-        days=BaseFaker.random_int(min=30, max=365)
-    )  # Add random days to _date_from
+    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
+    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
     _notes = BaseFaker.text(max_nb_chars=200)
     _assignment_type = BaseFaker.random_choices(
         ["other", "handler", "landlord", "contractor"], length=1
@@ -38,12 +34,12 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
         },
         json_schema_extra={
             "example": {
-                "property_unit_assoc_id": str(uuid4()), # Random UUID for property unit
-                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",  # Random UUID for user
-                "assignment_type": _assignment_type[0],  # Random assignment type
-                "date_from": _date_from,  # Random start date
-                "date_to": _date_to,  # Random end date
-                "notes": _notes,  # Random notes
+                "property_unit_assoc_id": str(uuid4()),
+                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
+                "assignment_type": _assignment_type[0],
+                "date_from": _date_from,
+                "date_to": _date_to,
+                "notes": _notes,
             }
         },
     )
@@ -61,12 +57,8 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
 
 
 class PropertyAssignmentUpdate(PropertyAssignmentBase):
-    _date_from = BaseFaker.date_time_between(
-        start_date="-2y", end_date="now"
-    )  # Generate random datetime
-    _date_to = _date_from + timedelta(
-        days=BaseFaker.random_int(min=30, max=365)
-    )  # Add random days to _date_from
+    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
+    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
     _notes = BaseFaker.text(max_nb_chars=200)
     _assignment_type = BaseFaker.random_choices(
         ["other", "handler", "landlord", "contractor"], length=1
@@ -81,12 +73,12 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
         },
         json_schema_extra={
             "example": {
-                "property_unit_assoc_id": str(uuid4()), # Random UUID for property unit
-                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",  # Random UUID for user
-                "assignment_type": _assignment_type[0],  # Random assignment type
-                "date_from": _date_from,  # Random start date
-                "date_to": _date_to,  # Random end date
-                "notes": _notes,  # Random notes
+                "property_unit_assoc_id": str(uuid4()),
+                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
+                "assignment_type": _assignment_type[0],
+                "date_from": _date_from,
+                "date_to": _date_to,
+                "notes": _notes,
             }
         },
     )
