@@ -38,9 +38,7 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
         },
         json_schema_extra={
             "example": {
-                "property_unit_assoc_id": UUID4(
-                    str(uuid4())
-                ),  # Random UUID for property unit
+                "property_unit_assoc_id": str(uuid4()), # Random UUID for property unit
                 "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",  # Random UUID for user
                 "assignment_type": _assignment_type[0],  # Random assignment type
                 "date_from": _date_from,  # Random start date
@@ -83,9 +81,7 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
         },
         json_schema_extra={
             "example": {
-                "property_unit_assoc_id": UUID4(
-                    str(uuid4())
-                ),  # Random UUID for property unit
+                "property_unit_assoc_id": str(uuid4()), # Random UUID for property unit
                 "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",  # Random UUID for user
                 "assignment_type": _assignment_type[0],  # Random assignment type
                 "date_from": _date_from,  # Random start date
