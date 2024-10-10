@@ -165,3 +165,6 @@ alembic.ini
 
 # scripts
 scripts/
+
+# vscode namespaces
+.vscode

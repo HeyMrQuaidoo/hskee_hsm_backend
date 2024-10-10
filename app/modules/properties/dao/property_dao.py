@@ -1,5 +1,3 @@
-# app/modules/properties/dao/property_dao.py
-
 from typing import List, Optional
 from uuid import UUID
 
@@ -11,7 +9,7 @@ from app.modules.properties.models.property import Property
 from app.modules.resources.models.amenity import Amenities
 from app.modules.properties.models.unit import Units
 from app.modules.resources.models.media import Media
-from app.modules.billing.models.utilities import Utilities
+from app.modules.billing.models.utility import Utilities
 from app.modules.associations.models.entity_amenities import EntityAmenities
 from app.modules.associations.models.entity_media import EntityMedia
 from app.modules.associations.models.entity_billable import EntityBillable
