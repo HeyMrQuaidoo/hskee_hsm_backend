@@ -25,3 +25,21 @@ class PropertyRouter(BaseCRUDRouter):
 
     def register_routes(self):
         pass
+    #     @self.router.post("/link_property_to_ammenity")
+    #     async def add_property_ammenity(
+    #         property_unit_assoc_id: UUID,
+    #         ammenity_id: UUID,
+    #         db: AsyncSession = Depends(self.get_db),
+    #     ):
+    #         property_ammenity: EntityAmenities = await self.dao.link_entity_to_ammenity(
+    #             db_session=db,
+    #             property_unit_assoc_id=property_unit_assoc_id,
+    #             ammenity_id=ammenity_id,
+    #         )
+
+    #         if property_ammenity is None:
+    #             raise HTTPException(
+    #                 status_code=404, detail="Error adding ammenity to property"
+    #             )
+
+    #         return DAOResponse(success=True, data=property_ammenity.to_dict())
