@@ -1,6 +1,7 @@
 # models
 from app.modules.auth.models.user import User
 from app.modules.auth.models.role import Role
+from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
 from app.modules.billing.models.account import Account
 from app.modules.auth.models.permissions import Permissions
@@ -29,6 +30,10 @@ UnitSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 
 PropertyAssignmentSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     PropertyAssignment, excludes=["property_assignment_id"]
+)
+
+MediaSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Media, excludes=["media_id"]
 )
 
 PermissionSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(

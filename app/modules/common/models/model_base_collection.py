@@ -5,13 +5,15 @@ from dogpile.cache import make_region
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.collections import InstrumentedList
 
+from app.core.config import settings
 from app.modules.common.models.model_registry import registry
 from app.modules.common.models.model_association import AssociationProcessor
+
 
 cache_region = make_region().configure(
     "dogpile.cache.dbm",
     expiration_time=300,
-    arguments={"filename": "/opt/render/project/src/cachefile.dbm"},
+    arguments={"filename": f"{settings.CACHE_PATH}cachefile.dbm"},
 )
 
 

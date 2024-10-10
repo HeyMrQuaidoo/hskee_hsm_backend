@@ -43,4 +43,11 @@ response_mapping: Dict[Type[Any], Type[BaseModel]] = {
         import_module("app.modules.properties.schema.property_assignment"),
         "PropertyAssignmentResponse",
     ),
+    getattr(
+        import_module("app.modules.resources.models.media"),
+        "Media",
+    ): getattr(
+        import_module("app.modules.resources.schema.media_schema"),
+        "MediaResponse",
+    )
 }

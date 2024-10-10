@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from dogpile.cache import make_region
 from contextlib import asynccontextmanager
 
+from app.core.config import settings
 from app.core.logger import AppLogger
 from app.db.dbManager import DBManager
 
@@ -21,7 +22,7 @@ get_db = db_manager.db_module.get_db
 cache_region = make_region().configure(
     "dogpile.cache.dbm",
     expiration_time=300,
-    arguments={"filename": "/opt/render/project/src/cachefile.dbm"},
+    arguments={"filename": f"{settings.CACHE_PATH}cachefile.dbm"},
 )
 
 

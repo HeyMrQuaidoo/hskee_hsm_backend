@@ -6,8 +6,9 @@ from app.modules.properties.models.property import Property
 
 # dao
 from app.modules.common.dao.base_dao import BaseDAO
-from app.modules.address.dao.address_dao import AddressDAO
 from app.modules.properties.dao.unit_dao import UnitDAO
+from app.modules.resources.dao.media_dao import MediaDAO
+from app.modules.address.dao.address_dao import AddressDAO
 
 # schemas
 
@@ -17,9 +18,14 @@ class PropertyDAO(BaseDAO[Property]):
         self.model = Property
 
         self.unit_dao = UnitDAO()
+        self.media_dao = MediaDAO()
         self.address_dao = AddressDAO()
 
-        self.detail_mappings = {"address": self.address_dao, "units": self.unit_dao}
+        self.detail_mappings = {
+            "address": self.address_dao,
+            "units": self.unit_dao,
+            "media": self.media_dao,
+        }
 
         super().__init__(
             model=self.model,

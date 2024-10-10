@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     ENCRYPT_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: str
     REFRESH_TOKEN_EXPIRE_MINUTES: str
+    
+    CACHE_PATH: str
 
     model_config = ConfigDict(
         from_attributes=True, env_file=".env", env_file_encoding="utf-8"
