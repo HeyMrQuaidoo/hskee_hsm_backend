@@ -6,13 +6,11 @@ from pydantic import ConfigDict
 # Base Faker
 from app.modules.common.schema.base_schema import BaseFaker
 
+# Schema mixin
+from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
+
 # Models
 from app.modules.resources.models.amenity import Amenities as AmenitiesModel
-
-class AmenityBase(BaseModel):
-    amenity_name: Optional[str] = None
-    amenity_short_name: Optional[str] = None
-    description: Optional[str] = None
 
 class AmenityCreateSchema(AmenityBase):
     # Faker attributes
