@@ -176,40 +176,55 @@ class User(Base):
     )
 
     # - property_assignments
-    property_assignments = relationship(
-        "PropertyUnitAssoc",
-        secondary="property_assignment",
-        back_populates="assignments",
-        lazy="selectin",
-    )
-
-    assigned_properties = relationship(
-        "Property",
-        secondary="property_assignment",
-        primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
-        secondaryjoin="PropertyAssignment.property_unit_assoc_id==Property.property_unit_assoc_id",
+    # property_assignment:Mapped[List["PropertyUnitAssoc"]] = relationship(
+    #     "PropertyUnitAssoc",
+    #     secondary="property_assignment",
+    #     back_populates="assignments",
+    #     lazy="selectin",
+    # )
+    property_assignment: Mapped[List["PropertyAssignment"]] = relationship(
+        "PropertyAssignment",
+        foreign_keys="[PropertyAssignment.user_id]",
+        back_populates="user",  # This matches the back_populates on PropertyAssignment
         lazy="selectin",
         viewonly=True,
     )
+    # property_assignment: Mapped[List["PropertyAssignment"]] = relationship(
+    #     "PropertyAssignment",
+    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
+    #     foreign_keys="[PropertyAssignment.user_id]",
+    #     back_populates="user",
+    #     lazy="selectin",
+    #     viewonly=True,
+    # )
 
-    assigned_units = relationship(
-        "Units",
-        secondary="property_assignment",
-        primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
-        secondaryjoin="and_(PropertyAssignment.property_unit_assoc_id==Units.property_unit_assoc_id)",
-        lazy="selectin",
-        viewonly=True,
-    )
+    # assigned_properties: Mapped[List["Property"]] = relationship(
+    #     "Property",
+    #     secondary="property_assignment",
+    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
+    #     secondaryjoin="PropertyAssignment.property_unit_assoc_id==Property.property_unit_assoc_id",
+    #     lazy="selectin",
+    #     viewonly=True,
+    # )
 
-    # - properties
-    owned_properties = relationship(
-        "PropertyUnitAssoc",
-        secondary="property_assignment",
-        primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type=='landlord')",
-        secondaryjoin="PropertyAssignment.property_unit_assoc_id==PropertyUnitAssoc.property_unit_assoc_id",
-        lazy="selectin",
-        viewonly=True,
-    )
+    # assigned_units: Mapped[List["Units"]] = relationship(
+    #     "Units",
+    #     secondary="property_assignment",
+    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
+    #     secondaryjoin="and_(PropertyAssignment.property_unit_assoc_id==Units.property_unit_assoc_id)",
+    #     lazy="selectin",
+    #     viewonly=True,
+    # )
+
+    # # - properties
+    # owned_properties = relationship(
+    #     "PropertyUnitAssoc",
+    #     secondary="property_assignment",
+    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type=='landlord')",
+    #     secondaryjoin="PropertyAssignment.property_unit_assoc_id==PropertyUnitAssoc.property_unit_assoc_id",
+    #     lazy="selectin",
+    #     viewonly=True,
+    # )
 
     # - messages
     sent_messages = relationship("Message", back_populates="sender", lazy="selectin")
@@ -262,7 +277,7 @@ class User(Base):
         return data
 
 
-def ensure_date_of_birth(mapper, connection, target):
+def parse_date_of_birth(mapper, connection, target):
     """Listener to convert date_of_birth to a date if it's provided as a string."""
     if isinstance(target.date_of_birth, str):
         # (format 'YYYY-MM-DD')
@@ -271,8 +286,8 @@ def ensure_date_of_birth(mapper, connection, target):
         ).date()
 
 
-event.listen(User, "before_insert", ensure_date_of_birth)
-event.listen(User, "before_update", ensure_date_of_birth)
+event.listen(User, "before_insert", parse_date_of_birth)
+event.listen(User, "before_update", parse_date_of_birth)
 
 # register model
 Base.setup_model_dynamic_listener("user_roles", User)

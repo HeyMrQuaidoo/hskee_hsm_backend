@@ -55,7 +55,6 @@ class BaseCRUDRouter(Generic[DBModelType]):
                 items = await self.dao.get_all(
                     db_session=db_session, offset=offset, limit=limit
                 )
-                print(items)
 
                 # if not items:
                 #     raise RecordNotFoundException(msg="No Record found")
@@ -110,21 +109,6 @@ class BaseCRUDRouter(Generic[DBModelType]):
             except Exception as e:
                 raise CustomException(e)
 
-    def call_model_validate(obj, for_insertion_value):
-        # Get the model_validate method if it exists
-        if hasattr(obj, "model_validate"):
-            method = getattr(obj, "model_validate")
-            # Get the parameters of the method
-            signature = inspect.signature(method)
-            if "for_insertion" in signature.parameters:
-                # Call with the 'for_insertion' argument if it exists
-                return method(for_insertion=for_insertion_value)
-            else:
-                # Call without the 'for_insertion' argument if it's not present
-                return method()
-        else:
-            raise AttributeError("model_validate method not found")
-
     def add_create_route(self):
         @self.router.post("/", status_code=status.HTTP_201_CREATED)
         async def create(
@@ -168,11 +152,21 @@ class BaseCRUDRouter(Generic[DBModelType]):
                 updated_item = await self.dao.update(
                     db_session=db_session, db_obj=db_item, obj_in=item
                 )
+
+                # determine how to call model_validate
+                method = getattr(self.update_schema, "model_validate")
+                signature = inspect.signature(method)
+
+                if "for_insertion" in signature.parameters:
+                    model_validate = partial(method, for_insertion=False)
+                else:
+                    model_validate = method
+
                 return DAOResponse(
                     success=True,
                     data=updated_item
                     if isinstance(updated_item, DAOResponse)
-                    else self.update_schema.model_validate(updated_item),
+                    else model_validate(updated_item),
                 )
             except RecordNotFoundException as e:
                 raise e

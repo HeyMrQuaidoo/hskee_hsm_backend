@@ -1,8 +1,18 @@
 from typing import List, Optional
 
-from app.modules.common.dao.base_dao import BaseDAO
+# Models
 from app.modules.resources.models.media import Media
+
+# Base DAO
+from app.modules.common.dao.base_dao import BaseDAO
 
 class MediaDAO(BaseDAO[Media]):
     def __init__(self, excludes: Optional[List[str]] = None):
-        super().__init__(model=Media, excludes=excludes)
+        self.model = Media
+        self.detail_mappings = {}
+        super().__init__(
+            model=self.model,
+            detail_mappings=self.detail_mappings,
+            excludes=excludes or [],
+            primary_key="media_id",
+        )

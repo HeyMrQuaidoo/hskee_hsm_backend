@@ -1,25 +1,13 @@
 from uuid import UUID
-from pydantic import UUID4
+from typing import List, Optional, Annotated
 from pydantic import BaseModel, ConfigDict, constr
-from typing import List, Optional, Annotated, Union
 
 # models
 from app.modules.auth.models.role import Role as RoleModel
 
 # schema
 from app.modules.auth.schema.permission import Permission
-from app.modules.common.schema.base_schema import BaseSchema
-
-
-class RoleBase(BaseSchema):
-    name: str
-    alias: Optional[str] = None
-    description: Optional[str] = None
-    permissions: Optional[Union[List[Permission]]] = []
-
-
-class Role(RoleBase):
-    role_id: UUID4
+from app.modules.auth.schema.mixins.role_mixin import RoleBase
 
 
 class RoleCreateSchema(RoleBase):
@@ -40,7 +28,7 @@ class RoleResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def from_orm(cls, role: RoleModel):
+    def model_validate(cls, role: RoleModel):
         """
         Create a RoleResponse instance from an ORM model.
 

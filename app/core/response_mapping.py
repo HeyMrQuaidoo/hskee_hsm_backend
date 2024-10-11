@@ -27,4 +27,27 @@ response_mapping: Dict[Type[Any], Type[BaseModel]] = {
     getattr(import_module("app.modules.billing.models.account"), "Account"): getattr(
         import_module("app.modules.billing.schema.account_schema"), "AccountResponse"
     ),
+    getattr(
+        import_module("app.modules.properties.models.property"), "Property"
+    ): getattr(
+        import_module("app.modules.properties.schema.property_schema"),
+        "PropertyResponse",
+    ),
+    getattr(import_module("app.modules.properties.models.unit"), "Units"): getattr(
+        import_module("app.modules.properties.schema.unit_schema"), "UnitResponse"
+    ),
+    getattr(
+        import_module("app.modules.properties.models.property_assignment"),
+        "PropertyAssignment",
+    ): getattr(
+        import_module("app.modules.properties.schema.property_assignment"),
+        "PropertyAssignmentResponse",
+    ),
+    getattr(
+        import_module("app.modules.resources.models.media"),
+        "Media",
+    ): getattr(
+        import_module("app.modules.resources.schema.media_schema"),
+        "MediaResponse",
+    )
 }
