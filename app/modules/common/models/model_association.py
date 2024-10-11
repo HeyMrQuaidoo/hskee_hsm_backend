@@ -35,8 +35,6 @@ class AssociationProcessor:
             self._is_processing = True
             association_data = self._build_association_data(item, config)
 
-            # print(f"\nassociation_data : {association_data}")
-
             # check if association already exists
             existing_association = await self._get_existing_association(
                 session,
@@ -82,8 +80,10 @@ class AssociationProcessor:
 
         # process parent fields (entity_id_attr)
         for parent_attr, parent_field in entity_params_attr.items():
-            if hasattr(self._parent, parent_field):
+            # if hasattr(self._parent, parent_field):
+            if parent_field in self._parent.__dict__:
                 association_data[parent_attr] = getattr(self._parent, parent_field)
+
             if parent_attr == "entity_type":
                 association_data[parent_attr] = parent_field
 

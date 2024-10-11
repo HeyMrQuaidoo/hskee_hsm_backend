@@ -9,8 +9,6 @@ contract_status
 
 features
 --------
-- add property
-
 
 Done
 ----
@@ -21,3 +19,4 @@ Done
   - add address
 - add address
 - add account
+- assign property

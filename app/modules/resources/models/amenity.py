@@ -1,13 +1,10 @@
-# app/modules/resources/models/amenities.py
-
 import uuid
-from typing import List
+from typing import List, Optional
 from sqlalchemy import String, Text, UUID
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # Base model
 from app.modules.common.models.model_base import BaseModel as Base
-
 
 class Amenities(Base):
     __tablename__ = "amenities"
@@ -15,22 +12,19 @@ class Amenities(Base):
     amenity_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    amenity_name: Mapped[str] = mapped_column(String(128))
-    amenity_short_name: Mapped[str] = mapped_column(String(80))
-    description: Mapped[str] = mapped_column(Text)
+    amenity_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    amenity_short_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Relationship to EntityAmenities
-    entity_amenities: Mapped[List["EntityAmenities"]] = relationship(
-        "EntityAmenities",
-        back_populates="amenity",
+    # Relationships
+    properties: Mapped[List["Property"]] = relationship(
+        "Property",
+        secondary="entity_amenities",
+        primaryjoin="Amenities.amenity_id == EntityAmenities.amenity_id",
+        secondaryjoin="and_(EntityAmenities.entity_id == Property.property_unit_assoc_id, EntityAmenities.entity_type == 'property')",
+        back_populates="amenities",
         lazy="selectin",
     )
 
-    # Media relationship
-    media: Mapped[List["Media"]] = relationship(
-        "Media",
-        secondary="entity_media",
-        primaryjoin="Amenities.amenity_id == EntityMedia.entity_id",
-        secondaryjoin="and_(EntityMedia.media_id == Media.media_id, EntityMedia.entity_type == 'amenities')",
-        lazy="selectin",
-    )
+# Register model
+Base.setup_model_dynamic_listener("amenities", Amenities)

@@ -1,5 +1,4 @@
-# app/modules/billing/models/utilities.py
-
+from typing import List
 import uuid
 from sqlalchemy import String, Text, UUID, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column

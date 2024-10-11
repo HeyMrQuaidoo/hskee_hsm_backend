@@ -27,8 +27,6 @@ class City(BaseSchema):
     region_id: UUID
     city_name: Annotated[str, constr(max_length=128)]
 
-    # model_config = ConfigDict(from_attributes=True)
-
 
 class Region(BaseSchema):
     """
@@ -44,8 +42,6 @@ class Region(BaseSchema):
     country_id: UUID
     region_name: Annotated[str, constr(max_length=128)]
 
-    # model_config = ConfigDict(from_attributes=True)
-
 
 class Country(BaseSchema):
     """
@@ -58,8 +54,6 @@ class Country(BaseSchema):
 
     country_id: Annotated[UUID, uuid4()] = uuid4()
     country_name: Annotated[str, constr(max_length=128)]
-
-    # model_config = ConfigDict(from_attributes=True)
 
 
 # Ensure pydantic schema is initialized TODO: Remove
@@ -104,8 +98,6 @@ class Address(AddressBase):
     """
 
     address_id: Optional[UUID] = None
-
-    # model_config = ConfigDict(from_attributes=True)
 
 
 class AddressMixin:

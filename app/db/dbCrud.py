@@ -97,7 +97,6 @@ class BaseMixin:
 
             return {k: v for k, v in obj_in.items() if k in valid_fields}
         except Exception as e:
-            # print(f"filter_input_fields: {e}")
             raise Exception(e)
 
     def validate_primary_key(
@@ -125,6 +124,48 @@ class BaseMixin:
             await db_session.rollback()
             raise Exception(f"Error committing data: {str(e)}")
 
+    def update_none_values_with_parent(
+        self, detail_obj_list, entity_parent_params_attr: dict, parent_obj: dict
+    ):
+        """
+        Updates items in detail_obj_list by setting fields with None values
+        to their corresponding parent values using entity_parent_params_attr.
+
+        Args:
+            detail_obj_list (list): List of detail objects (dictionaries) to update.
+            entity_parent_params_attr (dict): A mapping of keys from detail_obj to keys in the parent object.
+            parent_obj (dict): The parent object containing values for the linked keys.
+        """
+        for item in detail_obj_list:
+            # Find keys with None values in the item
+            keys_with_none = [key for key, value in item.items() if value is None]
+
+            if keys_with_none:
+                print(f"\tFound keys with None: {keys_with_none}")
+
+                # For each key with None, check if there is a corresponding parent key
+                for key in keys_with_none:
+                    # Get the corresponding linked key in entity_parent_params_attr
+                    parent_key = entity_parent_params_attr.get(key)
+
+                    if parent_key:
+                        # Set the current item's key to the parent value using the linked key
+                        parent_value = parent_obj.get(parent_key)
+
+                        if parent_value is not None:
+                            item[key] = parent_value
+                            print(
+                                f"\tSetting {key} in item to parent value: {parent_value}"
+                            )
+                        else:
+                            print(
+                                f"\tParent value for {parent_key} is None, skipping setting {key}"
+                            )
+                    else:
+                        print(
+                            f"\tNo parent key found for {key} in entity_parent_params_attr"
+                        )
+
     async def create_or_update_relationships(
         self,
         db_session: AsyncSession,
@@ -134,8 +175,23 @@ class BaseMixin:
         try:
             for mapped_obj_key, mapped_obj_dao in self.detail_mappings.items():
                 print(f"\tmapped_obj_key: {mapped_obj_key}")
+
+                # Get the list of objects to check from obj_data
                 detail_obj_list = obj_data.get(mapped_obj_key, [])
                 print(f"\tdetail_obj_list: {detail_obj_list}")
+
+                # Find entity parent params
+                config = registry.get_config()
+                parent_obj = db_obj.model_dump()
+                entity_child_attrs = config.get(db_obj.__tablename__.lower()).get(
+                    mapped_obj_key.lower()
+                )
+                entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
+
+                # Call the helper method to update the None values
+                self.update_none_values_with_parent(
+                    detail_obj_list, entity_parent_params_attr, parent_obj
+                )
 
                 if not detail_obj_list:
                     continue
@@ -158,8 +214,6 @@ class BaseMixin:
 
                     if isinstance(mapped_obj_created_item, BaseModel):
                         # get the configuration dictionary from registry
-                        config = registry.get_config()
-
                         entity_config = config.get(db_obj.__tablename__.lower())
 
                         if not entity_config:
@@ -171,7 +225,7 @@ class BaseMixin:
                             .get("item_params_attr")
                             .keys()
                         )
-                        # print(f"\tentity_param_keys : {entity_param_keys}\n")
+
                         # filter keys based on what is passed in the detail object
                         if entity_param_keys:
                             filtered_params = {
@@ -179,9 +233,7 @@ class BaseMixin:
                                 for key in entity_param_keys
                                 if key in detail_obj and detail_obj[key] is not None
                             }
-                            # print(
-                            #     f"\tfiltered_params {entity_param_keys} | {filtered_params}"
-                            # )
+
                             mapped_obj_created_item.set_entity_params(
                                 {mapped_obj_key: filtered_params}
                             )
@@ -215,9 +267,7 @@ class BaseMixin:
                 db_obj = await self.commit_and_refresh(
                     db_session=db_session, obj=db_obj
                 )
-            # print(f"\tend create_or_update_relationships")
         except Exception as e:
-            # print(f"create_or_update_relationships: {e}")
             raise Exception(str(e))
 
 
@@ -438,6 +488,7 @@ class UpdateMixin(BaseMixin):
                 else obj_in
             )
             if self.detail_mappings:
+                print(f"\tin update self.detail_mappings {self.detail_mappings}\n")
                 await self.create_or_update_relationships(db_session, db_obj, obj_data)
 
             return await self.commit_and_refresh(db_session=db_session, obj=db_obj)
@@ -489,6 +540,7 @@ class DBOperations(CreateMixin, ReadMixin, UpdateMixin, DeleteMixin):
         try:
             existing_obj = None
             primary_key_value = obj_in.get(self.primary_key)
+            print(f"\tcreate_or_update: {self.primary_key} :::: {primary_key_value}")
 
             if primary_key_value:
                 try:

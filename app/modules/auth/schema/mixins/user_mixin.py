@@ -1,12 +1,15 @@
+from uuid import UUID
 from datetime import datetime
 from typing import Annotated, Any, List, Optional
 from pydantic import UUID4, Field, constr, EmailStr
+
 
 # enums
 from app.modules.auth.enums.user_enums import GenderEnum
 
 # schema
 from app.modules.common.schema.base_schema import BaseSchema
+from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
 
 # models
 from app.modules.auth.models.user import User as UserModel
@@ -21,7 +24,8 @@ class FavoritePropertiesBase(BaseSchema):
     property_unit_assoc_id: UUID4
 
 
-class UserBase(BaseSchema):
+class UserBase(BaseSchema, PropertyDetailsMixin):
+    user_id: Optional[UUID] = None
     first_name: Annotated[str, constr(max_length=128)]
     last_name: Annotated[str, constr(max_length=128)]
     gender: GenderEnum

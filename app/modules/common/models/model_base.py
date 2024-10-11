@@ -25,8 +25,6 @@ from app.db.dbDeclarative import Base
 from app.modules.common.models.model_registry import registry
 from app.modules.common.models.model_base_collection import BaseModelCollection
 
-cache_region = make_region().configure("dogpile.cache.memory", expiration_time=300)
-
 
 class BaseModel(Base, AsyncAttrs):
     @declared_attr

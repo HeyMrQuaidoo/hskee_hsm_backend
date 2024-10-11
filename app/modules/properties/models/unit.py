@@ -91,7 +91,7 @@ class Units(PropertyUnitAssoc):
     # utilities
     utilities: Mapped[List["EntityBillable"]] = relationship(
         "EntityBillable",
-        primaryjoin="and_(EntityBillable.entity_id==Units.property_unit_assoc_id, EntityBillable.entity_type=='Units', EntityBillable.billable_type=='Utilities')",
+        primaryjoin="and_(EntityBillable.entity_id==Units.property_unit_assoc_id, EntityBillable.entity_type=='units', EntityBillable.billable_type=='utilities')",
         foreign_keys="[EntityBillable.entity_id]",
         # overlaps="entity_billable,utilities",
         lazy="selectin",
@@ -110,7 +110,7 @@ class Units(PropertyUnitAssoc):
     media: Mapped[List["Media"]] = relationship(
         "Media",
         secondary="entity_media",
-        primaryjoin="and_(EntityMedia.entity_id==Units.property_unit_assoc_id, EntityMedia.entity_type=='Units')",
+        primaryjoin="and_(EntityMedia.entity_id==Units.property_unit_assoc_id, EntityMedia.entity_type=='units')",
         # overlaps="entity_media,media",
         lazy="selectin",
         viewonly=True,

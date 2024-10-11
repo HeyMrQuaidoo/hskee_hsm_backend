@@ -1,21 +1,37 @@
 from uuid import uuid4
-from typing import Any, Optional, List, Union
-from datetime import date, datetime, timedelta
+from typing import Any, List, Optional, Union
+from datetime import date, timedelta, datetime
 
-from pydantic import UUID4, ConfigDict, EmailStr, Field, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
 # models
 from app.modules.auth.models.user import User as UserModel
 
 # schemas
+from app.modules.common.schema.base_schema import BaseFaker
+from app.modules.billing.schema.account_schema import AccountBase
+from app.modules.address.schema.address_mixin import AddressMixin
+from app.modules.auth.schema.mixins.user_auth_schema import UserAuthInfo
+from app.modules.auth.schema.mixins.user_mixin import (
+    UserBase,
+    UserHiddenFields,
+    FavoritePropertiesBase,
+)
+from app.modules.auth.schema.mixins.user_employer_schema import (
+    UserEmployerInfo,
+)
+from app.modules.properties.schema.rental_history_schema import (
+    PastRentalHistoryResponse,
+)
+from app.modules.auth.schema.mixins.user_emergency_schema import (
+    UserEmergencyInfo,
+)
 from app.modules.auth.schema.role_schema import RoleBase
 from app.modules.auth.schema.company_schema import CompanyBase
 from app.modules.billing.schema.account_schema import AccountBase
 from app.modules.communication.schema.tour_schema import TourBase
 from app.modules.address.schema.address_schema import AddressBase
 from app.modules.resources.schema.document_schema import DocumentBase
-from app.modules.properties.schema.property_schema import PropertyBase
-from app.modules.common.schema.base_schema import BaseSchema, BaseFaker
 from app.modules.billing.schema.transaction_schema import TransactionBase
 from app.modules.communication.schema.calendar_event_schema import CalendarEventBase
 from app.modules.communication.schema.maintenance_request_schema import (
@@ -24,26 +40,15 @@ from app.modules.communication.schema.maintenance_request_schema import (
 from app.modules.properties.schema.rental_history_schema import (
     PastRentalHistoryBase,
     PastRentalHistory,
-    PastRentalHistoryResponse,
 )
-from app.modules.auth.schema.mixins.user_mixin import (
-    FavoritePropertiesBase,
-    UserBase,
+from app.modules.properties.schema.mixins.property_assignment_mixin import (
+    PropertyAssignment,
+    PropertyAssignmentBase,
+    PropertyAssignmentMixin,
 )
-
 from app.modules.auth.schema.mixins.user_interactions_schema import (
     UserInteractionsBase,
 )
-
-from app.modules.auth.schema.mixins.user_auth_schema import UserAuthInfo
-
-from app.modules.auth.schema.mixins.user_emergency_schema import (
-    UserEmergencyInfo,
-)
-from app.modules.auth.schema.mixins.user_employer_schema import (
-    UserEmployerInfo,
-)
-from app.modules.address.schema.address_mixin import AddressMixin
 
 
 class UserSchema(UserBase):
@@ -59,34 +64,10 @@ class UserSchema(UserBase):
     maintenance_requests: Optional[List[MaintenanceRequestBase]] = []
     tours: Optional[List[TourBase]] = []
     events: Optional[List[CalendarEventBase]] = []
-    properties_owned: Optional[List[PropertyBase]] = []
+    property_assignment: Optional[List[PropertyAssignmentBase]] = []
     rental_history: Optional[
         Union[List[PastRentalHistoryBase] | List[PastRentalHistory]]
     ] = []
-
-
-class UserHiddenFields(BaseSchema):
-    # emergency info
-    emergency_contact_name: Optional[str] = Field(None, hidden=True)
-    emergency_contact_email: Optional[EmailStr] = Field(None, hidden=True)
-    emergency_contact_relation: Optional[str] = Field(None, hidden=True)
-    emergency_contact_number: Optional[str] = Field(None, hidden=True)
-
-    # auth info
-    login_provider: Optional[str] = Field(None, hidden=True)
-    reset_token: Optional[str] = Field(None, hidden=True)
-    verification_token: Optional[str] = Field(None, hidden=True)
-    is_subscribed_token: Optional[str] = Field(None, hidden=True)
-    is_disabled: Optional[bool] = Field(None, hidden=True)
-    is_verified: Optional[bool] = Field(None, hidden=True)
-    is_subscribed: Optional[bool] = Field(None, hidden=True)
-    current_login_time: Optional[datetime] = Field(None, hidden=True)
-    last_login_time: Optional[datetime] = Field(None, hidden=True)
-
-    # employer info
-    employer_name: Optional[str] = Field(None, hidden=True)
-    occupation_status: Optional[str] = Field(None, hidden=True)
-    occupation_location: Optional[str] = Field(None, hidden=True)
 
 
 class UserSchemaResponse(UserHiddenFields, UserSchema):
@@ -94,12 +75,19 @@ class UserSchemaResponse(UserHiddenFields, UserSchema):
     user_auth_info: Optional[UserAuthInfo] = None
     user_employer_info: Optional[UserEmployerInfo] = None
     user_emergency_info: Optional[UserEmergencyInfo] = None
+    property_assignment_count: int = 0
+    property_assignment: Optional[
+        Union[List[PropertyAssignmentBase] | List[Any] | PropertyAssignmentBase]
+    ] = []
 
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        json_encoders={
+            date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        },
         json_schema_extra={
             "example": {
                 "first_name": "John",
@@ -201,8 +189,10 @@ class UserSchemaResponse(UserHiddenFields, UserSchema):
             accounts=AccountBase.model_validate(user.accounts),
             # contracts=contracts,
             # contracts_count=len(contracts),
-            # assigned_properties=assigned_properties,
-            # assigned_properties_count=len(assigned_properties),
+            property_assignment_count=len(user.property_assignment),
+            property_assignment=PropertyAssignmentMixin.get_property_assignment_info(
+                user.property_assignment
+            ),
         ).model_dump(
             exclude_none=True,
             exclude_unset=True,
@@ -231,6 +221,15 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
     user_auth_info: Optional[UserAuthInfo] = None
     user_employer_info: Optional[UserEmployerInfo] = None
     user_emergency_info: Optional[UserEmergencyInfo] = None
+    property_assignment_count: int = 0
+    property_assignment: Optional[
+        Union[
+            List[PropertyAssignment]
+            | List[PropertyAssignmentBase]
+            | PropertyAssignment
+            | PropertyAssignmentBase
+        ]
+    ] = []
 
     # Faker attrributes
     _start_date = BaseFaker.date_between(start_date="-2y", end_date="-1y")
@@ -239,13 +238,31 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
     _gender = BaseFaker.random_choices(["male", "female", "other"], length=1)
     _account_type = BaseFaker.random_choices(["billing", "general", "debit"], length=1)
     _job = BaseFaker.job()
+
+    # Faker attributes for PropertyAssignment
+    _property_type = BaseFaker.random_choices(
+        ["residential", "commercial", "industrial"], length=1
+    )
+    _property_status = BaseFaker.random_choices(
+        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
+    )
+    _assignment_type = BaseFaker.random_choices(
+        ["other", "handler", "landlord", "contractor"], length=1
+    )
+    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
+    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
+    _notes = BaseFaker.text(max_nb_chars=200)
+
     for_insertion: bool = Field(default=True, exclude=True)
 
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        json_encoders={
+            date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        },
         json_schema_extra={
             "example": {
                 "first_name": BaseFaker.first_name(),
@@ -277,12 +294,12 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
                 },
                 "user_auth_info": {
                     "login_provider": "native",
-                    "reset_token": uuid4(),
-                    "verification_token": uuid4(),
+                    "reset_token": str(uuid4()),
+                    "verification_token": str(uuid4()),
                     "is_disabled": False,
                     "is_verified": True,
                     "is_subscribed": True,
-                    "is_subscribed_token": uuid4(),
+                    "is_subscribed_token": str(uuid4()),
                     "current_login_time": "2023-09-15T12:00:00",
                     "last_login_time": "2023-09-10T12:00:00",
                 },
@@ -348,12 +365,21 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
                         "bank_account_number": "GB38FYRR90680780656781",
                     }
                 ],
+                "property_assignment": [
+                    {
+                        "property_unit_assoc_id": "402c0deb-b978-40d6-a269-c690cbd99589",
+                        "assignment_type": _assignment_type[0],
+                        "date_from": _date_from,
+                        "date_to": _date_to,
+                        "notes": _notes,
+                    }
+                ],
             }
         },
     )
 
     @model_validator(mode="after")
-    def flatten_nested_info(cls, values):
+    def flatten_nested_info(cls, values: "UserCreateSchema"):
         # user_emergency_info
         if values.for_insertion:
             if values.user_emergency_info:
@@ -415,10 +441,12 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
             ],
             address=AddressMixin.get_address_base(user.address),
             accounts=AccountBase.model_validate(user.accounts),
+            property_assignment_count=len(user.property_assignment),
+            property_assignment=PropertyAssignmentMixin.get_property_assignment_info(
+                user.property_assignment
+            ),
             # contracts=contracts,
             # contracts_count=len(contracts),
-            # assigned_properties=assigned_properties,
-            # assigned_properties_count=len(assigned_properties),
             for_insertion=for_insertion,
         )
 
@@ -493,7 +521,7 @@ class UserUpdateSchema(UserHiddenFields, UserSchema):
     )
 
     @model_validator(mode="after")
-    def flatten_nested_info(cls, values):
+    def flatten_nested_info(cls, values: "UserUpdateSchema"):
         # user_emergency_info
         if values.user_emergency_info:
             values.emergency_contact_name = (
@@ -550,11 +578,13 @@ class UserUpdateSchema(UserHiddenFields, UserSchema):
                 PastRentalHistoryResponse.model_validate(r) for r in user.rental_history
             ],
             address=AddressMixin.get_address_base(user.address),
-            # accounts=user.accounts,
+            accounts=AccountBase.model_validate(user.accounts),
+            property_assignment_count=len(user.property_assignment),
+            property_assignment=PropertyAssignmentMixin.get_property_assignment_info(
+                user.property_assignment
+            ),
             # contracts=contracts,
             # contracts_count=len(contracts),
-            # assigned_properties=assigned_properties,
-            # assigned_properties_count=len(assigned_properties),
         ).model_dump(
             exclude=[
                 "emergency_contact_name",

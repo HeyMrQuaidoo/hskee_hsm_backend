@@ -1,8 +1,18 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from app.modules.common.dao.base_dao import BaseDAO
+# Models
 from app.modules.resources.models.amenity import Amenities
+
+# Base DAO
+from app.modules.common.dao.base_dao import BaseDAO
 
 class AmenityDAO(BaseDAO[Amenities]):
     def __init__(self, excludes: Optional[List[str]] = None):
-        super().__init__(model=Amenities, excludes=excludes)
+        self.model = Amenities
+        self.detail_mappings = {}
+        super().__init__(
+            model=self.model,
+            detail_mappings=self.detail_mappings,
+            excludes=excludes or [],
+            primary_key="amenity_id",
+        )

@@ -165,3 +165,10 @@ alembic.ini
 
 # scripts
 scripts/
+
+cachefile.dbm.rw.lock
+cachefile.dbm.dogpile.lock
+cachefile.dbm.db
+
+# vscode environ ignore
+.vscode

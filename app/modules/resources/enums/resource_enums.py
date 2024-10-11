@@ -5,9 +5,9 @@ class AmenityValueType(enum.Enum):
     boolean = "boolean"
     number = "number"
 
-
 class MediaType(enum.Enum):
-    document = "document"
     image = "image"
     video = "video"
+    audio = "audio"
+    document = "document"
     other = "other"
