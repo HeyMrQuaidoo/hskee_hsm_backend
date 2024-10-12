@@ -11,6 +11,7 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.resources.enums.resource_enums import MediaType
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
+
 class EntityMedia(Base):
     __tablename__ = "entity_media"
 

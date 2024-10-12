@@ -1,8 +1,7 @@
-from typing import List
 import uuid
+from typing import List
 from sqlalchemy import String, Text, UUID, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from typing import List
 
 # Base model
 from app.modules.billing.models.billable import BillableAssoc

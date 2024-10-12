@@ -49,5 +49,5 @@ response_mapping: Dict[Type[Any], Type[BaseModel]] = {
     ): getattr(
         import_module("app.modules.resources.schema.media_schema"),
         "MediaResponse",
-    )
+    ),
 }

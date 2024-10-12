@@ -6,6 +6,7 @@ from app.modules.resources.models.media import Media
 # Base DAO
 from app.modules.common.dao.base_dao import BaseDAO
 
+
 class MediaDAO(BaseDAO[Media]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Media

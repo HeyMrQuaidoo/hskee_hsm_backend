@@ -12,6 +12,7 @@ from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
 # Models
 from app.modules.resources.models.amenity import Amenities as AmenitiesModel
 
+
 class AmenityCreateSchema(AmenityBase):
     # Faker attributes
     _amenity_name = BaseFaker.word()
@@ -31,6 +32,7 @@ class AmenityCreateSchema(AmenityBase):
         },
     )
 
+
 class AmenityUpdateSchema(AmenityBase):
     # Faker attributes
     _amenity_name = BaseFaker.word()
@@ -49,6 +51,7 @@ class AmenityUpdateSchema(AmenityBase):
             }
         },
     )
+
 
 class AmenityResponse(AmenityBase):
     amenity_id: Optional[UUID] = None

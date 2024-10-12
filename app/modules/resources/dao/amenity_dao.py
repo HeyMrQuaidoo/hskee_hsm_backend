@@ -6,6 +6,7 @@ from app.modules.resources.models.amenity import Amenities
 # Base DAO
 from app.modules.common.dao.base_dao import BaseDAO
 
+
 class AmenityDAO(BaseDAO[Amenities]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Amenities

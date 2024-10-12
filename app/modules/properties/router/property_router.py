@@ -21,6 +21,7 @@ from app.modules.properties.schema.property_schema import (
 from app.core.lifespan import get_db
 from app.core.errors import CustomException
 
+
 class PropertyRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: PropertyDAO = PropertyDAO(excludes=[])
@@ -32,7 +33,9 @@ class PropertyRouter(BaseCRUDRouter):
         self.register_routes()
 
     def register_routes(self):
-        @self.router.post("/{property_id}/upload_media", status_code=status.HTTP_201_CREATED)
+        @self.router.post(
+            "/{property_id}/upload_media", status_code=status.HTTP_201_CREATED
+        )
         async def upload_media_to_property(
             property_id: UUID4,
             files: List[UploadFile] = File(...),

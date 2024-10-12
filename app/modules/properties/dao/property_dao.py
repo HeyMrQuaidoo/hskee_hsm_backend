@@ -1,8 +1,7 @@
+import cloudinary.uploader
+from fastapi import UploadFile
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import UUID4
-from fastapi import UploadFile
-import cloudinary.uploader
 
 # Models
 from app.modules.properties.models.property import Property
@@ -25,6 +24,7 @@ from app.modules.common.dao.base_dao import BaseDAO
 
 # Core
 from app.core.errors import RecordNotFoundException
+
 
 class PropertyDAO(BaseDAO[Property]):
     def __init__(self, excludes: Optional[List[str]] = None):
@@ -92,7 +92,9 @@ class PropertyDAO(BaseDAO[Property]):
                 "media_name": file.filename,
                 "media_type": media_type,
                 "content_url": uploaded_url,
-                "is_thumbnail": is_thumbnails[idx] if idx < len(is_thumbnails) else False,
+                "is_thumbnail": is_thumbnails[idx]
+                if idx < len(is_thumbnails)
+                else False,
                 "caption": captions[idx] if idx < len(captions) else None,
                 "description": descriptions[idx] if idx < len(descriptions) else None,
             }

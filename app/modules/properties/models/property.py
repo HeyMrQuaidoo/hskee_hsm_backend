@@ -32,6 +32,7 @@ from app.modules.common.models.model_base import BaseModel as Base, BaseModelCol
 # TODO: (DQ) Review calendar events
 # - review if this is needed is_contract_active
 
+
 class Property(PropertyUnitAssoc):
     __tablename__ = "property"
 
@@ -177,7 +178,7 @@ class Property(PropertyUnitAssoc):
         "PropertyAssignment", lazy="selectin", viewonly=True
     )
 
-        # calendar event
+    # calendar event
     # events = relationship(
     #     "CalendarEvent",
     #     secondary="property_unit_assoc",

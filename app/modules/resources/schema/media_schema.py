@@ -1,16 +1,18 @@
 from uuid import UUID
 from datetime import date
-from typing import Optional
-from pydantic import ConfigDict
+from typing import Annotated, Optional
+from pydantic import ConfigDict, constr
 
-# Schema mixin
+# schema mixin
+from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.resources.schema.mixins.media_mixin import MediaBase
 
-# Base Faker
+# base Faker
 from app.modules.common.schema.base_schema import BaseFaker
 
-# Models
+# models
 from app.modules.resources.models.media import Media as MediaModel
+
 
 class MediaCreateSchema(MediaBase):
     # Faker attributes
@@ -40,6 +42,7 @@ class MediaCreateSchema(MediaBase):
         },
     )
 
+
 class MediaUpdateSchema(MediaBase):
     # Faker attributes
     _media_name = BaseFaker.word()
@@ -68,6 +71,7 @@ class MediaUpdateSchema(MediaBase):
         },
     )
 
+
 class MediaResponse(MediaBase):
     media_id: Optional[UUID] = None
 
@@ -82,3 +86,12 @@ class MediaResponse(MediaBase):
             caption=media.caption,
             description=media.description,
         ).model_dump()
+
+
+class EntityMediaCreateSchema(BaseSchema):
+    entity_media_id: Optional[UUID] = None
+    entity_type: Annotated[str, constr(max_length=50)]
+    media_id: UUID
+    media_assoc_id: UUID
+
+    model_config = ConfigDict(from_attributes=True)

@@ -1,5 +1,5 @@
 from uuid import uuid4
-from pydantic import UUID4, ConfigDict
+from pydantic import ConfigDict
 from datetime import date, datetime, timedelta
 
 # schema
