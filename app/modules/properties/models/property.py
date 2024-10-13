@@ -31,12 +31,9 @@ from app.modules.common.models.model_base import BaseModel as Base, BaseModelCol
 
 # TODO: (DQ) Review calendar events
 # - review if this is needed is_contract_active
-
-
 class Property(PropertyUnitAssoc):
     __tablename__ = "property"
 
-    # Fields
     name: Mapped[str] = mapped_column(String(255))
     property_unit_assoc_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -63,7 +60,7 @@ class Property(PropertyUnitAssoc):
         == PropertyUnitAssoc.property_unit_assoc_id,
     }
 
-    # Computed Property
+    # computed property
     is_contract_active: Mapped[bool] = column_property(
         select(UnderContract.contract_number)
         .where(
@@ -79,9 +76,7 @@ class Property(PropertyUnitAssoc):
         .exists()
     )
 
-    # Relationships
-
-    # Maintenance Requests
+    # maintenance_requests
     maintenance_requests: Mapped[List["MaintenanceRequest"]] = relationship(
         "MaintenanceRequest",
         primaryjoin="Property.property_unit_assoc_id == MaintenanceRequest.property_unit_assoc_id",
@@ -91,7 +86,7 @@ class Property(PropertyUnitAssoc):
         viewonly=True,
     )
 
-    # Tour Bookings
+    # tour_bookings
     tour_bookings: Mapped[List["Tour"]] = relationship(
         "Tour",
         primaryjoin="Property.property_unit_assoc_id == Tour.property_unit_assoc_id",
@@ -101,24 +96,24 @@ class Property(PropertyUnitAssoc):
         viewonly=True,
     )
 
-    # Units
-    units: Mapped[List["PropertyUnit"]] = relationship(
-        "PropertyUnit",
-        primaryjoin="Property.property_unit_assoc_id == PropertyUnit.property_id",
+    # units
+    units: Mapped[List["Units"]] = relationship(
+        "Units",
+        primaryjoin="Property.property_unit_assoc_id == Units.property_id",
         back_populates="property",
         lazy="selectin",
-        collection_class=BaseModelCollection,
         viewonly=True,
     )
 
-    # Entity Media Relationship
+
+    # entity_media
     entity_media: Mapped[List["EntityMedia"]] = relationship(
         "EntityMedia",
         primaryjoin="and_(Property.property_unit_assoc_id == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
         lazy="selectin",
     )
 
-    # Media
+    # media
     media: Mapped[List["Media"]] = relationship(
         "Media",
         secondary="entity_media",
@@ -129,7 +124,7 @@ class Property(PropertyUnitAssoc):
         collection_class=BaseModelCollection,
     )
 
-    # Entity Amenities
+    # entity_amenities
     entity_amenities: Mapped[List["EntityAmenities"]] = relationship(
         "EntityAmenities",
         primaryjoin="Property.property_unit_assoc_id == EntityAmenities.entity_id",
@@ -139,7 +134,7 @@ class Property(PropertyUnitAssoc):
         cascade="all, delete-orphan",
     )
 
-    # Amenities
+    # amenities
     amenities: Mapped[List["Amenities"]] = relationship(
         "Amenities",
         secondary="entity_amenities",
@@ -150,7 +145,7 @@ class Property(PropertyUnitAssoc):
         collection_class=BaseModelCollection,
     )
 
-    # Utilities
+    # utilities
     utilities: Mapped[List["Utilities"]] = relationship(
         "Utilities",
         secondary="entity_billable",
@@ -161,7 +156,7 @@ class Property(PropertyUnitAssoc):
         collection_class=BaseModelCollection,
     )
 
-    # Addresses
+    # addresses
     address: Mapped[List["Addresses"]] = relationship(
         "Addresses",
         secondary="entity_address",
@@ -173,7 +168,7 @@ class Property(PropertyUnitAssoc):
         collection_class=BaseModelCollection,
     )
 
-    # Assigned Users
+    # property_assignment
     assigned_users: Mapped[List["PropertyAssignment"]] = relationship(
         "PropertyAssignment", lazy="selectin", viewonly=True
     )
