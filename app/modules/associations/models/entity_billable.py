@@ -73,15 +73,15 @@ class EntityBillable(Base):
 
     utility: Mapped[Optional["Utilities"]] = relationship(
         "Utilities",
-        primaryjoin="and_(EntityBillable.billable_id == Utilities.billable_assoc_id, "
-        "EntityBillable.billable_type == 'utilities')",
+        primaryjoin="and_(foreign(EntityBillable.billable_id) == Utilities.billable_assoc_id, "
+                    "EntityBillable.billable_type == 'utilities')",
         lazy="selectin",
     )
 
     property: Mapped[Optional["PropertyUnitAssoc"]] = relationship(
         "PropertyUnitAssoc",
-        primaryjoin="and_(EntityBillable.entity_id == PropertyUnitAssoc.property_unit_assoc_id, "
-        "EntityBillable.entity_type == 'property')",
+        primaryjoin="and_(foreign(EntityBillable.entity_id) == PropertyUnitAssoc.property_unit_assoc_id, "
+                    "EntityBillable.entity_type == 'property')",
         back_populates="entity_billables",
         lazy="selectin",
     )
@@ -90,6 +90,7 @@ class EntityBillable(Base):
         "Contract",
         primaryjoin="and_(EntityBillable.entity_id == Contract.contract_id, "
         "EntityBillable.entity_type == 'contract')",
+        foreign_keys="[EntityBillable.entity_id]",
         back_populates="entity_billables",
         lazy="selectin",
     )

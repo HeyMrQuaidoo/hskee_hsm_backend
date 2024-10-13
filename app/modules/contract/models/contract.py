@@ -108,6 +108,14 @@ class Contract(Base):
         # overlaps="entity_billable,utilities",
     )
 
+    # billable
+    entity_billables: Mapped[List["EntityBillable"]] = relationship(
+    "EntityBillable",
+    primaryjoin="foreign(EntityBillable.entity_id) == Contract.contract_id",
+    back_populates="contract",
+    lazy="selectin",
+    )
+
     # contract_type
     contract_type: Mapped["ContractType"] = relationship(
         "ContractType", back_populates="contracts", lazy="selectin"

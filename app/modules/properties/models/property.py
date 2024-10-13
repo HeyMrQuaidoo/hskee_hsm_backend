@@ -99,9 +99,9 @@ class Property(PropertyUnitAssoc):
     )
 
     # Units
-    units: Mapped[List["PropertyUnit"]] = relationship(
-        "PropertyUnit",
-        primaryjoin="Property.property_unit_assoc_id == PropertyUnit.property_id",
+    units: Mapped[List["Units"]] = relationship(
+        "Units",
+        primaryjoin="Property.property_unit_assoc_id == Units.property_id",
         back_populates="property",
         lazy="selectin",
         collection_class=BaseModelCollection,
@@ -111,7 +111,7 @@ class Property(PropertyUnitAssoc):
     # Entity Media Relationship
     entity_media: Mapped[List["EntityMedia"]] = relationship(
         "EntityMedia",
-        primaryjoin="and_(Property.property_unit_assoc_id == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
+        primaryjoin="and_(foreign(Property.property_unit_assoc_id) == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
         lazy="selectin",
     )
 
@@ -175,7 +175,7 @@ class Property(PropertyUnitAssoc):
         "PropertyAssignment", lazy="selectin", viewonly=True
     )
 
-        # calendar event
+    # calendar event
     # events = relationship(
     #     "CalendarEvent",
     #     secondary="property_unit_assoc",

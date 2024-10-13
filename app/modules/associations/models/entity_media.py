@@ -1,7 +1,7 @@
 # app/modules/associations/models/entity_media.py
 
 import uuid
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import Enum, CheckConstraint, UUID, ForeignKey
 
 # Base model
@@ -38,6 +38,12 @@ class EntityMedia(Base):
     )
 
     __mapper_args__ = {"eager_defaults": True}
+
+    media: Mapped["Media"] = relationship(
+        "Media",
+        back_populates="entity_media",  # Assuming Media has a relationship back to EntityMedia
+        lazy="selectin",
+    )
 
     @validates("entity_id")
     def validate_entity(self, key, entity_id):

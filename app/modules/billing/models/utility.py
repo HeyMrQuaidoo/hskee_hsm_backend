@@ -33,3 +33,12 @@ class Utilities(BillableAssoc):
         back_populates="utility",
         lazy="selectin",
     )
+
+    properties: Mapped[List["Property"]] = relationship(
+        "Property",
+        secondary="entity_billable",
+        primaryjoin="and_(Utilities.billable_assoc_id == EntityBillable.billable_id, EntityBillable.billable_type == 'utilities')",
+        secondaryjoin="EntityBillable.entity_id == Property.property_unit_assoc_id",
+        back_populates="utilities",
+        lazy="selectin",
+    )
