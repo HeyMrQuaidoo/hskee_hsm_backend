@@ -166,13 +166,9 @@ alembic.ini
 # scripts
 scripts/
 
-<<<<<<< HEAD
-# vscode namespaces
-=======
 cachefile.dbm.rw.lock
 cachefile.dbm.dogpile.lock
 cachefile.dbm.db
 
 # vscode environ ignore
->>>>>>> dev-daniel
 .vscode

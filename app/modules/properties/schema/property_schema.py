@@ -87,6 +87,13 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "has_amenities": BaseFaker.boolean(),
                     },
                 ],
+                "amenities": [
+                    {
+                        "amenity_name": BaseFaker.word(),
+                        "amenity_short_name": BaseFaker.word(),
+                        "amenity_description": BaseFaker.sentence(),
+                    },
+                ]
             }
         },
     )
@@ -185,6 +192,13 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "description": _description,
                     }
                 ],
+                "amenities": [
+                    {
+                        "amenity_name": BaseFaker.word(),
+                        "amenity_short_name": BaseFaker.word(),
+                        "amenity_description": BaseFaker.sentence(),
+                    },
+                ]
             }
         },
     )
