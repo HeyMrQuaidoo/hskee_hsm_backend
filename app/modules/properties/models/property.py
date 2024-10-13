@@ -105,7 +105,6 @@ class Property(PropertyUnitAssoc):
         viewonly=True,
     )
 
-
     # entity_media
     entity_media: Mapped[List["EntityMedia"]] = relationship(
         "EntityMedia",
