@@ -1,17 +1,14 @@
 from datetime import date
 from pydantic import ConfigDict
-from typing import Optional, List
+from typing import Any, Optional, List, Union
 
 # schema
 from app.modules.common.schema.base_schema import BaseFaker
-from app.modules.address.schema.address_mixin import AddressMixin, AddressBase
+from app.modules.address.schema.address_mixin import AddressMixin
+from app.modules.resources.schema.mixins.amenities_mixin import Amenity
 from app.modules.properties.schema.mixins.property_mixin import (
     PropertyInfoMixin,
     PropertyBase,
-    PropertyType,
-    PropertyStatus,
-    PropertyUnitBase,
-    PropertyUnit,
 )
 
 # models
@@ -109,6 +106,7 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
+    amenities: Optional[List[Amenity] | List[Amenity]] = []
 
     # Faker attrributes
     _property_type = BaseFaker.random_choices(

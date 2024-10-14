@@ -9,7 +9,7 @@ from app.modules.properties.enums.property_enums import PropertyStatus, Property
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.address.schema.address_schema import AddressBase
 from app.modules.address.schema.address_mixin import AddressMixin
-from app.modules.resources.schema.mixins.amenities_mixin import Amenity
+from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
 
 # models
 from app.modules.properties.models.property_unit_association import (
@@ -92,7 +92,7 @@ class PropertyBase(BaseSchema):
     property_status: PropertyStatus
     address: Optional[List[AddressBase]] = []
     units: Optional[List[PropertyUnit] | List[PropertyUnitBase]] = []
-    amenities: Optional[List[Amenity] | List[Amenity]] = []
+    amenities: Optional[List[AmenityBase] | List[AmenityBase]] = []
 
 
 class Property(PropertyBase):
