@@ -9,9 +9,6 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 
-# TODO (DQ): Deco concept of emergency hash in entity_address
-# Remove primary key field
-# - entity_id, address_id
 class EntityAddress(Base):
     __tablename__ = "entity_address"
 

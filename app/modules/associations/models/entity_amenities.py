@@ -10,8 +10,6 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 
-# Remove primary key field
-# - entity_type
 class EntityAmenities(Base):
     __tablename__ = "entity_amenities"
 
@@ -81,4 +79,3 @@ class EntityAmenities(Base):
                 entity_map=entity_map,
             )
         return value
-    

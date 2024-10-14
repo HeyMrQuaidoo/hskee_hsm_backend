@@ -1,10 +1,10 @@
-from functools import partial
 import inspect
 from uuid import UUID
+from functools import partial
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, TypeVar, Generic, Union
 from fastapi import APIRouter, Depends, Query, Request, status
-from fastapi import HTTPException
 
 # dao
 from app.modules.common.dao.base_dao import BaseDAO

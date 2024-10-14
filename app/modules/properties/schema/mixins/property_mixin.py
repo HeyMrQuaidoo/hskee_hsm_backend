@@ -125,7 +125,7 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
             property_status=property.property_status,
             address=cls.get_address_base(property.address),
             units=cls.get_property_unit_info(property.units),
-            amenities=property.amenities
+            amenities=property.amenities,
         ).model_dump()
 
 

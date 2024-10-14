@@ -123,8 +123,6 @@ class BaseModel(Base, AsyncAttrs):
         try:
             table_class = Base.metadata.tables.get(table_name.lower())
 
-            print(f"\t\ttable_name: {table_name} {column_name}")
-
             if not isinstance(table_class, Table):
                 raise ValueError(f"Model class for {table_name} not found")
 
@@ -162,10 +160,8 @@ class BaseModel(Base, AsyncAttrs):
                 and key in source
                 and isinstance(source.get(key), dict)
             ):
-                # print(f"Merging nested dict for key: {key}")
                 source[key] = self._merge_dicts(source[key], value)
             else:
-                # print(f"Updating key: {key} with value: {value}")
                 source[key] = value
         return source
 
