@@ -1,9 +1,11 @@
 from datetime import date
 from pydantic import ConfigDict
+from typing import Any, Optional, List, Union
 
 # schema
 from app.modules.common.schema.base_schema import BaseFaker
 from app.modules.address.schema.address_mixin import AddressMixin
+from app.modules.resources.schema.mixins.amenities_mixin import Amenity
 from app.modules.properties.schema.mixins.property_mixin import (
     PropertyInfoMixin,
     PropertyBase,
@@ -87,16 +89,29 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "has_amenities": BaseFaker.boolean(),
                     },
                 ],
+                "amenities": [
+                    {
+                        "amenity_name": BaseFaker.word(),
+                        "amenity_short_name": BaseFaker.word(),
+                        "amenity_description": BaseFaker.sentence(),
+                    },
+                ],
             }
         },
     )
 
     @classmethod
     def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property).model_dump()
+        return cls.get_property_info(property)
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
+    name: str = None
+    property_type: Union[Any] = None
+    amount: float = None
+    property_status: Union[Any] = None
+    amenities: Optional[List[Amenity] | List[Amenity]] = []
+
     # Faker attrributes
     _property_type = BaseFaker.random_choices(
         ["residential", "commercial", "industrial"], length=1
@@ -122,6 +137,11 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
     _is_thumbnail = BaseFaker.boolean()
     _caption = BaseFaker.sentence()
     _description = BaseFaker.text(max_nb_chars=200)
+
+    # amenitites faker attributes
+    _amenity_name = BaseFaker.word()
+    _amenity_short_name = BaseFaker.word()
+    _description = BaseFaker.sentence()
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -182,6 +202,13 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "content_url": _content_url,
                         "is_thumbnail": _is_thumbnail,
                         "caption": _caption,
+                        "description": _description,
+                    }
+                ],
+                "amenities": [
+                    {
+                        "amenity_name": _amenity_name,
+                        "amenity_short_name": _amenity_short_name,
                         "description": _description,
                     }
                 ],

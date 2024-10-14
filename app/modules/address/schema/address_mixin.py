@@ -3,7 +3,6 @@ from uuid import UUID, uuid4
 from typing import Annotated, Any, Optional, List
 
 # schemas
-# from app.schema.address import Address, City, Region, Country
 from app.modules.common.schema.base_schema import BaseSchema
 
 # enums

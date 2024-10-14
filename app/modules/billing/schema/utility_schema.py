@@ -1,19 +1,59 @@
-from pydantic import BaseModel, UUID4
 from typing import Optional
+from pydantic import ConfigDict
 
-
-class UtilityBase(BaseModel):
-    name: str
-    description: Optional[str] = None
+from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
+from app.modules.common.schema.base_schema import BaseFaker
 
 
 class UtilityCreateSchema(UtilityBase):
-    pass
+    name: str
+    description: Optional[str] = None
+
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": _name,
+                "description": _description,
+            }
+        }
+    )
 
 
 class UtilityUpdateSchema(UtilityBase):
-    pass
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": _name,
+                "description": _description,
+            }
+        }
+    )
 
 
-class UtilitySchema(UtilityBase):
-    billable_assoc_id: UUID4
+class UtilityResponse(UtilityBase):
+    name: str
+    description: Optional[str] = None
+
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": _name,
+                "description": _description,
+            }
+        }
+    )

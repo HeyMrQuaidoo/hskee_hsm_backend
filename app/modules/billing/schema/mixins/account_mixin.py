@@ -1,6 +1,5 @@
+from uuid import UUID
 from typing import List, Optional, Union
-
-from pydantic import UUID4
 
 # schemas
 from app.modules.common.schema.base_schema import BaseSchema
@@ -60,7 +59,7 @@ class AccountMixin(BaseSchema, AddressMixin):
 
 
 class AccountBase(AccountMixin):
-    account_id: Optional[UUID4] = None
+    account_id: Optional[UUID] = None
     account_type: Optional[Union[AccountTypeEnum | List[AccountTypeEnum]]] = None
     bank_account_name: str
     bank_account_number: str
@@ -73,4 +72,4 @@ class AccountBase(AccountMixin):
 
 
 class Account(AccountBase):
-    account_id: UUID4
+    account_id: Optional[UUID] = None

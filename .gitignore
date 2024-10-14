@@ -173,5 +173,7 @@ cachefile.dbm.db
 
 # vscode environ ignore
 .vscode
+=======
+.vscode
 
 requirements.txt

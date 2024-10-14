@@ -175,13 +175,6 @@ class User(Base):
         "CalendarEvent", back_populates="organizer"
     )
 
-    # - property_assignments
-    # property_assignment:Mapped[List["PropertyUnitAssoc"]] = relationship(
-    #     "PropertyUnitAssoc",
-    #     secondary="property_assignment",
-    #     back_populates="assignments",
-    #     lazy="selectin",
-    # )
     property_assignment: Mapped[List["PropertyAssignment"]] = relationship(
         "PropertyAssignment",
         foreign_keys="[PropertyAssignment.user_id]",
@@ -189,42 +182,6 @@ class User(Base):
         lazy="selectin",
         viewonly=True,
     )
-    # property_assignment: Mapped[List["PropertyAssignment"]] = relationship(
-    #     "PropertyAssignment",
-    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
-    #     foreign_keys="[PropertyAssignment.user_id]",
-    #     back_populates="user",
-    #     lazy="selectin",
-    #     viewonly=True,
-    # )
-
-    # assigned_properties: Mapped[List["Property"]] = relationship(
-    #     "Property",
-    #     secondary="property_assignment",
-    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
-    #     secondaryjoin="PropertyAssignment.property_unit_assoc_id==Property.property_unit_assoc_id",
-    #     lazy="selectin",
-    #     viewonly=True,
-    # )
-
-    # assigned_units: Mapped[List["Units"]] = relationship(
-    #     "Units",
-    #     secondary="property_assignment",
-    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type!='landlord')",
-    #     secondaryjoin="and_(PropertyAssignment.property_unit_assoc_id==Units.property_unit_assoc_id)",
-    #     lazy="selectin",
-    #     viewonly=True,
-    # )
-
-    # # - properties
-    # owned_properties = relationship(
-    #     "PropertyUnitAssoc",
-    #     secondary="property_assignment",
-    #     primaryjoin="and_(PropertyAssignment.user_id == User.user_id, PropertyAssignment.assignment_type=='landlord')",
-    #     secondaryjoin="PropertyAssignment.property_unit_assoc_id==PropertyUnitAssoc.property_unit_assoc_id",
-    #     lazy="selectin",
-    #     viewonly=True,
-    # )
 
     # - messages
     sent_messages = relationship("Message", back_populates="sender", lazy="selectin")
@@ -291,4 +248,3 @@ event.listen(User, "before_update", parse_date_of_birth)
 
 # register model
 Base.setup_model_dynamic_listener("user_roles", User)
-# Base.setup_model_dynamic_listener("entity_address", User)
