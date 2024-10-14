@@ -7,8 +7,6 @@ from app.modules.billing.models.account import Account
 from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.address.dao.address_dao import AddressDAO
 
-# schemas
-
 
 class AccountDAO(BaseDAO[Account]):
     def __init__(self, excludes: Optional[List[str]] = [""]):

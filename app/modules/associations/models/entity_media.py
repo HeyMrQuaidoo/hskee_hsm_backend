@@ -1,7 +1,5 @@
-# app/modules/associations/models/entity_media.py
-
 import uuid
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import Enum, CheckConstraint, UUID, ForeignKey
 
 # Base model
@@ -33,25 +31,50 @@ class EntityMedia(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities')",
+            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities', 'contract')",
             name="check_entity_type_media",
         ),
     )
 
     __mapper_args__ = {"eager_defaults": True}
 
-    @validates("entity_id")
-    def validate_entity(self, key, entity_id):
+    media: Mapped["Media"] = relationship(
+        "Media",
+        back_populates="entity_media",
+        overlaps="media",
+        lazy="selectin",
+    )
+
+    @validates("entity_type", "entity_id")
+    def validate_entity(self, key, value, **kwargs):
+        if key == "entity_id":
+            entity_id = value
+            entity_type = kwargs.get("entity_type", self.entity_type)
+        elif key == "entity_type":
+            entity_type = value
+            entity_id = self.entity_id
+
         entity_map = {
-            EntityTypeEnum.user: ("users", "user_id"),
+            EntityTypeEnum.property: (
+                "property_unit_assoc",
+                "property_unit_assoc_id",
+            ),
+            EntityTypeEnum.units: (
+                "property_unit_assoc",
+                "property_unit_assoc_id",
+            ),
             EntityTypeEnum.amenities: ("amenities", "amenity_id"),
-            EntityTypeEnum.property: ("property_unit_assoc", "property_unit_assoc_id"),
             EntityTypeEnum.entityamenities: ("entity_amenities", "entity_amenities_id"),
-            EntityTypeEnum.units: ("property_unit", "property_unit_id"),
+            EntityTypeEnum.user: ("users", "user_id"),
+            EntityTypeEnum.account: ("accounts", "account_id"),
+            EntityTypeEnum.role: ("role", "role_id"),
+            EntityTypeEnum.contract: ("contract", "contract_id"),  # Added 'contract'
         }
 
-        return super().validate_entity(
-            entity_id=entity_id,
-            entity_type=self.entity_type,
-            entity_map=entity_map,
-        )
+        if entity_type and EntityTypeEnum(str(entity_type)) in entity_map:
+            super().validate_entity(
+                entity_id=entity_id,
+                entity_type=EntityTypeEnum(str(entity_type)),
+                entity_map=entity_map,
+            )
+        return value

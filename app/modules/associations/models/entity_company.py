@@ -37,15 +37,27 @@ class EntityCompany(Base):
         ),
     )
 
-    @validates("entity_id")
-    def validate_entity(self, entity_id):
+    @validates("entity_type", "entity_id")
+    def validate_entity(self, key, value, **kwargs):
+        if key == "entity_id":
+            entity_id = value
+            entity_type = kwargs.get("entity_type", self.entity_type)
+        elif key == "entity_type":
+            entity_type = value
+            entity_id = self.entity_id
+
         entity_map = {
-            EntityTypeEnum.property: ("PropertyUnitAssoc", "property_unit_assoc_id"),
-            EntityTypeEnum.user: ("User", "user_id"),
+            EntityTypeEnum.property: (
+                "property_unit_assoc",
+                "property_unit_assoc_id",
+            ),
+            EntityTypeEnum.user: ("users", "user_id"),
         }
 
-        return super().validate_entity(
-            entity_id=entity_id,
-            entity_type=self.entity_type,
-            entity_map=entity_map,
-        )
+        if entity_type and EntityTypeEnum(str(entity_type)) in entity_map:
+            super().validate_entity(
+                entity_id=entity_id,
+                entity_type=EntityTypeEnum(str(entity_type)),
+                entity_map=entity_map,
+            )
+        return value

@@ -1,5 +1,3 @@
-# app/modules/properties/models/property.py
-
 from datetime import datetime
 from typing import List, Optional
 import uuid
@@ -29,11 +27,10 @@ from app.modules.properties.enums.property_enums import PropertyStatus, Property
 from app.modules.common.models.model_base import BaseModel as Base, BaseModelCollection
 
 
-# TODO: (DQ) Review calendar events
-# - review if this is needed is_contract_active
 class Property(PropertyUnitAssoc):
     __tablename__ = "property"
 
+    # Fields
     name: Mapped[str] = mapped_column(String(255))
     property_unit_assoc_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -60,7 +57,7 @@ class Property(PropertyUnitAssoc):
         == PropertyUnitAssoc.property_unit_assoc_id,
     }
 
-    # computed property
+    # Computed Property
     is_contract_active: Mapped[bool] = column_property(
         select(UnderContract.contract_number)
         .where(
@@ -108,7 +105,7 @@ class Property(PropertyUnitAssoc):
     # entity_media
     entity_media: Mapped[List["EntityMedia"]] = relationship(
         "EntityMedia",
-        primaryjoin="and_(Property.property_unit_assoc_id == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
+        primaryjoin="and_(foreign(Property.property_unit_assoc_id) == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
         lazy="selectin",
     )
 
@@ -151,11 +148,12 @@ class Property(PropertyUnitAssoc):
         primaryjoin="and_(Property.property_unit_assoc_id == EntityBillable.entity_id, EntityBillable.entity_type == 'property', EntityBillable.billable_type=='utilities')",
         secondaryjoin="EntityBillable.billable_id == Utilities.billable_assoc_id",
         back_populates="properties",
+        overlaps="entity_billables",
         lazy="selectin",
         collection_class=BaseModelCollection,
     )
 
-    # addresses
+    # address
     address: Mapped[List["Addresses"]] = relationship(
         "Addresses",
         secondary="entity_address",
@@ -167,7 +165,7 @@ class Property(PropertyUnitAssoc):
         collection_class=BaseModelCollection,
     )
 
-    # property_assignment
+    # assigned_users
     assigned_users: Mapped[List["PropertyAssignment"]] = relationship(
         "PropertyAssignment", lazy="selectin", viewonly=True
     )

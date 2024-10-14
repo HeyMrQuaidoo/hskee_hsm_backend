@@ -104,3 +104,10 @@ class PropertyUnitAssoc(Base):
         cascade="save-update, merge",
         foreign_keys="[Tour.property_unit_assoc_id]",
     )
+
+    entity_billables: Mapped[List["EntityBillable"]] = relationship(
+        "EntityBillable",
+        primaryjoin="foreign(EntityBillable.entity_id) == PropertyUnitAssoc.property_unit_assoc_id",
+        back_populates="property",
+        lazy="selectin",
+    )

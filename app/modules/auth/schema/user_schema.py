@@ -31,7 +31,8 @@ from app.modules.auth.schema.company_schema import CompanyBase
 from app.modules.communication.schema.tour_schema import TourBase
 from app.modules.address.schema.address_schema import AddressBase
 from app.modules.resources.schema.document_schema import DocumentBase
-from app.modules.billing.schema.transaction_schema import TransactionBase
+
+# from app.modules.billing.schema.transaction_schema import TransactionBase
 from app.modules.communication.schema.calendar_event_schema import CalendarEventBase
 from app.modules.communication.schema.maintenance_request_schema import (
     MaintenanceRequestBase,
@@ -58,8 +59,8 @@ class UserSchema(UserBase):
     address: Optional[List[AddressBase]] = []
     accounts: Optional[List[AccountBase]] = []
     documents: Optional[List[DocumentBase]] = []
-    transactions_as_client_offered: Optional[List[TransactionBase]] = []
-    transactions_as_client_requested: Optional[List[TransactionBase]] = []
+    # transactions_as_client_offered: Optional[List[TransactionBase]] = []
+    # transactions_as_client_requested: Optional[List[TransactionBase]] = []
     maintenance_requests: Optional[List[MaintenanceRequestBase]] = []
     tours: Optional[List[TourBase]] = []
     events: Optional[List[CalendarEventBase]] = []

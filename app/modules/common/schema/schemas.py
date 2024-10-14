@@ -4,6 +4,8 @@ from app.modules.auth.models.role import Role
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
 from app.modules.billing.models.account import Account
+from app.modules.contract.models.contract import Contract
+from app.modules.billing.models.utility import Utilities
 from app.modules.auth.models.permissions import Permissions
 from app.modules.properties.models.property import Property
 from app.modules.properties.models.property_assignment import PropertyAssignment
@@ -18,6 +20,14 @@ RoleSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 
 AccountSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Account, excludes=["account_id"]
+)
+
+ContractSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Contract, excludes=["contract_number"]
+)
+
+UtilitySchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Utilities, excludes=["billable_assoc_id"]
 )
 
 PropertySchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(

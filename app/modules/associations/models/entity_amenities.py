@@ -10,8 +10,6 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 
-# Remove primary key field
-# - entity_type
 class EntityAmenities(Base):
     __tablename__ = "entity_amenities"
 
@@ -37,19 +35,6 @@ class EntityAmenities(Base):
             "entity_type IN ('property')", name="check_entity_type_amenities"
         ),
     )
-
-    @validates("entity_id")
-    def validate_entity(self, entity_id):
-        entity_map = {
-            EntityTypeEnum.property: ("PropertyUnitAssoc", "property_unit_assoc_id")
-        }
-
-        return super().validate_entity(
-            entity_id=entity_id,
-            entity_type=self.entity_type,
-            entity_map=entity_map,
-        )
-
     # amenity
     amenity: Mapped["Amenities"] = relationship(
         "Amenities", overlaps="amenities", lazy="selectin"
@@ -60,6 +45,37 @@ class EntityAmenities(Base):
         "Media",
         secondary="entity_media",
         primaryjoin="EntityAmenities.entity_amenities_id == EntityMedia.entity_id",
-        secondaryjoin="and_(EntityMedia.media_id == Media.media_id, EntityMedia.entity_type == 'EntityAmenities')",
+        secondaryjoin="and_(EntityMedia.media_id == Media.media_id, EntityMedia.entity_type == 'entityamenities')",
         lazy="selectin",
     )
+
+    @validates("entity_type", "entity_id")
+    def validate_entity(self, key, value, **kwargs):
+        if key == "entity_id":
+            entity_id = value
+            entity_type = kwargs.get("entity_type", self.entity_type)
+        elif key == "entity_type":
+            entity_type = value
+            entity_id = self.entity_id
+
+        entity_map = {
+            EntityTypeEnum.property: (
+                "property_unit_assoc",
+                "property_unit_assoc_id",
+            ),
+            EntityTypeEnum.user: ("users", "user_id"),
+            EntityTypeEnum.account: ("accounts", "account_id"),
+            EntityTypeEnum.role: ("role", "role_id"),
+            EntityTypeEnum.pastrentalhistory: (
+                "past_rental_history",
+                "rental_history_id",
+            ),
+        }
+
+        if entity_type and EntityTypeEnum(str(entity_type)) in entity_map:
+            super().validate_entity(
+                entity_id=entity_id,
+                entity_type=EntityTypeEnum(str(entity_type)),
+                entity_map=entity_map,
+            )
+        return value

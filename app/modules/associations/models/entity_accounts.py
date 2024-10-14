@@ -10,8 +10,6 @@ from app.modules.billing.enums.billing_enums import AccountTypeEnum
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 
-# Remove primary key field
-# - account_id, account_type, entity_id, entity_type
 class EntityAccount(Base):
     __tablename__ = "entity_accounts"
 
@@ -50,7 +48,7 @@ class EntityAccount(Base):
 
         entity_map = {
             EntityTypeEnum.property: (
-                "PropertyUnitAssoc",
+                "property_unit_assoc",
                 "property_unit_assoc_id",
             ),
             EntityTypeEnum.user: ("users", "user_id"),

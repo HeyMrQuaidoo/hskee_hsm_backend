@@ -26,6 +26,7 @@ class Amenities(Base):
         primaryjoin="Amenities.amenity_id == EntityAmenities.amenity_id",
         secondaryjoin="and_(EntityAmenities.entity_id == Property.property_unit_assoc_id, EntityAmenities.entity_type == 'property')",
         back_populates="amenities",
+        overlaps="amenity,amenities",
         lazy="selectin",
     )
 
