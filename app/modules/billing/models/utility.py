@@ -11,19 +11,16 @@ class Utilities(BillableAssoc):
     __tablename__ = "utilities"
 
     utility_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
-
-    billable_assoc_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("billable_assoc.billable_assoc_id"),
         primary_key=True,
     )
-    name: Mapped[str] = mapped_column(String(128), nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=True)
+    name: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str] = mapped_column(Text)
 
     __mapper_args__ = {
-        "polymorphic_identity": "utilities",
+        "polymorphic_identity": "Utilities",
+        "inherit_condition": utility_id == BillableAssoc.billable_assoc_id,
     }
 
     # Properties

@@ -105,9 +105,7 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
     @classmethod
     def model_validate(cls, property: PropertyModel):
-        print(property)
-        print("DONE")
-        return cls.get_property_info(property).model_dump()
+        return cls.get_property_info(property)
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
