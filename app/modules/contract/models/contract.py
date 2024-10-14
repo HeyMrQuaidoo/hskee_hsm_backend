@@ -117,6 +117,22 @@ class Contract(Base):
     lazy="selectin",
     )
 
+    # Media (Documents)
+    entity_media: Mapped[List["EntityMedia"]] = relationship(
+        "EntityMedia",
+        primaryjoin="and_(Contract.contract_id == EntityMedia.entity_id, EntityMedia.entity_type == 'contract')",
+        lazy="selectin",
+    )
+
+    media: Mapped[List["Media"]] = relationship(
+        "Media",
+        secondary="entity_media",
+        primaryjoin="and_(Contract.contract_id == EntityMedia.entity_id, EntityMedia.entity_type == 'contract')",
+        secondaryjoin="EntityMedia.media_id == Media.media_id",
+        viewonly=True,
+        lazy="selectin",
+    )
+
     # contract_type
     contract_type: Mapped["ContractType"] = relationship(
         "ContractType", back_populates="contracts", lazy="selectin"

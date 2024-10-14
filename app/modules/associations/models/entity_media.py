@@ -1,5 +1,3 @@
-# app/modules/associations/models/entity_media.py
-
 import uuid
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import Enum, CheckConstraint, UUID, ForeignKey
@@ -32,7 +30,7 @@ class EntityMedia(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities')",
+            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities', 'contract')",
             name="check_entity_type_media",
         ),
     )
@@ -54,6 +52,7 @@ class EntityMedia(Base):
             EntityTypeEnum.property: ("property_unit_assoc", "property_unit_assoc_id"),
             EntityTypeEnum.entityamenities: ("entity_amenities", "entity_amenities_id"),
             EntityTypeEnum.units: ("property_unit", "property_unit_id"),
+            EntityTypeEnum.contract: ("contract", "contract_id"),  # Addeding 'contract'
         }
 
         return super().validate_entity(

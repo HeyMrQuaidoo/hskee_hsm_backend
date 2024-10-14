@@ -2,7 +2,6 @@ from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import UUID4
 from fastapi import UploadFile
-import cloudinary.uploader
 
 # Models
 from app.modules.properties.models.property import Property
@@ -25,6 +24,9 @@ from app.modules.common.dao.base_dao import BaseDAO
 
 # Core
 from app.core.errors import RecordNotFoundException
+
+# Services
+from app.services.upload_service import MediaUploaderService
 
 class PropertyDAO(BaseDAO[Property]):
     def __init__(self, excludes: Optional[List[str]] = None):
@@ -56,9 +58,9 @@ class PropertyDAO(BaseDAO[Property]):
         self,
         property_id: str,
         files: List[UploadFile],
-        descriptions: List[str],
-        captions: List[str],
-        is_thumbnails: List[bool],
+        descriptions: Optional[List[str]],
+        captions: Optional[List[str]],
+        is_thumbnails: Optional[List[bool]],
         db_session: AsyncSession,
     ):
         # Check if property exists
@@ -67,12 +69,17 @@ class PropertyDAO(BaseDAO[Property]):
             raise RecordNotFoundException(model="Property", id=property_id)
 
         for idx, file in enumerate(files):
-            # Upload file to Cloudinary
-            try:
-                result = cloudinary.uploader.upload(file.file)
-                uploaded_url = result["secure_url"]
-            except Exception as e:
-                raise Exception(f"Failed to upload file to Cloudinary: {str(e)}")
+            content = await file.read()
+            base64_image = f"data:{file.content_type};base64,{content.decode('latin1')}"
+            file_name = file.filename
+            media_type_str = "property"
+
+            # Use MediaUploaderService
+            uploader = MediaUploaderService(base64_image, file_name, media_type_str)
+            response = uploader.upload()
+
+            if not response.success:
+                raise Exception(f"Upload failed: {response.error}")
 
             # Determine media type based on file content type
             content_type = file.content_type
@@ -89,24 +96,36 @@ class PropertyDAO(BaseDAO[Property]):
 
             # Create Media instance
             media_data = {
-                "media_name": file.filename,
+                "media_name": file_name,
                 "media_type": media_type,
-                "content_url": uploaded_url,
-                "is_thumbnail": is_thumbnails[idx] if idx < len(is_thumbnails) else False,
-                "caption": captions[idx] if idx < len(captions) else None,
-                "description": descriptions[idx] if idx < len(descriptions) else None,
+                "content_url": response.data["content_url"],
+                "is_thumbnail": is_thumbnails[idx] if is_thumbnails and idx < len(is_thumbnails) else False,
+                "caption": captions[idx] if captions and idx < len(captions) else None,
+                "description": descriptions[idx] if descriptions and idx < len(descriptions) else None,
             }
-            media = Media(**media_data)
-            db_session.add(media)
-            await db_session.flush()
-
-            # Create EntityMedia association
-            entity_media = EntityMedia(
-                media_id=media.media_id,
-                entity_id=property_id,
-                entity_type=EntityTypeEnum.property,
-                media_type=media.media_type,
+            await self.add_media_to_property(
+                db_session=db_session,
+                property_id=property_id,
+                media_data=media_data,
             )
-            db_session.add(entity_media)
 
+    async def add_media_to_property(
+        self,
+        db_session: AsyncSession,
+        property_id: str,
+        media_data: dict,
+    ):
+        # Create Media instance
+        media = Media(**media_data)
+        db_session.add(media)
+        await db_session.flush()
+
+        # Create EntityMedia association
+        entity_media = EntityMedia(
+            media_id=media.media_id,
+            entity_id=property_id,
+            entity_type=EntityTypeEnum.property,
+            media_type=media.media_type,
+        )
+        db_session.add(entity_media)
         await db_session.commit()

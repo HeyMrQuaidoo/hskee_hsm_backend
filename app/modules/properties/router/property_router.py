@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import UUID4
 from fastapi import Depends, UploadFile, File, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,9 +36,9 @@ class PropertyRouter(BaseCRUDRouter):
         async def upload_media_to_property(
             property_id: UUID4,
             files: List[UploadFile] = File(...),
-            descriptions: List[str] = Form(...),
-            captions: List[str] = Form(...),
-            is_thumbnails: List[bool] = Form(...),
+            descriptions: Optional[List[str]] = Form(None),
+            captions: Optional[List[str]] = Form(None),
+            is_thumbnails: Optional[List[bool]] = Form(None),
             db_session: AsyncSession = Depends(get_db),
         ):
             try:
