@@ -28,15 +28,15 @@ from app.modules.contract.enums.contract_enums import ContractStatusEnum
 class Contract(Base):
     __tablename__ = "contract"
 
+    contract_number: Mapped[str] = mapped_column(
+        String(128), unique=True, nullable=False, index=True, primary_key=True
+    )
     contract_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         unique=True,
         index=True,
         default=uuid.uuid4,
-    )
-    contract_number: Mapped[str] = mapped_column(
-        String(128), unique=True, nullable=False
     )
     contract_type_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("contract_type.contract_type_id")
