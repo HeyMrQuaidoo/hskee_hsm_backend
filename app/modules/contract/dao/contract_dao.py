@@ -1,26 +1,22 @@
-# app/modules/contract/dao/contract_dao.py
-
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete
 from app.modules.common.dao.base_dao import BaseDAO
+
+# enums
+from app.modules.resources.enums.resource_enums import MediaType
+from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 # Models
 from app.modules.contract.models.contract import Contract
 from app.modules.resources.models.media import Media
 from app.modules.associations.models.entity_media import EntityMedia
-from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
-from app.modules.resources.enums.resource_enums import MediaType
-
-# Enums
-from app.modules.associations.enums.user_role_enums import UserRoleEnum
 
 # Errors
 from app.core.errors import RecordNotFoundException
 
 # Services
-from app.services.upload_service import MediaUploaderService
 from fastapi import UploadFile
+from app.services.upload_service import MediaUploaderService
 
 
 class ContractDAO(BaseDAO[Contract]):

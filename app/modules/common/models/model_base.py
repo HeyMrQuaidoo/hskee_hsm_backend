@@ -2,7 +2,6 @@ import pytz
 from datetime import datetime
 from functools import lru_cache
 from sqlalchemy.future import select
-from dogpile.cache import make_region
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.ext.declarative import declared_attr
 from typing import Dict, List, Any, Optional, Tuple, Union

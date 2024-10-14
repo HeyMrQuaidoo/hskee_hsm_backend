@@ -99,13 +99,12 @@ class Property(PropertyUnitAssoc):
         viewonly=True,
     )
 
-    # Units
+    # units
     units: Mapped[List["Units"]] = relationship(
         "Units",
         primaryjoin="Property.property_unit_assoc_id == Units.property_id",
         back_populates="property",
         lazy="selectin",
-        collection_class=BaseModelCollection,
         viewonly=True,
     )
 

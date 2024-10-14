@@ -12,7 +12,6 @@ from app.modules.properties.schema.mixins.property_mixin import (
     PropertyBase,
     PropertyUnitAssocBase,
     PropertyUnitBase,
-    PropertyInfoMixin,
 )
 
 # models

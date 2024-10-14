@@ -1,7 +1,7 @@
+from uuid import UUID
 from typing import List
-from pydantic import UUID4
-from fastapi import APIRouter, Depends, status, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, status, UploadFile, File, Form
 
 # DAO
 from app.modules.contract.dao.contract_dao import ContractDAO
@@ -37,7 +37,7 @@ class ContractRouter(BaseCRUDRouter):
             "/{contract_id}/upload_media", status_code=status.HTTP_201_CREATED
         )
         async def upload_media_to_contract(
-            contract_id: UUID4,
+            contract_id: UUID,
             files: List[UploadFile] = File(...),
             descriptions: List[str] = Form(None),
             captions: List[str] = Form(None),

@@ -12,9 +12,6 @@ from app.modules.billing.models.payment_type import PaymentType as PaymentTypeMo
 from app.modules.associations.models.entity_billable import (
     EntityBillable as EntityBillableModel,
 )
-from app.modules.associations.models.entity_billable import (
-    EntityBillable as EntityBillableModel,
-)
 
 
 class UtilityBase(BaseSchema):

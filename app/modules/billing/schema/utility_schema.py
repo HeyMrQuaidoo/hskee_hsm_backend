@@ -22,6 +22,7 @@ class UtilityCreateSchema(UtilityBase):
         }
     )
 
+
 class UtilityUpdateSchema(UtilityBase):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -39,7 +40,8 @@ class UtilityUpdateSchema(UtilityBase):
         }
     )
 
-class UtilityResponseSchema(UtilityBase):
+
+class UtilityResponse(UtilityBase):
     name: str
     description: Optional[str] = None
 

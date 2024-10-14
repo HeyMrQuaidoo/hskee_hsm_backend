@@ -1,12 +1,18 @@
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.associations.models.entity_billable import EntityBillable
-from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
-from app.modules.billing.enums.billing_enums import BillableTypeEnum
-from app.modules.billing.models.utility import Utilities
-from app.modules.billing.schema.utility_schema import UtilityCreateSchema
+
 from app.modules.common.dao.base_dao import BaseDAO
+
+# enums
+from app.modules.billing.enums.billing_enums import BillableTypeEnum
+
+# shemas
+from app.modules.billing.schema.utility_schema import UtilityCreateSchema
+
+# models
+from app.modules.billing.models.utility import Utilities
+from app.modules.associations.models.entity_billable import EntityBillable
 
 
 class UtilityDAO(BaseDAO[Utilities]):

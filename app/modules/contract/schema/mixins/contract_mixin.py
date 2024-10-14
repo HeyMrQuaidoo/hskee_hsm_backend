@@ -9,7 +9,6 @@ from app.modules.contract.enums.contract_enums import ContractStatusEnum
 # schema
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
-from app.modules.contract.schema.mixins.contract_mixin import Contract
 from app.modules.contract.schema.mixins.under_contract_mixin import UnderContract
 from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
 
@@ -41,7 +40,7 @@ class Contract(BaseSchema):
     contract_id: UUID
 
 
-class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin, UtilitiesMixin):
+class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
     @classmethod
     def get_contract_details(cls, contract_details: List[UnderContractModel]):
         result = []

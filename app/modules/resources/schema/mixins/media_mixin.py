@@ -1,13 +1,13 @@
 from uuid import UUID
 from typing import Annotated, Optional
-from pydantic import BaseModel, ConfigDict, constr
+from pydantic import ConfigDict, constr
 
 # schema
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.resources.enums.resource_enums import MediaType
 
 
-class EntityMediaCreateSchema(BaseModel):
+class EntityMediaCreateSchema(BaseSchema):
     """
     Schema for creating an entity media association.
 
@@ -26,7 +26,7 @@ class EntityMediaCreateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MediaBase(BaseModel):
+class MediaBase(BaseSchema):
     media_name: Optional[str] = None
     media_type: Optional[MediaType] = None
     content_url: Optional[str] = None
