@@ -113,6 +113,7 @@ class Contract(Base):
     "EntityBillable",
     primaryjoin="foreign(EntityBillable.entity_id) == Contract.contract_id",
     back_populates="contract",
+    overlaps="entity_billables,property,utilities,",
     lazy="selectin",
     )
 

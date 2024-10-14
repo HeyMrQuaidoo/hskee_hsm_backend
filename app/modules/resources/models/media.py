@@ -28,6 +28,7 @@ class Media(Base):
     entity_media: Mapped[List["EntityMedia"]] = relationship(
         "EntityMedia",
         back_populates="media",
+        overlaps="media",
         lazy="selectin",
     )
 

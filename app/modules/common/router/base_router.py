@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, TypeVar, Generic, Union
 from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi import HTTPException
 
 # dao
 from app.modules.common.dao.base_dao import BaseDAO
@@ -137,6 +138,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
             except Exception as e:
                 raise CustomException(e)
 
+
     def add_update_route(self):
         @self.router.put("/{id}")
         async def update(
@@ -145,15 +147,21 @@ class BaseCRUDRouter(Generic[DBModelType]):
             db_session: AsyncSession = Depends(get_db),
         ) -> DAOResponse:
             try:
+                # Query the database for the item
                 db_item = await self.dao.query(
                     db_session, filters={f"{self.dao.primary_key}": id}, single=True
                 )
 
+                # If item is not found, raise a 404 error
+                if not db_item:
+                    raise HTTPException(status_code=404, detail="Item not found")
+
+                # Perform the update operation
                 updated_item = await self.dao.update(
                     db_session=db_session, db_obj=db_item, obj_in=item
                 )
 
-                # determine how to call model_validate
+                # Determine how to call model_validate
                 method = getattr(self.update_schema, "model_validate")
                 signature = inspect.signature(method)
 
@@ -168,12 +176,22 @@ class BaseCRUDRouter(Generic[DBModelType]):
                     if isinstance(updated_item, DAOResponse)
                     else model_validate(updated_item),
                 )
-            except RecordNotFoundException as e:
-                raise e
+            
+            # Handle item not found in the database
+            except HTTPException as e:
+                # Ensure correct status code is returned
+                if e.status_code == 404:
+                    raise e
+                else:
+                    raise HTTPException(status_code=400, detail=str(e))
+
+            # Handle database integrity errors (e.g., constraint violations)
             except IntegrityError as e:
-                raise e
+                raise HTTPException(status_code=400, detail=f"Database integrity error: {str(e)}")
+            
+            # Catch other exceptions and raise a custom exception
             except Exception as e:
-                raise CustomException(str(e))
+                raise CustomException(f"Error updating data: {str(e)}")
 
     def add_delete_route(self):
         @self.router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

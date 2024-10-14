@@ -75,6 +75,7 @@ class EntityBillable(Base):
         "Utilities",
         primaryjoin="and_(foreign(EntityBillable.billable_id) == Utilities.billable_assoc_id, "
                     "EntityBillable.billable_type == 'utilities')",
+        overlaps="properties,utilities",
         lazy="selectin",
     )
 
@@ -82,6 +83,7 @@ class EntityBillable(Base):
         "PropertyUnitAssoc",
         primaryjoin="and_(foreign(EntityBillable.entity_id) == PropertyUnitAssoc.property_unit_assoc_id, "
                     "EntityBillable.entity_type == 'property')",
+        overlaps="properties,utilities",
         back_populates="entity_billables",
         lazy="selectin",
     )
@@ -92,6 +94,7 @@ class EntityBillable(Base):
         "EntityBillable.entity_type == 'contract')",
         foreign_keys="[EntityBillable.entity_id]",
         back_populates="entity_billables",
+        overlaps="entity_billables,property,properties,utilities,",
         lazy="selectin",
     )
 

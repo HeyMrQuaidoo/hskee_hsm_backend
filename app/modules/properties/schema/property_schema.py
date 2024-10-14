@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 from pydantic import ConfigDict
 
@@ -105,31 +105,24 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
-    # Faker attributes
-    _property_type: Optional[str] = BaseFaker.random_choices(
-        ["residential", "commercial", "industrial"], length=1
-    )[0]
-    _property_status: Optional[str] = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
-    )[0]
-    _property_unit_status: Optional[str] = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
-    )[0]
-    _amount: Optional[float] = round(BaseFaker.random_number(digits=5), 2)
-    _security_deposit: Optional[float] = round(BaseFaker.random_number(digits=4), 2)
-    _commission: Optional[float] = round(BaseFaker.random_number(digits=3), 2)
-    _floor_space: Optional[int] = BaseFaker.random_number(digits=3)
-    _address_type: Optional[str] = BaseFaker.random_choices(["billing", "mailing"], length=1)[0]
-
-    # Media faker attributes
-    _media_name: Optional[str] = BaseFaker.word()
-    _media_type: Optional[str] = BaseFaker.random_choices(
-        ["image", "video", "audio", "document"], length=1
-    )[0]
-    _content_url: Optional[str] = BaseFaker.url()
-    _is_thumbnail: Optional[bool] = BaseFaker.boolean()
-    _caption: Optional[str] = BaseFaker.sentence()
-    _description: Optional[str] = BaseFaker.text(max_nb_chars=200)
+    name: Optional[str] = None
+    property_type: Optional[str] = None
+    amount: Optional[float] = None
+    security_deposit: Optional[float] = None
+    commission: Optional[float] = None
+    floor_space: Optional[float] = None
+    num_units: Optional[int] = None
+    num_bathrooms: Optional[int] = None
+    num_garages: Optional[int] = None
+    has_balconies: Optional[bool] = None
+    has_parking_space: Optional[bool] = None
+    pets_allowed: Optional[bool] = None
+    description: Optional[str] = None
+    property_status: Optional[str] = None
+    address: Optional[List[dict]] = None
+    units: Optional[List[dict]] = None
+    media: Optional[List[dict]] = None
+    amenities: Optional[List[dict]] = None
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -177,7 +170,7 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "property_unit_commission": Optional[float],
                         "has_amenities": Optional[bool],
                         "property_unit_assoc_id": Optional[str],
-                    },
+                    }
                 ],
                 "media": [
                     {
@@ -194,7 +187,7 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "amenity_name": Optional[str],
                         "amenity_short_name": Optional[str],
                         "amenity_description": Optional[str],
-                    },
+                    }
                 ]
             }
         },
@@ -202,4 +195,4 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
     @classmethod
     def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property)
+        return cls.get_property_info(property).model_dump()

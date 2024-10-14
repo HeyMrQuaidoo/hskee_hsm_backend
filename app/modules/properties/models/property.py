@@ -154,6 +154,7 @@ class Property(PropertyUnitAssoc):
         primaryjoin="and_(Property.property_unit_assoc_id == EntityBillable.entity_id, EntityBillable.entity_type == 'property', EntityBillable.billable_type=='utilities')",
         secondaryjoin="EntityBillable.billable_id == Utilities.billable_assoc_id",
         back_populates="properties",
+        overlaps="entity_billables",
         lazy="selectin",
         collection_class=BaseModelCollection,
     )

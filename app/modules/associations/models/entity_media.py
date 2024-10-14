@@ -41,7 +41,8 @@ class EntityMedia(Base):
 
     media: Mapped["Media"] = relationship(
         "Media",
-        back_populates="entity_media",  # Assuming Media has a relationship back to EntityMedia
+        back_populates="entity_media",
+        overlaps="media",
         lazy="selectin",
     )
 
