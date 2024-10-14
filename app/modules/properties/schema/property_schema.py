@@ -106,6 +106,10 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
+    name: str = None
+    property_type: Union[Any] = None
+    amount: float = None
+    property_status: Union[Any] = None
     amenities: Optional[List[Amenity] | List[Amenity]] = []
 
     # Faker attrributes
