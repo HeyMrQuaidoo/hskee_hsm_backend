@@ -8,6 +8,7 @@ from app.modules.billing.models.utility import Utilities
 from app.modules.billing.schema.utility_schema import UtilityCreateSchema
 from app.modules.common.dao.base_dao import BaseDAO
 
+
 class UtilityDAO(BaseDAO[Utilities]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Utilities

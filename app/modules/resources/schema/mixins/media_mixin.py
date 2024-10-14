@@ -26,7 +26,6 @@ class EntityMediaCreateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-
 class MediaBase(BaseModel):
     media_name: Optional[str] = None
     media_type: Optional[MediaType] = None

@@ -21,6 +21,7 @@ from app.modules.contract.schema.contract_schema import (
 from app.core.lifespan import get_db
 from app.core.errors import CustomException
 
+
 class ContractRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: ContractDAO = ContractDAO(excludes=[])
@@ -32,8 +33,9 @@ class ContractRouter(BaseCRUDRouter):
         self.register_routes()
 
     def register_routes(self):
-
-        @self.router.post("/{contract_id}/upload_media", status_code=status.HTTP_201_CREATED)
+        @self.router.post(
+            "/{contract_id}/upload_media", status_code=status.HTTP_201_CREATED
+        )
         async def upload_media_to_contract(
             contract_id: UUID4,
             files: List[UploadFile] = File(...),

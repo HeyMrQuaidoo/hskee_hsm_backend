@@ -30,6 +30,7 @@ from app.modules.common.models.model_base import BaseModel as Base, BaseModelCol
 # TODO: (DQ) Review calendar events
 # - review if this is needed is_contract_active
 
+
 class Property(PropertyUnitAssoc):
     __tablename__ = "property"
 

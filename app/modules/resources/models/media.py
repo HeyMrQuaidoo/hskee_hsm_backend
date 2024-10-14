@@ -9,6 +9,7 @@ from app.modules.common.models.model_base import BaseModel as Base
 # Enums
 from app.modules.resources.enums.resource_enums import MediaType
 
+
 class Media(Base):
     __tablename__ = "media"
 
@@ -31,6 +32,7 @@ class Media(Base):
         overlaps="media",
         lazy="selectin",
     )
+
 
 # Register model outside the class definition
 Base.setup_model_dynamic_listener("media", Media)

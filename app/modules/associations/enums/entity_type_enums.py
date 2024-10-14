@@ -12,4 +12,4 @@ class EntityTypeEnum(enum.Enum):
     account = "account"
     comapany = "comapany"
     entityamenities = "entityamenities"
-    pastrentalhistory = "pastrentalhistory",
+    pastrentalhistory = "pastrentalhistory"

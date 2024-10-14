@@ -12,6 +12,7 @@ from app.modules.common.schema.base_schema import BaseFaker
 # Models
 from app.modules.resources.models.media import Media as MediaModel
 
+
 class MediaCreateSchema(MediaBase):
     # Faker attributes
     _media_name = BaseFaker.word()
@@ -40,6 +41,7 @@ class MediaCreateSchema(MediaBase):
         },
     )
 
+
 class MediaUpdateSchema(MediaBase):
     # Faker attributes
     _media_name = BaseFaker.word()
@@ -67,6 +69,7 @@ class MediaUpdateSchema(MediaBase):
             }
         },
     )
+
 
 class MediaResponse(MediaBase):
     media_id: Optional[UUID] = None

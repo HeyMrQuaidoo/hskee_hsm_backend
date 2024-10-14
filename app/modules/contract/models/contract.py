@@ -2,7 +2,7 @@ import uuid
 import pytz
 from typing import List
 from datetime import datetime
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, column_property
 from sqlalchemy import (
     Numeric,
     String,
@@ -13,10 +13,13 @@ from sqlalchemy import (
     Integer,
     Text,
     UUID,
+    select,
 )
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
+from app.modules.contract.models.contract_type import ContractType
+from app.modules.billing.models.payment_type import PaymentType
 
 # enums
 from app.modules.contract.enums.contract_enums import ContractStatusEnum
@@ -101,7 +104,7 @@ class Contract(Base):
     # utilities
     utilities: Mapped[List["EntityBillable"]] = relationship(
         "EntityBillable",
-        primaryjoin="and_(EntityBillable.entity_id==Contract.contract_id,  EntityBillable.entity_type=='Contract', EntityBillable.billable_type=='Utilities')",
+        primaryjoin="and_(EntityBillable.entity_id==Contract.contract_id,  EntityBillable.entity_type=='contract', EntityBillable.billable_type=='utilities')",
         foreign_keys="[EntityBillable.entity_id]",
         lazy="selectin",
         viewonly=True,
@@ -110,19 +113,20 @@ class Contract(Base):
 
     # billable
     entity_billables: Mapped[List["EntityBillable"]] = relationship(
-    "EntityBillable",
-    primaryjoin="foreign(EntityBillable.entity_id) == Contract.contract_id",
-    back_populates="contract",
-    overlaps="entity_billables,property,utilities,",
-    lazy="selectin",
+        "EntityBillable",
+        primaryjoin="foreign(EntityBillable.entity_id) == Contract.contract_id",
+        back_populates="contract",
+        overlaps="entity_billables,property,utilities,",
+        lazy="selectin",
     )
 
     # Media (Documents)
-    entity_media: Mapped[List["EntityMedia"]] = relationship(
-        "EntityMedia",
-        primaryjoin="and_(Contract.contract_id == EntityMedia.entity_id, EntityMedia.entity_type == 'contract')",
-        lazy="selectin",
-    )
+    # entity_media: Mapped[List["EntityMedia"]] = relationship(
+    #     "EntityMedia",
+    #     primaryjoin="and_(Contract.contract_id == EntityMedia.entity_id, EntityMedia.entity_type == 'contract')",
+    #     viewonly=True,
+    #     lazy="selectin",
+    # )
 
     media: Mapped[List["Media"]] = relationship(
         "Media",
@@ -141,6 +145,21 @@ class Contract(Base):
     # payment_type
     payment_type: Mapped["PaymentType"] = relationship(
         "PaymentType", back_populates="contracts", lazy="selectin"
+    )
+
+    # generate dynamic column property
+    contract_type_value = column_property(
+        select(ContractType.contract_type_name)
+        .where(ContractType.contract_type_id == contract_type_id)
+        .correlate_except(ContractType)
+        .scalar_subquery()
+    )
+
+    payment_type_value = column_property(
+        select(PaymentType.payment_type_name)
+        .where(PaymentType.payment_type_id == payment_type_id)
+        .correlate_except(PaymentType)
+        .scalar_subquery()
     )
 
     def to_dict(self, exclude=[]):

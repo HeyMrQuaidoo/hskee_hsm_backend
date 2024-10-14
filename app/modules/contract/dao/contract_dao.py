@@ -22,6 +22,7 @@ from app.core.errors import RecordNotFoundException
 from app.services.upload_service import MediaUploaderService
 from fastapi import UploadFile
 
+
 class ContractDAO(BaseDAO[Contract]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Contract
@@ -71,7 +72,9 @@ class ContractDAO(BaseDAO[Contract]):
                 "content_url": response.data["content_url"],
                 "is_thumbnail": False,
                 "caption": captions[idx] if captions and idx < len(captions) else None,
-                "description": descriptions[idx] if descriptions and idx < len(descriptions) else None,
+                "description": descriptions[idx]
+                if descriptions and idx < len(descriptions)
+                else None,
             }
             await self.add_media_to_contract(
                 db_session=db_session,

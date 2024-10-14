@@ -9,6 +9,7 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.resources.enums.resource_enums import MediaType
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
+
 class EntityMedia(Base):
     __tablename__ = "entity_media"
 
@@ -51,8 +52,8 @@ class EntityMedia(Base):
             EntityTypeEnum.amenities: ("amenities", "amenity_id"),
             EntityTypeEnum.property: ("property_unit_assoc", "property_unit_assoc_id"),
             EntityTypeEnum.entityamenities: ("entity_amenities", "entity_amenities_id"),
-            EntityTypeEnum.units: ("property_unit", "property_unit_id"),
-            EntityTypeEnum.contract: ("contract", "contract_id"),  # Addeding 'contract'
+            EntityTypeEnum.units: ("property_unit", "property_unit_assoc_id"),
+            EntityTypeEnum.contract: ("contract", "contract_id"),  # Added 'contract'
         }
 
         return super().validate_entity(

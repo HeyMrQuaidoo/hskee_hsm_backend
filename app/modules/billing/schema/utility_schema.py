@@ -1,39 +1,57 @@
-from decimal import Decimal
-from pydantic import BaseModel, UUID4
 from typing import Optional
-from pydantic import BaseModel, UUID4, Field
+from pydantic import ConfigDict
 
-from app.modules.associations.enums import EntityTypeEnum
+from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
+from app.modules.common.schema.base_schema import BaseFaker
 
-class UtilityBase(BaseModel):
+
+class UtilityCreateSchema(UtilityBase):
     name: str
     description: Optional[str] = None
 
-class UtilityCreateSchema(UtilityBase):
-    entity_id: UUID4  # Can be contract_id or property_id
-    entity_type: EntityTypeEnum  # 'contract' or 'property'
-    billable_amount: float
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
 
-class UtilityUpdateSchema(UtilityBase):
-    pass
-class UtilitySchema(UtilityBase):
-    billable_assoc_id: UUID4
-
-class UtilityResponse(BaseModel):
-    utility_id: UUID4 = Field(..., description="Unique identifier for the utility")
-    name: str = Field(..., max_length=128, description="Name of the utility")
-    description: Optional[str] = Field(None, description="Detailed description of the utility")
-    billable_amount: Decimal = Field(..., description="Amount billed for the utility")
-    apply_to_units: bool = Field(..., description="Indicates if the utility applies to individual units")
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
-                "utility_id": "1a7f9f3d-4a6c-42c7-8149-bb79db6e8f3f",
-                "name": "Electricity",
-                "description": "Electricity service charges for the building",
-                "billable_amount": 150.75,
-                "apply_to_units": True
+                "name": _name,
+                "description": _description,
             }
         }
+    )
+
+class UtilityUpdateSchema(UtilityBase):
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": _name,
+                "description": _description,
+            }
+        }
+    )
+
+class UtilityResponseSchema(UtilityBase):
+    name: str
+    description: Optional[str] = None
+
+    # Faker attributes
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": _name,
+                "description": _description,
+            }
+        }
+    )

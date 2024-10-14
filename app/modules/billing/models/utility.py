@@ -27,8 +27,6 @@ class Utilities(BillableAssoc):
         "polymorphic_identity": "utilities",
     }
 
-    # Relationships
-    
     # Properties
     properties: Mapped[List["Property"]] = relationship(
         "Property",
@@ -41,20 +39,20 @@ class Utilities(BillableAssoc):
     )
 
     # Entity Billables
-    entity_billable: Mapped[List["EntityBillable"]] = relationship(
-        "EntityBillable",
-        back_populates="utility",
-        overlaps="entity_billable,utilities",
-        lazy="selectin",
-    )
+    # entity_billable: Mapped[List["EntityBillable"]] = relationship(
+    #     "EntityBillable",
+    #     back_populates="utility",
+    #     overlaps="entity_billable,utilities",
+    #     lazy="selectin",
+    # )
 
     # Contracts
-    contracts: Mapped[List["Contract"]] = relationship(
-        "Contract",
-        secondary="entity_billable",
-        primaryjoin="and_(Utilities.billable_assoc_id == EntityBillable.billable_id, EntityBillable.billable_type == 'utilities', EntityBillable.entity_type == 'contract')",
-        secondaryjoin="EntityBillable.entity_id == Contract.contract_id",
-        back_populates="utilities",
-        overlaps="entity_billables,entity_billable",
-        lazy="selectin",
-    )
+    # contracts: Mapped[List["Contract"]] = relationship(
+    #     "Contract",
+    #     secondary="entity_billable",
+    #     primaryjoin="and_(Utilities.billable_assoc_id == EntityBillable.billable_id, EntityBillable.billable_type == 'utilities', EntityBillable.entity_type == 'contract')",
+    #     secondaryjoin="EntityBillable.entity_id == Contract.contract_id",
+    #     back_populates="utilities",
+    #     overlaps="entity_billables,entity_billable",
+    #     lazy="selectin",
+    # )

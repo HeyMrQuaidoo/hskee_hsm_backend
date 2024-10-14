@@ -138,7 +138,6 @@ class BaseCRUDRouter(Generic[DBModelType]):
             except Exception as e:
                 raise CustomException(e)
 
-
     def add_update_route(self):
         @self.router.put("/{id}")
         async def update(
@@ -176,7 +175,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
                     if isinstance(updated_item, DAOResponse)
                     else model_validate(updated_item),
                 )
-            
+
             # Handle item not found in the database
             except HTTPException as e:
                 # Ensure correct status code is returned
@@ -187,8 +186,10 @@ class BaseCRUDRouter(Generic[DBModelType]):
 
             # Handle database integrity errors (e.g., constraint violations)
             except IntegrityError as e:
-                raise HTTPException(status_code=400, detail=f"Database integrity error: {str(e)}")
-            
+                raise HTTPException(
+                    status_code=400, detail=f"Database integrity error: {str(e)}"
+                )
+
             # Catch other exceptions and raise a custom exception
             except Exception as e:
                 raise CustomException(f"Error updating data: {str(e)}")

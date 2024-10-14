@@ -12,6 +12,7 @@ from app.modules.billing.schema.utility_schema import (
 from app.core.lifespan import get_db
 from app.core.errors import CustomException
 
+
 class UtilityRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: UtilityDAO = UtilityDAO(excludes=[])

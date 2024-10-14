@@ -5,8 +5,8 @@ import cloudinary.api
 import cloudinary.uploader
 
 # utils
-from app.utils.settings import settings
-from app.utils.response import DAOResponse
+from app.core.config import settings
+from app.core.response import DAOResponse
 
 
 class MediaUploaderService:

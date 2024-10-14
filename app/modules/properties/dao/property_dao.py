@@ -28,6 +28,7 @@ from app.core.errors import RecordNotFoundException
 # Services
 from app.services.upload_service import MediaUploaderService
 
+
 class PropertyDAO(BaseDAO[Property]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Property
@@ -99,9 +100,13 @@ class PropertyDAO(BaseDAO[Property]):
                 "media_name": file_name,
                 "media_type": media_type,
                 "content_url": response.data["content_url"],
-                "is_thumbnail": is_thumbnails[idx] if is_thumbnails and idx < len(is_thumbnails) else False,
+                "is_thumbnail": is_thumbnails[idx]
+                if is_thumbnails and idx < len(is_thumbnails)
+                else False,
                 "caption": captions[idx] if captions and idx < len(captions) else None,
-                "description": descriptions[idx] if descriptions and idx < len(descriptions) else None,
+                "description": descriptions[idx]
+                if descriptions and idx < len(descriptions)
+                else None,
             }
             await self.add_media_to_property(
                 db_session=db_session,
