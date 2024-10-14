@@ -109,24 +109,6 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
 
 class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
-    name: Optional[str]
-    property_type: Optional[PropertyType]
-    amount: Optional[float]
-    security_deposit: Optional[float] = None
-    commission: Optional[float] = None
-    floor_space: Optional[float] = None
-    num_units: Optional[int] = None
-    num_bathrooms: Optional[int] = None
-    num_garages: Optional[int] = None
-    has_balconies: Optional[bool] = False
-    has_parking_space: Optional[bool] = False
-    pets_allowed: bool = False
-    description: Optional[str] = None
-    property_status: PropertyStatus
-    address: Optional[List[AddressBase]] = []
-    units: Optional[List[PropertyUnit] | List[PropertyUnitBase]] = []
-    media: Optional[List[dict]] = None
-    amenities: Optional[List[dict]] = None
 
     # Faker attrributes
     _property_type = BaseFaker.random_choices(
@@ -234,4 +216,4 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
 
     @classmethod
     def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property).model_dump()
+        return cls.get_property_info(property)
