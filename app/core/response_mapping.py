@@ -50,4 +50,18 @@ response_mapping: Dict[Type[Any], Type[BaseModel]] = {
         import_module("app.modules.resources.schema.media_schema"),
         "MediaResponse",
     ),
+    getattr(
+        import_module("app.modules.contract.models.contract"),
+        "Contract",
+    ): getattr(
+        import_module("app.modules.contract.schema.contract_schema"),
+        "ContractResponse",
+    ),
+    getattr(
+        import_module("app.modules.contract.models.contract_type"),
+        "ContractType",
+    ): getattr(
+        import_module("app.modules.contract.schema.contract_type_schema"),
+        "ContractTypeResponse",
+    ),
 }

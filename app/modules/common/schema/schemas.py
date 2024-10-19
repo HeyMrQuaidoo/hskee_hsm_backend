@@ -1,6 +1,9 @@
 # models
 from app.modules.auth.models.user import User
 from app.modules.auth.models.role import Role
+from app.modules.billing.models.payment_type import PaymentType
+from app.modules.billing.models.transaction_type import TransactionType
+from app.modules.contract.models.contract_type import ContractType
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
 from app.modules.billing.models.account import Account
@@ -25,6 +28,19 @@ AccountSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 ContractSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Contract, excludes=["contract_number"]
 )
+
+TransactionTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    TransactionType, excludes=["transaction_id"]
+)
+
+PaymentTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    PaymentType, excludes=["transaction_id"]
+)
+
+ContractTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    ContractType, excludes=["transaction_id"]
+)
+
 
 UtilitySchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Utilities, excludes=["billable_assoc_id"]

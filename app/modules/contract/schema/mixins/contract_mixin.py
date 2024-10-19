@@ -11,12 +11,17 @@ from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 from app.modules.contract.schema.mixins.under_contract_mixin import UnderContract
 from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
+from app.modules.billing.schema.utility_schema import UtilityResponse
+from app.modules.billing.schema.invoice_schema import InvoiceResponse
+from app.modules.resources.schema.media_schema import MediaResponse
 
 # models
 from app.modules.contract.models.contract import Contract as ContractModel
 from app.modules.contract.models.under_contract import (
     UnderContract as UnderContractModel,
 )
+from app.modules.contract.models.contract_type import ContractType as ContractTypeModel
+from app.modules.billing.models.payment_type import PaymentType as PaymentTypeModel
 
 
 class ContractBase(BaseSchema):
@@ -32,7 +37,6 @@ class ContractBase(BaseSchema):
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
     contract_info: Optional[List[UnderContract] | UnderContract] = None
-    # utilities: Optional[List[Billable] | Billable] = None
 
 
 class Contract(BaseSchema):
@@ -71,22 +75,24 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
         return result
 
     @classmethod
-    def get_contract_info(
-        cls, contract_info: List[UnderContractModel]
-    ) -> List[Contract]:
+    def get_contract_info(cls, contract_info: List[UnderContractModel]) -> List[Contract]:
         result = []
 
         for under_contract in contract_info:
             contract: ContractModel = under_contract.contract
 
             if contract:
+                # Fetch related contract_type and payment_type
+                contract_type: ContractTypeModel = contract.contract_type
+                payment_type: PaymentTypeModel = contract.payment_type
+
                 result.append(
                     Contract(
                         contract_id=contract.contract_id,
                         contract_number=contract.contract_number,
                         num_invoices=contract.num_invoices,
-                        contract_type=contract.contract_type_value,  # contract.contract_type.contract_type_name
-                        payment_type=contract.payment_type_value,  # contract.payment_type.payment_type_name
+                        contract_type=contract_type.contract_type_name if contract_type else None,  # Fetch contract type name
+                        payment_type=payment_type.payment_type_name if payment_type else None,  # Fetch payment type name
                         contract_status=contract.contract_status,
                         contract_details=contract.contract_details,
                         payment_amount=contract.payment_amount,
@@ -101,3 +107,15 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
                     )
                 )
         return result
+
+    @classmethod
+    def get_utilities_info(cls, utilities):
+        return [UtilityResponse.model_validate(utility) for utility in utilities] if utilities else []
+
+    @classmethod
+    def get_invoices_info(cls, invoices):
+        return [InvoiceResponse.model_validate(invoice) for invoice in invoices] if invoices else []
+
+    @classmethod
+    def get_media_info(cls, media_items):
+        return [MediaResponse.model_validate(media) for media in media_items] if media_items else []

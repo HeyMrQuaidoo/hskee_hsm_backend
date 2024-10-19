@@ -5,6 +5,10 @@ from fastapi import APIRouter, FastAPI
 
 from app.modules.auth.router.role_router import RoleRouter
 from app.modules.auth.router.user_router import UserRouter
+from app.modules.billing.router.payment_type_router import PaymentTypeRouter
+from app.modules.billing.router.transaction_type_router import TransactionTypeRouter
+from app.modules.contract.router.contract_router import ContractRouter
+from app.modules.contract.router.contract_type_router import ContractTypeRouter
 from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.resources.router.media_router import MediaRouter
 from app.modules.billing.router.account_router import AccountRouter
@@ -56,6 +60,18 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of PropertyRouter
     app.include_router(PropertyRouter(prefix="/property", tags=["Property"]).router)
+
+    # Create an instance of ContractRouter
+    app.include_router(ContractRouter(prefix="/contract", tags=["Contract"]).router)
+
+    # Create an instance of PaymentTypeRouter
+    app.include_router(PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router)
+
+    # Create an instance of TransactionTypeRouter
+    app.include_router(TransactionTypeRouter(prefix="/transaction_type", tags=["TransactionType"]).router)
+
+    # Create an instance of ContractTypeRouter
+    app.include_router(ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router)
 
     # Create an instance of UnitRouter
     app.include_router(UnitRouter(prefix="/unit", tags=["Unit"]).router)

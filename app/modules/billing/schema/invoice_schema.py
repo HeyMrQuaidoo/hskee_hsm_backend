@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from pydantic import ConfigDict
-from sqlalchemy import UUID
+from uuid import UUID
 
 # Enums
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTypeEnum
@@ -15,13 +15,13 @@ from app.modules.billing.schema.mixins.invoice_mixin import (
     InvoiceInfoMixin,
     Invoice,
 )
-from app.modules.billing.schema.mixins.invoice_item_mixin import InvoiceItemCreateSchema
+from app.modules.billing.schema.mixins.invoice_item_mixin import InvoiceItemBase, InvoiceItemResponse 
 
 # Models
 from app.modules.billing.models.invoice import Invoice as InvoiceModel
 
 class InvoiceCreateSchema(InvoiceBase):
-    invoice_items: Optional[List[InvoiceItemCreateSchema]] = []
+    invoice_items: Optional[List[InvoiceItemBase]] = []
 
     # Faker attributes
     _issued_by = str(BaseFaker.uuid4())

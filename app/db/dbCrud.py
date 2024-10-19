@@ -96,7 +96,7 @@ class BaseMixin:
             valid_fields = self.get_model_fields()
             print("VALID FIELDS ARE:", valid_fields)
 
-            return {k: v for k, v in obj_in.items() if k in valid_fields}
+            return {k: v for k, v in obj_in.items() if k in valid_fields and v is not None}
         except Exception as e:
             print("Error is", e)
             raise Exception(e)
@@ -311,7 +311,6 @@ class CreateMixin(BaseMixin):
             if self.detail_mappings:
                 print(f"\tin self.detail_mappings {self.detail_mappings}\n")
                 await self.create_or_update_relationships(db_session, db_obj, obj_data)
-            print("HERE1")
 
             await db_session.flush()
             return await self.commit_and_refresh(db_session=db_session, obj=db_obj)
@@ -494,7 +493,7 @@ class UpdateMixin(BaseMixin):
     ) -> DBModelType:
         try:
             obj_in_fields = self.filter_input_fields(obj_in)
-
+            print(f"Object fields: {obj_in_fields}\n\n Object in fields: {obj_in}")
              # Ensure obj_in_fields is not None before iterating
             if obj_in_fields is None:
                 raise ValueError("Input fields cannot be None")

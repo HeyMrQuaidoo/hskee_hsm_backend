@@ -27,7 +27,7 @@ class ContractRouter(BaseCRUDRouter):
         self.dao: ContractDAO = ContractDAO(excludes=[])
         ContractSchema["create_schema"] = ContractCreateSchema
         ContractSchema["update_schema"] = ContractUpdateSchema
-        ContractSchema["response_schema"] = ContractResponse
+        # ContractSchema["response_schema"] = ContractResponse
 
         super().__init__(dao=self.dao, schemas=ContractSchema, prefix=prefix, tags=tags)
         self.register_routes()
