@@ -72,16 +72,6 @@ class RelationshipConfigRegistry:
                     item_params_attr,
                 ) = self._generate_entity_item_params(model_class, entity_rel_name)
 
-            # inspect relationship model and set parent
-            # insp_rel = inspect(rel)
-            # collection_class = getattr(insp_rel, "collection_class")
-
-            # if collection_class and collection_class.__name__ == "BaseModelCollection":
-            #     print(f"collection_class {collection_class.__name__}")
-            #     print(f"{insp_rel}")
-            #     collection_class.set_parent(model_class, parent=model_class)
-            #     print(f"after setting parent")
-
             config[name] = {
                 "association_class": entity_rel_name,
                 "entity_param_key": name,
@@ -159,16 +149,13 @@ class RelationshipConfigRegistry:
         if field_name == "entity_type" and "entity_id" in entity_rel_name.__dict__:
             enum_class = field_obj.property.columns[0].type.enums
 
-            # print(
-            #     f"\nModel: {model_class} \n__name__:{model_class.__name__.lower()} \n__tablename__: {model_class.__tablename__.lower()} \nenum_class{enum_class}"
-            # )
             if (
                 model_class.__tablename__.lower() in enum_class
                 or model_class.__name__.lower() in enum_class
             ):
-                entity_params_attr[
-                    "entity_id"
-                ] = model_class.__table__.primary_key.columns[0].name
+                entity_params_attr["entity_id"] = (
+                    model_class.__table__.primary_key.columns[0].name
+                )
                 entity_params_attr["entity_type"] = (
                     model_class.__tablename__.lower()
                     if model_class.__tablename__.lower() in enum_class

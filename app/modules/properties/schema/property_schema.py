@@ -1,9 +1,11 @@
 from datetime import date
 from pydantic import ConfigDict
-from typing import Any, Optional, List, Union
+from typing import Any, Any, Optional, List, Union, Union
 
 # schema
 from app.modules.common.schema.base_schema import BaseFaker
+from app.modules.address.schema.address_mixin import AddressMixin
+from app.modules.resources.schema.mixins.amenities_mixin import Amenity
 from app.modules.address.schema.address_mixin import AddressMixin
 from app.modules.resources.schema.mixins.amenities_mixin import Amenity
 from app.modules.properties.schema.mixins.property_mixin import (
