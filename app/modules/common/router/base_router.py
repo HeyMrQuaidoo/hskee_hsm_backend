@@ -117,7 +117,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
         ) -> DAOResponse:
             try:
                 created_item = await self.dao.create(db_session=db_session, obj_in=item)
-
+                print("HERE2")
                 # determine how to call model_validate
                 method = getattr(self.create_schema, "model_validate")
                 signature = inspect.signature(method)
@@ -155,6 +155,8 @@ class BaseCRUDRouter(Generic[DBModelType]):
                 if not db_item:
                     raise HTTPException(status_code=404, detail="Item not found")
 
+                print(f"db_item: {db_item}")
+                print(f"item: {item}")
                 # Perform the update operation
                 updated_item = await self.dao.update(
                     db_session=db_session, db_obj=db_item, obj_in=item

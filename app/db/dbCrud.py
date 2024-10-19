@@ -94,9 +94,11 @@ class BaseMixin:
                 raise ValueError("Input must be a dictionary or a BaseModel instance.")
 
             valid_fields = self.get_model_fields()
+            print("VALID FIELDS ARE:", valid_fields)
 
             return {k: v for k, v in obj_in.items() if k in valid_fields}
         except Exception as e:
+            print("Error is", e)
             raise Exception(e)
 
     def validate_primary_key(
@@ -113,6 +115,7 @@ class BaseMixin:
         self, db_session: AsyncSession, obj: DBModelType
     ) -> DBModelType:
         try:
+            print("HERE3")
             await db_session.commit()
             await db_session.refresh(obj)
             return obj
@@ -169,8 +172,8 @@ class BaseMixin:
     async def create_or_update_relationships(
         self,
         db_session: AsyncSession,
-        db_obj: Union[DBModelType | BaseModel],
-        obj_data: Union[Dict[str, Any] | PydanticBaseModel],
+        db_obj: Union[DBModelType, BaseModel],
+        obj_data: Union[Dict[str, Any], PydanticBaseModel],
     ):
         try:
             for mapped_obj_key, mapped_obj_dao in self.detail_mappings.items():
@@ -180,12 +183,26 @@ class BaseMixin:
                 detail_obj_list = obj_data.get(mapped_obj_key, [])
                 print(f"\tdetail_obj_list: {detail_obj_list}")
 
+                # Safeguard against None values in the obj_data
+                if detail_obj_list is None:
+                    continue
+
                 # Find entity parent params
                 config = registry.get_config()
+                if not config:
+                    continue  # skip if config is None
+
                 parent_obj = db_obj.model_dump()
-                entity_child_attrs = config.get(db_obj.__tablename__.lower()).get(
-                    mapped_obj_key.lower()
+                if not parent_obj:
+                    continue  # skip if parent_obj is None
+
+                entity_child_attrs = config.get(db_obj.__tablename__.lower(), {}).get(
+                    mapped_obj_key.lower(), {}
                 )
+
+                if not entity_child_attrs:
+                    continue  # skip if entity_child_attrs is None or empty
+
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
 
                 # Call the helper method to update the None values
@@ -204,6 +221,9 @@ class BaseMixin:
                 new_items = []
 
                 for detail_obj in detail_obj_list:
+                    if detail_obj is None:
+                        continue  # skip if detail_obj is None
+
                     mapped_obj_created_item = await mapped_obj_dao.create_or_update(
                         db_session=db_session, obj_in=detail_obj
                     )
@@ -213,20 +233,18 @@ class BaseMixin:
                     )
 
                     if isinstance(mapped_obj_created_item, BaseModel):
-                        # get the configuration dictionary from registry
-                        entity_config = config.get(db_obj.__tablename__.lower())
+                        # Get the configuration dictionary from registry
+                        entity_config = config.get(db_obj.__tablename__.lower(), {})
 
                         if not entity_config:
-                            entity_config = config.get(self.model.__name__.lower())
+                            entity_config = config.get(self.model.__name__.lower(), {})
 
-                        # get keys for relationship fields
-                        entity_param_keys: Dict[str, Any] = (
-                            entity_config.get(mapped_obj_key.lower())
-                            .get("item_params_attr")
-                            .keys()
-                        )
+                        # Get keys for relationship fields
+                        entity_param_keys = entity_config.get(
+                            mapped_obj_key.lower(), {}
+                        ).get("item_params_attr", {}).keys()
 
-                        # filter keys based on what is passed in the detail object
+                        # Filter keys based on what is passed in the detail object
                         if entity_param_keys:
                             filtered_params = {
                                 key: detail_obj[key]
@@ -234,14 +252,16 @@ class BaseMixin:
                                 if key in detail_obj and detail_obj[key] is not None
                             }
 
-                            mapped_obj_created_item.set_entity_params(
-                                {mapped_obj_key: filtered_params}
-                            )
+                            if filtered_params:
+                                mapped_obj_created_item.set_entity_params(
+                                    {mapped_obj_key: filtered_params}
+                                )
+
                     await db_session.flush()
                     await db_session.refresh(mapped_obj_created_item)
                     new_items.append(mapped_obj_created_item)
 
-                # now batch add the items to the collection
+                # Now batch add the items to the collection
                 if model_attr is not None and isinstance(model_attr, list):
                     if isinstance(model_attr, BaseModelCollection):
                         model_attr = (
@@ -264,12 +284,10 @@ class BaseMixin:
 
                 await db_session.flush()
                 await db_session.refresh(mapped_obj_created_item)
-                db_obj = await self.commit_and_refresh(
-                    db_session=db_session, obj=db_obj
-                )
-        except Exception as e:
-            raise Exception(str(e))
+                db_obj = await self.commit_and_refresh(db_session=db_session, obj=db_obj)
 
+        except Exception as e:
+            raise Exception(f"Error in create_or_update_relationships: {str(e)}")
 
 class CreateMixin(BaseMixin):
     async def create(
@@ -293,6 +311,7 @@ class CreateMixin(BaseMixin):
             if self.detail_mappings:
                 print(f"\tin self.detail_mappings {self.detail_mappings}\n")
                 await self.create_or_update_relationships(db_session, db_obj, obj_data)
+            print("HERE1")
 
             await db_session.flush()
             return await self.commit_and_refresh(db_session=db_session, obj=db_obj)
@@ -475,6 +494,12 @@ class UpdateMixin(BaseMixin):
     ) -> DBModelType:
         try:
             obj_in_fields = self.filter_input_fields(obj_in)
+
+             # Ensure obj_in_fields is not None before iterating
+            if obj_in_fields is None:
+                raise ValueError("Input fields cannot be None")
+            
+            print(f"Fields: {obj_in_fields}")
 
             for field, value in obj_in_fields.items():
                 if hasattr(db_obj, field):

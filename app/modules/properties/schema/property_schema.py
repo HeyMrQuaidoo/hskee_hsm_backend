@@ -1,45 +1,75 @@
-from datetime import date
-from pydantic import ConfigDict
-from typing import Optional, List
+# app/modules/properties/schema/property_schema.py
 
-# schema
+from datetime import date
+from typing import Optional, List
+from uuid import UUID
+from pydantic import ConfigDict
+
+# Enums
+from app.modules.properties.enums.property_enums import PropertyType, PropertyStatus
+from app.modules.resources.enums.resource_enums import MediaType
+from app.modules.address.enums.address_enums import AddressTypeEnum as AddressType
+
+# Base Faker and Base Schema
 from app.modules.common.schema.base_schema import BaseFaker
-from app.modules.address.schema.address_mixin import AddressMixin, AddressBase
+
+# Mixins and Base Classes
 from app.modules.properties.schema.mixins.property_mixin import (
-    PropertyInfoMixin,
     PropertyBase,
-    PropertyType,
-    PropertyStatus,
+    PropertyInfoMixin,
     PropertyUnitBase,
     PropertyUnit,
+    MediaBase,
+    AddressBase,
+    AmenityInfo,
+    UtilityInfo,
 )
 
-# models
+# Models
 from app.modules.properties.models.property import Property as PropertyModel
 
+class PropertyResponse(PropertyBase):
+    property_id: UUID
+    media: Optional[List[MediaBase]] = None
+    units: Optional[List[PropertyUnit]] = None
+    amenities: Optional[List[AmenityInfo]] = None
+    address: Optional[List[AddressBase]] = None
+    utilities: Optional[List[UtilityInfo]] = None
+    is_contract_active: bool
 
-class PropertyResponse(PropertyBase, PropertyInfoMixin):
+    model_config = ConfigDict(
+        from_attributes=True,
+        arbitrary_types_allowed=True,
+        use_enum_values=True,
+    )
+
     @classmethod
     def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property)
+        property_info = PropertyInfoMixin.get_property_info(property)
+        return cls(**property_info.__dict__)
 
+class PropertyCreateSchema(PropertyBase):
+    media: Optional[List[MediaBase]] = None
+    units: Optional[List[PropertyUnitBase]] = None
+    amenities: Optional[List[AmenityInfo]] = None
+    utilities: Optional[List[UtilityInfo]] = None
+    address: Optional[List[AddressBase]] = None
 
-class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
-    # Faker attrributes
+    # Faker attributes
     _property_type = BaseFaker.random_choices(
-        ["residential", "commercial", "industrial"], length=1
+        [e.value for e in PropertyType], length=1
     )
     _property_status = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
+        [e.value for e in PropertyStatus], length=1
     )
     _property_unit_status = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
+        [e.value for e in PropertyStatus], length=1
     )
     _amount = round(BaseFaker.random_number(digits=5), 2)
     _security_deposit = round(BaseFaker.random_number(digits=4), 2)
     _commission = round(BaseFaker.random_number(digits=3), 2)
     _floor_space = BaseFaker.random_number(digits=3)
-    _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
+    _address_type = BaseFaker.random_choices([e.value for e in AddressType], length=1)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -96,68 +126,51 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                     {
                         "amenity_name": BaseFaker.word(),
                         "amenity_short_name": BaseFaker.word(),
-                        "amenity_description": BaseFaker.sentence(),
+                        "description": BaseFaker.sentence(),
                     },
+                ],
+                "media": [
+                    {
+                        "media_name": BaseFaker.word(),
+                        "media_type": BaseFaker.random_element(
+                            [e.value for e in MediaType]
+                        ),
+                        "content_url": BaseFaker.url(),
+                        "is_thumbnail": BaseFaker.boolean(),
+                        "caption": BaseFaker.sentence(),
+                        "description": BaseFaker.text(max_nb_chars=200),
+                    }
                 ],
             }
         },
     )
 
-    @classmethod
-    def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property)
+class PropertyUpdateSchema(PropertyBase):
+    name: Optional[str] = None
+    property_type: Optional[PropertyType] = None
+    amount: Optional[float] = None
+    property_status: Optional[PropertyStatus] = None
+    media: Optional[List[MediaBase]] = None
+    units: Optional[List[PropertyUnitBase]] = None
+    amenities: Optional[List[AmenityInfo]] = None
+    utilities: Optional[List[UtilityInfo]] = None
+    address: Optional[List[AddressBase]] = None
 
-
-class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
-    name: Optional[str]
-    property_type: Optional[PropertyType]
-    amount: Optional[float]
-    security_deposit: Optional[float] = None
-    commission: Optional[float] = None
-    floor_space: Optional[float] = None
-    num_units: Optional[int] = None
-    num_bathrooms: Optional[int] = None
-    num_garages: Optional[int] = None
-    has_balconies: Optional[bool] = False
-    has_parking_space: Optional[bool] = False
-    pets_allowed: bool = False
-    description: Optional[str] = None
-    property_status: PropertyStatus
-    address: Optional[List[AddressBase]] = []
-    units: Optional[List[PropertyUnit] | List[PropertyUnitBase]] = []
-    media: Optional[List[dict]] = None
-    amenities: Optional[List[dict]] = None
-
-    # Faker attrributes
+    # Faker attributes
     _property_type = BaseFaker.random_choices(
-        ["residential", "commercial", "industrial"], length=1
+        [e.value for e in PropertyType], length=1
     )
     _property_status = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
+        [e.value for e in PropertyStatus], length=1
     )
     _property_unit_status = BaseFaker.random_choices(
-        ["sold", "rent", "lease", "bought", "available", "unavailable"], length=1
+        [e.value for e in PropertyStatus], length=1
     )
     _amount = round(BaseFaker.random_number(digits=5), 2)
     _security_deposit = round(BaseFaker.random_number(digits=4), 2)
     _commission = round(BaseFaker.random_number(digits=3), 2)
     _floor_space = BaseFaker.random_number(digits=3)
-    _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
-
-    # media faker attributes
-    _media_name = BaseFaker.word()
-    _media_type = BaseFaker.random_choices(
-        ["image", "video", "audio", "document"], length=1
-    )
-    _content_url = BaseFaker.url()
-    _is_thumbnail = BaseFaker.boolean()
-    _caption = BaseFaker.sentence()
-    _description = BaseFaker.text(max_nb_chars=200)
-
-    # amenitites faker attributes
-    _amenity_name = BaseFaker.word()
-    _amenity_short_name = BaseFaker.word()
-    _description = BaseFaker.sentence()
+    _address_type = BaseFaker.random_choices([e.value for e in AddressType], length=1)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -211,27 +224,26 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
                         "property_unit_assoc_id": "06ff99dd-d3a7-454d-98ff-39dd8894f92f",
                     },
                 ],
-                "media": [
-                    {
-                        "media_name": _media_name,
-                        "media_type": _media_type[0],
-                        "content_url": _content_url,
-                        "is_thumbnail": _is_thumbnail,
-                        "caption": _caption,
-                        "description": _description,
-                    }
-                ],
                 "amenities": [
                     {
-                        "amenity_name": _amenity_name,
-                        "amenity_short_name": _amenity_short_name,
-                        "description": _description,
+                        "amenity_name": BaseFaker.word(),
+                        "amenity_short_name": BaseFaker.word(),
+                        "description": BaseFaker.sentence(),
+                    },
+                ],
+                "media": [
+                    {
+                        "media_name": BaseFaker.word(),
+                        "media_type": BaseFaker.random_element(
+                            [e.value for e in MediaType]
+                        ),
+                        "content_url": BaseFaker.url(),
+                        "is_thumbnail": BaseFaker.boolean(),
+                        "caption": BaseFaker.sentence(),
+                        "description": BaseFaker.text(max_nb_chars=200),
                     }
                 ],
             }
         },
     )
 
-    @classmethod
-    def model_validate(cls, property: PropertyModel):
-        return cls.get_property_info(property).model_dump()
