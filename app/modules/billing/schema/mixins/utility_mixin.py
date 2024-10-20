@@ -1,5 +1,7 @@
 from uuid import UUID
 from typing import List, Optional
+from decimal import Decimal
+from datetime import datetime
 
 
 # schemas
@@ -15,8 +17,15 @@ from app.modules.associations.models.entity_billable import (
 
 
 class UtilityBase(BaseSchema):
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
+    billable_type: Optional[str] = None
+    billable_amount: Optional[int] = None 
+    apply_to_units: Optional[bool] = False
+    payment_type_id: Optional[int] = None,
+    start_period: Optional[datetime] = None
+    end_period: Optional[datetime] = None
+    billable_id: Optional[UUID] = None
 
 
 class Utility(BaseSchema):

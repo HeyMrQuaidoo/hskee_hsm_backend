@@ -1,8 +1,11 @@
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
+
+# Enums
+from app.modules.billing.enums.billing_enums import TransactionTypeEnum
 
 
 class TransactionType(Base):
@@ -14,8 +17,8 @@ class TransactionType(Base):
         unique=True,
         index=True,
     )
-    transaction_type_name: Mapped[str] = mapped_column(
-        String(128),
+    transaction_type_name: Mapped[TransactionTypeEnum] = mapped_column(
+        Enum(TransactionTypeEnum),
         unique=True,
         index=True,
     )

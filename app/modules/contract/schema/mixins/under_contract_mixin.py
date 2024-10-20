@@ -14,7 +14,7 @@ from app.modules.properties.schema.mixins.property_mixin import PropertyBase
 class UnderContractBase(BaseSchema):
     property_unit_assoc_id: UUID
     contract_status: Optional[ContractStatusEnum]
-    contract_number: str
+    contract_number: Optional[str] = None
     client_id: Optional[UUID] = None
     employee_id: Optional[UUID] = None
     start_date: datetime

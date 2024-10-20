@@ -115,7 +115,6 @@ class BaseMixin:
         self, db_session: AsyncSession, obj: DBModelType
     ) -> DBModelType:
         try:
-            print("HERE3")
             await db_session.commit()
             await db_session.refresh(obj)
             return obj
@@ -185,40 +184,49 @@ class BaseMixin:
 
                 # Safeguard against None values in the obj_data
                 if detail_obj_list is None:
+                    print("HERE0")
                     continue
-
+                    
+                print("HERE-1")
                 # Find entity parent params
                 config = registry.get_config()
                 if not config:
+                    print(f"HERE-2 {config}")
                     continue  # skip if config is None
-
+                print("HERE-3")
                 parent_obj = db_obj.model_dump()
                 if not parent_obj:
                     continue  # skip if parent_obj is None
-
+                print("HERE-4")
                 entity_child_attrs = config.get(db_obj.__tablename__.lower(), {}).get(
                     mapped_obj_key.lower(), {}
                 )
-
+                print("HRE1")
                 if not entity_child_attrs:
+                    print("HRE2")
                     continue  # skip if entity_child_attrs is None or empty
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
-
+                print("HRE3")
+            
                 # Call the helper method to update the None values
                 self.update_none_values_with_parent(
                     detail_obj_list, entity_parent_params_attr, parent_obj
                 )
+                print("HRE4")
 
                 if not detail_obj_list:
+                    print("HRE5")
                     continue
-
+                print("HRE6")
                 mapped_obj_dao: DBOperations = mapped_obj_dao
                 if not isinstance(detail_obj_list, list):
                     detail_obj_list = [detail_obj_list]
 
                 model_attr = getattr(db_obj, mapped_obj_key, None)
                 new_items = []
+
+                print(f"Detail Object is: {detail_obj_list}")
 
                 for detail_obj in detail_obj_list:
                     if detail_obj is None:

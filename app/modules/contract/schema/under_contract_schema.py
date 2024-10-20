@@ -22,7 +22,7 @@ from app.modules.contract.models.under_contract import UnderContract as UnderCon
 class UnderContractCreateSchema(UnderContractBase):
     property_unit_assoc_id: UUID
     contract_status: ContractStatusEnum
-    contract_number: str
+    contract_number: Optional[str] = None
     client_id: Optional[UUID] = None
     employee_id: Optional[UUID] = None
     start_date: datetime
@@ -88,7 +88,7 @@ class UnderContractUpdateSchema(UnderContractBase):
 class UnderContractResponse(UnderContractBase):
     under_contract_id: UUID
     properties: Optional[PropertyBase] = None
-    contract: Optional['Contract'] = None  # Use the appropriate Contract schema
+    contract: Optional['ContractResponse'] = None  # Use the appropriate Contract schema
     client_representative: Optional[UserBase] = None
     employee_representative: Optional[UserBase] = None
 

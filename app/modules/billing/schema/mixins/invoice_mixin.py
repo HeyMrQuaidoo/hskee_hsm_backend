@@ -21,10 +21,11 @@ class InvoiceBase(BaseSchema):
     issued_to: UUID
     invoice_details: str
     due_date: datetime
+    invoice_amount: float
     invoice_type: InvoiceTypeEnum
     status: PaymentStatusEnum
 
-class Invoice(BaseSchema):
+class Invoice(InvoiceBase):
     invoice_id: UUID
     invoice_number: str
 

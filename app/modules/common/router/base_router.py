@@ -117,7 +117,6 @@ class BaseCRUDRouter(Generic[DBModelType]):
         ) -> DAOResponse:
             try:
                 created_item = await self.dao.create(db_session=db_session, obj_in=item)
-                print("HERE2")
                 # determine how to call model_validate
                 method = getattr(self.create_schema, "model_validate")
                 signature = inspect.signature(method)

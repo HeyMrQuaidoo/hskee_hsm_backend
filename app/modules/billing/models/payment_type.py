@@ -1,8 +1,9 @@
 from typing import List
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # models
+from app.modules.billing.enums.billing_enums import PaymentTypeEnum
 from app.modules.common.models.model_base import BaseModel as Base
 
 
@@ -12,7 +13,7 @@ class PaymentType(Base):
     payment_type_id: Mapped[int] = mapped_column(
         Integer, primary_key=True, unique=True, index=True
     )
-    payment_type_name: Mapped[str] = mapped_column(String(80), unique=True)
+    payment_type_name: Mapped[PaymentTypeEnum] = mapped_column(Enum(PaymentTypeEnum))
     payment_type_description: Mapped[str] = mapped_column(Text)
     payment_partitions: Mapped[int] = mapped_column(Integer)
 

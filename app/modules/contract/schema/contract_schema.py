@@ -6,6 +6,7 @@ from uuid import UUID
 
 # Enums
 from app.modules.billing.enums.billing_enums import InvoiceTypeEnum, PaymentStatusEnum
+from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 from app.modules.contract.enums.contract_enums import ContractStatusEnum
 
 # Schema
@@ -14,11 +15,12 @@ from app.modules.contract.schema.mixins.contract_mixin import (
     ContractBase,
     ContractInfoMixin,
 )
-from app.modules.billing.schema.mixins.utility_mixin import UtilitiesMixin
+from app.modules.billing.schema.mixins.utility_mixin import UtilitiesMixin, UtilityBase
 
 # Relationship Schemas
 from app.modules.billing.schema.utility_schema import UtilityCreateSchema, UtilityResponse
 from app.modules.billing.schema.invoice_schema import InvoiceCreateSchema, InvoiceResponse
+from app.modules.contract.schema.mixins.under_contract_mixin import UnderContractBase
 from app.modules.contract.schema.under_contract_schema import UnderContractCreateSchema, UnderContractResponse
 from app.modules.resources.schema.media_schema import MediaCreateSchema, MediaResponse
 from app.modules.billing.schema.utility_schema import UtilityUpdateSchema
@@ -28,6 +30,7 @@ from app.modules.resources.schema.media_schema import MediaUpdateSchema
 
 # Models
 from app.modules.contract.models.contract import Contract as ContractModel
+from app.modules.resources.schema.mixins.media_mixin import MediaBase
 
 
 class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
@@ -41,14 +44,14 @@ class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
     date_signed: datetime
     start_date: datetime
     end_date: datetime
-    utilities: Optional[List[UtilityCreateSchema]] = None
-    invoices: Optional[List[InvoiceCreateSchema]] = None
-    under_contract: Optional[List[UnderContractCreateSchema]] = None
-    media: Optional[List[MediaCreateSchema]] = None
+    utilities: Optional[List[UtilityBase]] = None
+    invoices: Optional[List[InvoiceBase]] = None
+    under_contract: Optional[List[UnderContractBase]] = None
+    media: Optional[List[MediaBase]] = None
 
     # Faker attributes
-    _contract_type_id = BaseFaker.random_int(min=1, max=5)
-    _payment_type_id = BaseFaker.random_int(min=1, max=5)
+    _contract_type_id = 1
+    _payment_type_id = 5
     _contract_status = BaseFaker.random_element([e.value for e in ContractStatusEnum])
     _contract_details = BaseFaker.text(max_nb_chars=200)
     _num_invoices = BaseFaker.random_int(min=1, max=10)
@@ -56,12 +59,13 @@ class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
     _fee_percentage = round(BaseFaker.random_number(digits=2), 2)
     _fee_amount = round(BaseFaker.random_number(digits=4), 2)
     _date_signed = BaseFaker.date_this_year()
-    _start_date = BaseFaker.date_this_year()
-    _end_date = BaseFaker.future_date()
+    _start_date = BaseFaker.future_datetime()
+    _end_date = BaseFaker.future_datetime()
 
     # Faker attributes for relationships
     _utility_name = BaseFaker.word()
     _invoice_number = BaseFaker.bothify(text='INV-#####')
+    _invoice_amount = round(BaseFaker.random_number(digits=2), 2)
     _media_name = BaseFaker.word()
     _media_type = BaseFaker.random_element(['image', 'video', 'document'])
     _invoice_type = BaseFaker.random_element([e.value for e in InvoiceTypeEnum])
@@ -85,17 +89,22 @@ class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
                 "utilities": [
                     {
                         "name": _utility_name,
-                        # "utility_type": BaseFaker.random_element(["electricity", "water", "gas"]),
                         "description": BaseFaker.text(max_nb_chars=100),
-                        # "utility_amount": round(BaseFaker.random_number(digits=4), 2),
+                        "billable_type": BaseFaker.random_element(["utilities", "maintenance_requests"]),
+                        "billable_amount": round(BaseFaker.random_number(digits=4), 2),
+                        "apply_to_units" : BaseFaker.boolean(),
+                        "payment_type_id": _payment_type_id,
+                        "start_period": _start_date.isoformat(),
+                        "end_period": _end_date.isoformat()
                     }
                 ],
                 "invoices": [
                     {
                         # "invoice_number": _invoice_number,
-                        "issued_by": str(BaseFaker.uuid4()),
-                        "issued_to": str(BaseFaker.uuid4()),
+                        "issued_by": "7b1596ef-44bf-43e0-98cf-a1336bc39b5c",
+                        "issued_to": "7b1596ef-44bf-43e0-98cf-a1336bc39b5c",
                         "invoice_details": BaseFaker.text(max_nb_chars=200),
+                        "invoice_amount": _invoice_amount,
                         "due_date": BaseFaker.future_datetime().isoformat(),
                        "invoice_type": _invoice_type,
                         "status": _status,
@@ -111,11 +120,11 @@ class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
                 ],
                 "under_contract": [
                     {
-                        "property_unit_assoc_id": str(BaseFaker.uuid4()),
+                        "property_unit_assoc_id": "0dc468ff-1d5e-44b9-9024-95c0d5b8084a",
                         "contract_status": _contract_status,
-                        "contract_number": f"CTR-{BaseFaker.bothify(text='#####')}",
-                        "client_id": str(BaseFaker.uuid4()),
-                        "employee_id": str(BaseFaker.uuid4()),
+                        # "contract_number": f"CTR-{BaseFaker.bothify(text='#####')}",
+                        "client_id": "7b1596ef-44bf-43e0-98cf-a1336bc39b5c",
+                        "employee_id": "7b1596ef-44bf-43e0-98cf-a1336bc39b5c",
                         "start_date": _start_date.isoformat(),
                         "end_date": _end_date.isoformat(),
                         "next_payment_due": BaseFaker.future_datetime().isoformat(),
@@ -151,10 +160,10 @@ class ContractCreateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
             date_signed=contract.date_signed,
             start_date=contract.start_date,
             end_date=contract.end_date,
-            utilities=cls.get_utilities_info(contract.utilities),
-            invoices=[invoice.to_dict() for invoice in contract.invoices],
-            under_contract=cls.get_contract_details(contract.under_contract),
-            media=[media.to_dict() for media in contract.media],
+            # utilities=cls.get_utilities_info(contract.utilities),
+            # invoices=[invoice.to_dict() for invoice in contract.invoices],
+            # under_contract=cls.get_contract_details(contract.under_contract),
+            # media=[media.to_dict() for media in contract.media],
         ).model_dump()
 
 
@@ -192,6 +201,7 @@ class ContractUpdateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
     # Faker attributes for relationships
     _utility_name = BaseFaker.word()
     _invoice_number = BaseFaker.bothify(text='INV-#####')
+    _invoice_amount = round(BaseFaker.random_number(digits=2), 2)
     _media_name = BaseFaker.word()
     _media_type = BaseFaker.random_element(['image', 'video', 'document'])
 
@@ -222,11 +232,12 @@ class ContractUpdateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
                     {
                         "invoice_id": str(BaseFaker.uuid4()),
                         # "invoice_number": _invoice_number,
+                        "invoice_amount": _invoice_amount,
                         "issued_by": str(BaseFaker.uuid4()),
                         "issued_to": str(BaseFaker.uuid4()),
                         "invoice_details": BaseFaker.text(max_nb_chars=200),
                         "due_date": BaseFaker.future_datetime().isoformat(),
-                        # "date_paid": BaseFaker.date_time_this_year().isoformat(),
+                        "date_paid": BaseFaker.future_datetime().isoformat(),
                         "invoice_type": BaseFaker.random_element(["standard", "credit", "debit"]),
                         "status": BaseFaker.random_element(["unpaid", "paid", "overdue"]),
                         "invoice_items": [
@@ -301,9 +312,9 @@ class ContractUpdateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
 class ContractResponse(ContractBase, ContractInfoMixin):
     contract_id: UUID
     contract_number: str
-    utilities: Optional[List[UtilityResponse]] = None
-    invoices: Optional[List[InvoiceResponse]] = None
-    under_contract: Optional[List[UnderContractResponse]] = None
+    utilities: Optional[List[UtilityBase]] = None
+    invoices: Optional[List[InvoiceBase]] = None
+    under_contract: Optional[List[UnderContractBase]] = None
     media: Optional[List[MediaResponse]] = None
 
     model_config = ConfigDict(

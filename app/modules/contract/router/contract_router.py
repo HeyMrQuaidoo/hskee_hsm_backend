@@ -14,7 +14,7 @@ from app.modules.common.schema.schemas import ContractSchema
 from app.modules.contract.schema.contract_schema import (
     ContractCreateSchema,
     ContractUpdateSchema,
-    ContractResponse,
+    # ContractResponse,
 )
 
 # Core
@@ -44,7 +44,7 @@ class ContractRouter(BaseCRUDRouter):
             db_session: AsyncSession = Depends(get_db),
         ):
             try:
-                await self.dao.upload_media_to_contract(
+                await self.dao.upload_contract_media(
                     db_session=db_session,
                     contract_id=str(contract_id),
                     files=files,

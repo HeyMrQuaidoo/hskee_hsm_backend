@@ -18,6 +18,7 @@ from sqlalchemy import (
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
+from app.modules.common.models.model_base_collection import BaseModelCollection
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.billing.models.payment_type import PaymentType
 
@@ -28,15 +29,15 @@ from app.modules.contract.enums.contract_enums import ContractStatusEnum
 class Contract(Base):
     __tablename__ = "contract"
 
-    contract_number: Mapped[str] = mapped_column(
-        String(128), unique=True, nullable=False, index=True, primary_key=True
-    )
     contract_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         unique=True,
         index=True,
         default=uuid.uuid4,
+    )
+    contract_number: Mapped[str] = mapped_column(
+        String(128), unique=True, nullable=False
     )
     contract_type_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("contract_type.contract_type_id")
@@ -88,6 +89,7 @@ class Contract(Base):
         foreign_keys="UnderContract.contract_number",
         cascade="all, delete-orphan",
         viewonly=True,
+        collection_class=BaseModelCollection,
     )
 
     # properties
@@ -109,6 +111,8 @@ class Contract(Base):
         lazy="selectin",
         viewonly=True,
         # overlaps="entity_billable,utilities",
+        collection_class=BaseModelCollection,
+
     )
 
     # billable
@@ -118,6 +122,7 @@ class Contract(Base):
         back_populates="contract",
         overlaps="entity_billables,property,utilities,",
         lazy="selectin",
+        collection_class=BaseModelCollection,
     )
 
     # Media (Documents)
@@ -200,3 +205,6 @@ def receive_after_insert(mapper, connection, target):
             .where(target.__table__.c.contract_id == target.contract_id)
             .values(contract_number=target.contract_number)
         )
+
+# Register model outside the class definition
+Base.setup_model_dynamic_listener("contract", Contract)

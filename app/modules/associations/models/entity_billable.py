@@ -118,7 +118,7 @@ class EntityBillable(Base):
             ),
             EntityTypeEnum.contract: (
                 "contract",
-                "contract_number",
+                "contract_id",
             ),
         }
 

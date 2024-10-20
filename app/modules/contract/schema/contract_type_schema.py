@@ -2,16 +2,18 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from decimal import Decimal
 from app.modules.contract.models.contract_type import ContractType as ContractTypeModel
-from app.modules.common.schema.base_schema import BaseFaker  # Importing BaseFaker
+from app.modules.contract.enums.contract_enums import ContractTypeEnum  # Importing new enum
+from app.modules.common.schema.base_schema import BaseFaker
+
 
 class ContractTypeBase(BaseModel):
-    contract_type_name: str
+    contract_type_name: ContractTypeEnum
     fee_percentage: Decimal
 
 
 class ContractTypeCreateSchema(ContractTypeBase):
     # Adding BaseFaker to auto-generate example values
-    _contract_type_name = BaseFaker.random_element(["Annual", "Monthly", "Weekly"])
+    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
     _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
 
     model_config = ConfigDict(
@@ -22,21 +24,21 @@ class ContractTypeCreateSchema(ContractTypeBase):
             }
         }
     )
+
     @classmethod
     def model_validate(cls, contract_type: ContractTypeModel):
         return cls(
-            contract_type_id=contract_type.contract_type_id,
             contract_type_name=contract_type.contract_type_name,
             fee_percentage=contract_type.fee_percentage,
         ).model_dump()
 
 
 class ContractTypeUpdateSchema(ContractTypeBase):
-    contract_type_name: Optional[str] = None
+    contract_type_name: Optional[ContractTypeEnum] = None
     fee_percentage: Optional[Decimal] = None
 
     # Adding BaseFaker to auto-generate example values
-    _contract_type_name = BaseFaker.random_element(["Monthly", "Weekly", "One-time"])
+    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
     _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
 
     model_config = ConfigDict(
@@ -47,10 +49,10 @@ class ContractTypeUpdateSchema(ContractTypeBase):
             }
         }
     )
+
     @classmethod
     def model_validate(cls, contract_type: ContractTypeModel):
         return cls(
-            contract_type_id=contract_type.contract_type_id,
             contract_type_name=contract_type.contract_type_name,
             fee_percentage=contract_type.fee_percentage,
         ).model_dump()
@@ -61,7 +63,7 @@ class ContractTypeResponse(ContractTypeBase):
 
     # Adding BaseFaker to auto-generate example values
     _contract_type_id = BaseFaker.random_int(min=1, max=100)
-    _contract_type_name = BaseFaker.random_element(["Monthly", "Weekly", "One-time"])
+    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
     _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
 
     model_config = ConfigDict(
