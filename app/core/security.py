@@ -39,7 +39,7 @@ class SecureAccessTokens:
         ###
         user = subject
         payload = user.to_dict(
-        exclude={"password_hash", "updated_at", "created_at", "gender", "user_id"}
+            exclude={"password_hash", "updated_at", "created_at", "gender", "user_id"}
         )
         payload = {key: payload[key] for key in payload if key in UserBase.model_fields}
         payload.update({"expires": time.time() + 1800})
@@ -48,7 +48,7 @@ class SecureAccessTokens:
         user_permissions = [p.name for r in user.roles for p in r.permissions]
         payload.update({"scope": ",".join(user_permissions)})
         ###
-        
+
         if expires_delta:
             expire = datetime.now() + expires_delta
         else:
