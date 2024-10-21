@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Integer, String, Text, Enum
+from sqlalchemy import Integer, Text, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # models

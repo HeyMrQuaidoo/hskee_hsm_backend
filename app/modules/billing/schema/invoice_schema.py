@@ -1,58 +1,35 @@
-from datetime import datetime
-from typing import Optional, List
-from pydantic import ConfigDict
 from uuid import UUID
+from datetime import datetime
+from pydantic import ConfigDict
+from typing import Optional, List
 
-# Enums
+# enums
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTypeEnum
 
-# Base Faker
-from app.modules.common.schema.base_schema import BaseFaker
-
-# Mixins
+# schema
+from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 from app.modules.billing.schema.mixins.invoice_mixin import (
     InvoiceBase,
     InvoiceInfoMixin,
-    Invoice,
 )
-from app.modules.billing.schema.mixins.invoice_item_mixin import InvoiceItemBase, InvoiceItemResponse 
+from app.modules.billing.schema.mixins.invoice_item_mixin import (
+    InvoiceItem,
+    InvoiceItemBase,
+)
 
-# Models
+# models
 from app.modules.billing.models.invoice import Invoice as InvoiceModel
 
-class InvoiceCreateSchema(InvoiceBase):
+
+class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin):
     invoice_items: Optional[List[InvoiceItemBase]] = []
 
-    # Faker attributes
-    _issued_by = str(BaseFaker.uuid4())
-    _issued_to = str(BaseFaker.uuid4())
-    _invoice_details = BaseFaker.text(max_nb_chars=200)
-    _due_date = BaseFaker.future_datetime()
-    _invoice_type = BaseFaker.random_element([e.value for e in InvoiceTypeEnum])
-    _status = BaseFaker.random_element([e.value for e in PaymentStatusEnum])
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "issued_by": _issued_by,
-                "issued_to": _issued_to,
-                "invoice_details": _invoice_details,
-                "due_date": _due_date.isoformat(),
-                "invoice_type": _invoice_type,
-                "status": _status,
-                "invoice_items": [
-                    {
-                        "description": BaseFaker.sentence(),
-                        "quantity": BaseFaker.random_int(min=1, max=10),
-                        "unit_price": round(BaseFaker.random_number(digits=5), 2),
-                        "reference_id": str(BaseFaker.uuid4()),
-                    },
-                ],
-            }
-        },
+        json_schema_extra={"example": InvoiceInfoMixin._invoice_create_json},
     )
 
-class InvoiceUpdateSchema(InvoiceBase):
+
+class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin):
     issued_by: Optional[UUID] = None
     issued_to: Optional[UUID] = None
     invoice_details: Optional[str] = None
@@ -61,64 +38,39 @@ class InvoiceUpdateSchema(InvoiceBase):
     invoice_type: Optional[InvoiceTypeEnum] = None
     status: Optional[PaymentStatusEnum] = None
 
-    # Faker attributes
-    _issued_by = str(BaseFaker.uuid4())
-    _issued_to = str(BaseFaker.uuid4())
-    _invoice_details = BaseFaker.text(max_nb_chars=200)
-    _due_date = BaseFaker.future_datetime()
-    _date_paid = BaseFaker.date_time_this_year()
-    _invoice_type = BaseFaker.random_element([e.value for e in InvoiceTypeEnum])
-    _status = BaseFaker.random_element([e.value for e in PaymentStatusEnum])
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "issued_by": _issued_by,
-                "issued_to": _issued_to,
-                "invoice_details": _invoice_details,
-                "due_date": _due_date.isoformat(),
-                "date_paid": _date_paid.isoformat(),
-                "invoice_type": _invoice_type,
-                "status": _status,
-            }
-        },
+        json_schema_extra={"example": InvoiceInfoMixin._invoice_update_json},
     )
 
-class InvoiceResponse(InvoiceBase, InvoiceInfoMixin):
+
+class InvoiceResponse(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
     invoice_id: UUID
     invoice_number: str
     invoice_amount: float
     date_paid: Optional[datetime] = None
-    invoice_items: Optional[List[InvoiceItemResponse]] = []
+    invoice_items: Optional[List[InvoiceItem]] = []
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "invoice_id": str(BaseFaker.uuid4()),
-                "invoice_number": f"INV{BaseFaker.random_number(digits=8)}",
-                "issued_by": str(BaseFaker.uuid4()),
-                "issued_to": str(BaseFaker.uuid4()),
-                "invoice_details": BaseFaker.text(max_nb_chars=200),
-                "due_date": BaseFaker.future_datetime().isoformat(),
-                "date_paid": BaseFaker.date_time_this_year().isoformat(),
-                "invoice_type": BaseFaker.random_element([e.value for e in InvoiceTypeEnum]),
-                "status": BaseFaker.random_element([e.value for e in PaymentStatusEnum]),
-                "invoice_amount": round(BaseFaker.random_number(digits=5), 2),
-                "invoice_items": [
-                    {
-                        "invoice_item_id": str(BaseFaker.uuid4()),
-                        "description": BaseFaker.sentence(),
-                        "quantity": BaseFaker.random_int(min=1, max=10),
-                        "unit_price": round(BaseFaker.random_number(digits=5), 2),
-                        "total_price": round(BaseFaker.random_number(digits=6), 2),
-                        "reference_id": str(BaseFaker.uuid4()),
-                    },
-                ],
-            }
-        },
+        json_schema_extra={"example": InvoiceInfoMixin._invoice_create_json},
     )
 
     @classmethod
     def model_validate(cls, invoice: InvoiceModel):
-        invoice_info = cls.get_invoice_info(invoice)
-        return cls(**invoice_info)
+        return cls(
+            invoice_id=invoice.invoice_id,
+            invoice_number=invoice.invoice_number,
+            invoice_amount=invoice.invoice_amount,
+            invoice_details=invoice.invoice_details,
+            due_date=invoice.due_date,
+            date_paid=invoice.date_paid,
+            invoice_type=invoice.invoice_type,
+            status=invoice.status,
+            transaction_number=invoice.transaction_number,
+            issued_by=cls.get_user_info(invoice.issued_by_user),
+            issued_to=cls.get_user_info(invoice.issued_to_user),
+            invoice_items=[
+                InvoiceItemBase.model_validate(item) for item in invoice.invoice_items
+            ],
+            # transaction=TransactionBase.model_validate(invoice.transaction),
+            # contracts=[ContractBase.model_validate(contract) for contract in invoice.contracts]
+        ).model_dump()

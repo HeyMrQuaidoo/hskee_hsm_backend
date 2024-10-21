@@ -78,7 +78,6 @@ class Contract(Base):
         secondary="contract_invoice",
         back_populates="contracts",
         lazy="selectin",
-        viewonly=True,
     )
 
     # contract
@@ -112,7 +111,6 @@ class Contract(Base):
         viewonly=True,
         # overlaps="entity_billable,utilities",
         collection_class=BaseModelCollection,
-
     )
 
     # billable
@@ -140,6 +138,7 @@ class Contract(Base):
         secondaryjoin="EntityMedia.media_id == Media.media_id",
         viewonly=True,
         lazy="selectin",
+        collection_class=BaseModelCollection,
     )
 
     # contract_type
@@ -205,6 +204,7 @@ def receive_after_insert(mapper, connection, target):
             .where(target.__table__.c.contract_id == target.contract_id)
             .values(contract_number=target.contract_number)
         )
+
 
 # Register model outside the class definition
 Base.setup_model_dynamic_listener("contract", Contract)

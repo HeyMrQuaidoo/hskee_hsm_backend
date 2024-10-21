@@ -5,70 +5,29 @@ from pydantic import ConfigDict, constr
 
 # schema mixin
 from app.modules.common.schema.base_schema import BaseSchema
-from app.modules.resources.schema.mixins.media_mixin import MediaBase
-
-# base Faker
-from app.modules.common.schema.base_schema import BaseFaker
+from app.modules.resources.schema.mixins.media_mixin import MediaBase, MediaInfoMixin
 
 # models
 from app.modules.resources.models.media import Media as MediaModel
 
 
-class MediaCreateSchema(MediaBase):
-    # Faker attributes
-    _media_name = BaseFaker.word()
-    _media_type = BaseFaker.random_choices(
-        ["image", "video", "audio", "document"], length=1
-    )
-    _content_url = BaseFaker.url()
-    _is_thumbnail = BaseFaker.boolean()
-    _caption = BaseFaker.sentence()
-    _description = BaseFaker.text(max_nb_chars=200)
-
+class MediaCreateSchema(MediaBase, MediaInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
-        json_schema_extra={
-            "example": {
-                "media_name": _media_name,
-                "media_type": _media_type[0],
-                "content_url": _content_url,
-                "is_thumbnail": _is_thumbnail,
-                "caption": _caption,
-                "description": _description,
-            }
-        },
+        json_schema_extra={"example": MediaInfoMixin._media_create_json},
     )
 
 
 class MediaUpdateSchema(MediaBase):
-    # Faker attributes
-    _media_name = BaseFaker.word()
-    _media_type = BaseFaker.random_choices(
-        ["image", "video", "audio", "document"], length=1
-    )
-    _content_url = BaseFaker.url()
-    _is_thumbnail = BaseFaker.boolean()
-    _caption = BaseFaker.sentence()
-    _description = BaseFaker.text(max_nb_chars=200)
-
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
-        json_schema_extra={
-            "example": {
-                "media_name": _media_name,
-                "media_type": _media_type[0],
-                "content_url": _content_url,
-                "is_thumbnail": _is_thumbnail,
-                "caption": _caption,
-                "description": _description,
-            }
-        },
+        json_schema_extra={"example": MediaInfoMixin._media_update_json},
     )
 
 

@@ -1,11 +1,10 @@
 from uuid import UUID
-from typing import List, Optional
-from decimal import Decimal
 from datetime import datetime
+from typing import List, Optional
 
 
 # schemas
-from app.modules.common.schema.base_schema import BaseSchema
+from app.modules.common.schema.base_schema import BaseSchema, BaseFaker
 from app.modules.billing.schema.mixins.billable_mixin import EntityBillable
 
 # models
@@ -20,9 +19,9 @@ class UtilityBase(BaseSchema):
     name: Optional[str] = None
     description: Optional[str] = None
     billable_type: Optional[str] = None
-    billable_amount: Optional[int] = None 
+    billable_amount: Optional[int] = None
     apply_to_units: Optional[bool] = False
-    payment_type_id: Optional[int] = None,
+    payment_type_id: Optional[int] = (None,)
     start_period: Optional[datetime] = None
     end_period: Optional[datetime] = None
     billable_id: Optional[UUID] = None
@@ -42,6 +41,19 @@ class UtilityInfo(BaseSchema):
 
 
 class UtilitiesMixin:
+    _name = BaseFaker.word()
+    _description = BaseFaker.sentence()
+
+    _utility_create_json = {
+        "name": _name,
+        "description": _description,
+    }
+
+    _utility_update_json = {
+        "name": _name,
+        "description": _description,
+    }
+
     @classmethod
     def get_utilities_info(cls, utilities: List[EntityBillable]):
         """

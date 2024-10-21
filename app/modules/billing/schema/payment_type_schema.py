@@ -1,36 +1,22 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from pydantic import ConfigDict
 
-# Schema
-from app.modules.common.schema.base_schema import BaseFaker
-
-# Model
-from app.modules.billing.models.payment_type import PaymentType as PaymentTypeModel
-
-# Enums
+# enums
 from app.modules.billing.enums.billing_enums import PaymentTypeEnum
 
+# schemas
+from app.modules.billing.schema.mixins.payment_type_mixin import (
+    PaymentTypeBase,
+    PaymentTypeInfoMixin,
+)
 
-class PaymentTypeBase(BaseModel):
-    payment_type_name: PaymentTypeEnum  
-    payment_type_description: Optional[str]
-    payment_partitions: int
+# models
+from app.modules.billing.models.payment_type import PaymentType as PaymentTypeModel
 
 
-class PaymentTypeCreateSchema(PaymentTypeBase):
-    # Adding BaseFaker to auto-generate example values
-    _payment_type_name = BaseFaker.random_element([e.value for e in PaymentTypeEnum])
-    _payment_partitions = BaseFaker.random_int(min=1, max=12)
-    _payment_type_description = BaseFaker.sentence()
-
+class PaymentTypeCreateSchema(PaymentTypeBase, PaymentTypeInfoMixin):
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "payment_type_name": _payment_type_name,
-                "payment_type_description": _payment_type_description,
-                "payment_partitions": _payment_partitions,
-            }
-        }
+        json_schema_extra={"example": PaymentTypeInfoMixin._payment_create_json}
     )
 
     @classmethod
@@ -42,24 +28,13 @@ class PaymentTypeCreateSchema(PaymentTypeBase):
         ).model_dump()
 
 
-class PaymentTypeUpdateSchema(PaymentTypeBase):
-    payment_type_name: Optional[PaymentTypeEnum] = None  # Enum used here
-    payment_type_description: Optional[str] = None
+class PaymentTypeUpdateSchema(PaymentTypeBase, PaymentTypeInfoMixin):
     payment_partitions: Optional[int] = None
-
-    # Adding BaseFaker to auto-generate example values
-    _payment_type_name = BaseFaker.random_element([e.value for e in PaymentTypeEnum])
-    _payment_partitions = BaseFaker.random_int(min=1, max=12)
-    _payment_type_description = BaseFaker.sentence()
+    payment_type_description: Optional[str] = None
+    payment_type_name: Optional[PaymentTypeEnum] = None  # Enum used here
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "payment_type_name": _payment_type_name,
-                "payment_type_description": _payment_type_description,
-                "payment_partitions": _payment_partitions,
-            }
-        }
+        json_schema_extra={"example": PaymentTypeInfoMixin._payment_update_json}
     )
 
     @classmethod
@@ -74,22 +49,9 @@ class PaymentTypeUpdateSchema(PaymentTypeBase):
 class PaymentTypeResponse(PaymentTypeBase):
     payment_type_id: int
 
-    # Adding BaseFaker to auto-generate example values
-    _payment_type_id = BaseFaker.random_int(min=1, max=100)
-    _payment_type_name = BaseFaker.random_element([e.value for e in PaymentTypeEnum])
-    _payment_partitions = BaseFaker.random_int(min=1, max=12)
-    _payment_type_description = BaseFaker.sentence()
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "payment_type_id": _payment_type_id,
-                "payment_type_name": _payment_type_name,
-                "payment_type_description": _payment_type_description,
-                "payment_partitions": _payment_partitions,
-            }
-        },
-        from_attributes=True
+        json_schema_extra={"example": PaymentTypeInfoMixin._payment_response_json},
+        from_attributes=True,
     )
 
     @classmethod

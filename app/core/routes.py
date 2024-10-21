@@ -65,13 +65,21 @@ def configure_routes(app: FastAPI):
     app.include_router(ContractRouter(prefix="/contract", tags=["Contract"]).router)
 
     # Create an instance of PaymentTypeRouter
-    app.include_router(PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router)
+    app.include_router(
+        PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router
+    )
 
     # Create an instance of TransactionTypeRouter
-    app.include_router(TransactionTypeRouter(prefix="/transaction_type", tags=["TransactionType"]).router)
+    app.include_router(
+        TransactionTypeRouter(
+            prefix="/transaction_type", tags=["TransactionType"]
+        ).router
+    )
 
     # Create an instance of ContractTypeRouter
-    app.include_router(ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router)
+    app.include_router(
+        ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router
+    )
 
     # Create an instance of UnitRouter
     app.include_router(UnitRouter(prefix="/unit", tags=["Unit"]).router)

@@ -1,3 +1,4 @@
+from typing import List
 import uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import DateTime, ForeignKey, Enum, UUID, String, event
@@ -45,7 +46,30 @@ class UnderContract(Base):
 
     # properties
     properties: Mapped["PropertyUnitAssoc"] = relationship(
-        "PropertyUnitAssoc", back_populates="under_contract", lazy="selectin"
+        "PropertyUnitAssoc",
+        back_populates="under_contract",
+        lazy="selectin",
+        viewonly=True,
+    )
+
+    # property
+    property: Mapped[List["Property"]] = relationship(
+        "Property",
+        primaryjoin="UnderContract.property_unit_assoc_id == Property.property_unit_assoc_id",
+        foreign_keys="[Property.property_unit_assoc_id]",
+        # remote_side="[UnderContract.property_unit_assoc_id]",
+        lazy="selectin",
+        viewonly=True,
+    )
+
+    # units
+    units: Mapped[List["Units"]] = relationship(
+        "Units",
+        primaryjoin="UnderContract.property_unit_assoc_id == Units.property_unit_assoc_id",
+        foreign_keys="[Units.property_unit_assoc_id]",
+        # remote_side="[UnderContract.property_unit_assoc_id]",
+        lazy="selectin",
+        viewonly=True,
     )
 
     # contract
@@ -82,7 +106,9 @@ def parse_dates(mapper, connection, target):
             )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.start_date = datetime.strptime(target.start_date, "%Y-%m-%d %H:%M:%S")
+            target.start_date = datetime.strptime(
+                target.start_date, "%Y-%m-%d %H:%M:%S"
+            )
 
     if isinstance(target.end_date, str):
         # Try to convert 'end_date' string to datetime with or without microseconds
@@ -95,10 +121,14 @@ def parse_dates(mapper, connection, target):
     if isinstance(target.next_payment_due, str):
         # Try to convert 'next_payment_due' string to datetime with or without microseconds
         try:
-            target.next_payment_due = datetime.strptime(target.next_payment_due, "%Y-%m-%d %H:%M:%S.%f")
+            target.next_payment_due = datetime.strptime(
+                target.next_payment_due, "%Y-%m-%d %H:%M:%S.%f"
+            )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.next_payment_due = datetime.strptime(target.next_payment_due, "%Y-%m-%d %H:%M:%S")
+            target.next_payment_due = datetime.strptime(
+                target.next_payment_due, "%Y-%m-%d %H:%M:%S"
+            )
 
 
 event.listen(UnderContract, "before_insert", parse_dates)

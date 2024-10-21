@@ -10,7 +10,6 @@ class ContractStatusEnum(enum.Enum):
 
 
 class ContractTypeEnum(enum.Enum):
-    annual = "Annual"
-    monthly = "Monthly"
-    weekly = "Weekly"
-    one_time = "One-time"
+    annual = "annual"
+    rent = "rent"
+    lease = "lease"

@@ -22,7 +22,9 @@ class TransactionTypeRouter(BaseCRUDRouter):
         self.dao: TransactionTypeDAO = TransactionTypeDAO()
 
         # Call the base class constructor
-        super().__init__(dao=self.dao, schemas=TransactionTypeSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao, schemas=TransactionTypeSchema, prefix=prefix, tags=tags
+        )
         self.register_routes()
 
     def register_routes(self):

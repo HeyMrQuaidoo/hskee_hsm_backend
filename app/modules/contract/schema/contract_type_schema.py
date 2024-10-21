@@ -1,28 +1,23 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from decimal import Decimal
+from pydantic import ConfigDict
+
+# enum
+from app.modules.contract.enums.contract_enums import ContractTypeEnum
+
+# schemas
+from app.modules.contract.schema.mixins.contract_type_mixin import (
+    ContractTypeBase,
+    ContractTypeInfoMixin,
+)
+
+# models
 from app.modules.contract.models.contract_type import ContractType as ContractTypeModel
-from app.modules.contract.enums.contract_enums import ContractTypeEnum  # Importing new enum
-from app.modules.common.schema.base_schema import BaseFaker
 
 
-class ContractTypeBase(BaseModel):
-    contract_type_name: ContractTypeEnum
-    fee_percentage: Decimal
-
-
-class ContractTypeCreateSchema(ContractTypeBase):
-    # Adding BaseFaker to auto-generate example values
-    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
-    _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
-
+class ContractTypeCreateSchema(ContractTypeBase, ContractTypeInfoMixin):
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "contract_type_name": _contract_type_name,
-                "fee_percentage": _fee_percentage,
-            }
-        }
+        json_schema_extra={"example": ContractTypeInfoMixin._contract_type_create_json}
     )
 
     @classmethod
@@ -33,21 +28,12 @@ class ContractTypeCreateSchema(ContractTypeBase):
         ).model_dump()
 
 
-class ContractTypeUpdateSchema(ContractTypeBase):
-    contract_type_name: Optional[ContractTypeEnum] = None
+class ContractTypeUpdateSchema(ContractTypeBase, ContractTypeInfoMixin):
     fee_percentage: Optional[Decimal] = None
-
-    # Adding BaseFaker to auto-generate example values
-    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
-    _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
+    contract_type_name: Optional[ContractTypeEnum] = None
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "contract_type_name": _contract_type_name,
-                "fee_percentage": _fee_percentage,
-            }
-        }
+        json_schema_extra={"example": ContractTypeInfoMixin._contract_type_update_json}
     )
 
     @classmethod
@@ -61,21 +47,7 @@ class ContractTypeUpdateSchema(ContractTypeBase):
 class ContractTypeResponse(ContractTypeBase):
     contract_type_id: int
 
-    # Adding BaseFaker to auto-generate example values
-    _contract_type_id = BaseFaker.random_int(min=1, max=100)
-    _contract_type_name = BaseFaker.random_element([e.value for e in ContractTypeEnum])
-    _fee_percentage = round(BaseFaker.random_number(digits=3), 2)
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "contract_type_id": _contract_type_id,
-                "contract_type_name": _contract_type_name,
-                "fee_percentage": _fee_percentage,
-            }
-        },
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def model_validate(cls, contract_type: ContractTypeModel):

@@ -23,7 +23,7 @@ class Utilities(BillableAssoc):
         "inherit_condition": utility_id == BillableAssoc.billable_assoc_id,
     }
 
-    # Properties
+    # properties
     properties: Mapped[List["Property"]] = relationship(
         "Property",
         secondary="entity_billable",

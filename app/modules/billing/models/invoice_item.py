@@ -45,7 +45,7 @@ def calculate_total_price(mapper, connection, target: InvoiceItem):
 @event.listens_for(InvoiceItem, "after_delete")
 def update_invoice_after_item_change(mapper, connection, target: InvoiceItem):
     # update the invoice amount when an invoice item is added, updated, or deleted
-    models_module = import_module("app.modules.billing.models")
+    models_module = import_module("app.modules.billing.models.invoice")
     invoice_model = getattr(models_module, "Invoice")
 
     session = Session(connection)
@@ -63,3 +63,7 @@ def update_invoice_after_item_change(mapper, connection, target: InvoiceItem):
             .values(invoice_amount=total_amount)
         )
     session.close()
+
+
+# register model
+Base.setup_model_dynamic_listener("invoice_items", InvoiceItem)

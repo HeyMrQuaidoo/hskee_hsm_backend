@@ -15,7 +15,7 @@ class Invoice(Base):
     __tablename__ = "invoice"
     INVOICE_PREFIX: str = "INV"
 
-    id: Mapped[uuid.UUID] = mapped_column(
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         unique=True,
@@ -103,7 +103,7 @@ def receive_after_insert(mapper, connection, target):
         target.invoice_number = f"{Invoice.INVOICE_PREFIX}{current_time_str}"
         connection.execute(
             target.__table__.update()
-            .where(target.__table__.c.id == target.id)
+            .where(target.__table__.c.invoice_id == target.invoice_id)
             .values(invoice_number=target.invoice_number)
         )
 
@@ -114,10 +114,9 @@ def update_invoice_amount(mapper, connection, target):
     total_amount = sum(item.total_price for item in target.invoice_items)
     connection.execute(
         target.__table__.update()
-        .where(target.__table__.c.id == target.id)
+        .where(target.__table__.c.invoice_id == target.invoice_id)
         .values(invoice_amount=total_amount)
     )
-
 
 
 def parse_dates(mapper, connection, target):
@@ -143,3 +142,6 @@ def parse_dates(mapper, connection, target):
 
 event.listen(Invoice, "before_insert", parse_dates)
 event.listen(Invoice, "before_update", parse_dates)
+
+# register model
+Base.setup_model_dynamic_listener("invoice", Invoice)

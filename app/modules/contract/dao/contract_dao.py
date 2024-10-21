@@ -32,7 +32,7 @@ class ContractDAO(BaseDAO[Contract]):
         self.media_dao = MediaDAO()
         self.utility_dao = UtilityDAO()
         self.invoice_dao = InvoiceDAO()
-        
+
         self.detail_mappings = {
             "media": self.media_dao,
             "utilities": self.utility_dao,
@@ -45,7 +45,6 @@ class ContractDAO(BaseDAO[Contract]):
             excludes=excludes or [],
             primary_key="contract_id",
         )
-
 
     async def upload_contract_media(
         self,

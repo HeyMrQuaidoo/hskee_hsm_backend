@@ -11,12 +11,13 @@ from app.modules.common.schema.schemas import ContractTypeSchema
 from app.modules.contract.schema.contract_type_schema import (
     ContractTypeCreateSchema,
     ContractTypeUpdateSchema,
-    ContractTypeResponse,
 )
 
 
 class ContractTypeRouter(BaseCRUDRouter):
-    def __init__(self, prefix: str = "/contract-type", tags: List[str] = ["ContractType"]):
+    def __init__(
+        self, prefix: str = "/contract-type", tags: List[str] = ["ContractType"]
+    ):
         # Assign schemas for CRUD operations
         ContractTypeSchema["create_schema"] = ContractTypeCreateSchema
         ContractTypeSchema["update_schema"] = ContractTypeUpdateSchema
@@ -26,7 +27,9 @@ class ContractTypeRouter(BaseCRUDRouter):
         self.dao: ContractTypeDAO = ContractTypeDAO()
 
         # Call the base class constructor
-        super().__init__(dao=self.dao, schemas=ContractTypeSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao, schemas=ContractTypeSchema, prefix=prefix, tags=tags
+        )
         self.register_routes()
 
     def register_routes(self):

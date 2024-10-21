@@ -1,59 +1,29 @@
 from typing import Optional
 from pydantic import ConfigDict
 
-from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
-from app.modules.common.schema.base_schema import BaseFaker
+from app.modules.billing.schema.mixins.utility_mixin import UtilitiesMixin, UtilityBase
 
 
-class UtilityCreateSchema(UtilityBase):
+class UtilityCreateSchema(UtilityBase, UtilitiesMixin):
     name: str
     description: Optional[str] = None
 
-    # Faker attributes
-    _name = BaseFaker.word()
-    _description = BaseFaker.sentence()
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "name": _name,
-                "description": _description,
-            }
-        }
+        json_schema_extra={"example": UtilitiesMixin._utility_create_json}
     )
 
 
-class UtilityUpdateSchema(UtilityBase):
+class UtilityUpdateSchema(UtilityBase, UtilitiesMixin):
     name: Optional[str] = None
     description: Optional[str] = None
 
-    # Faker attributes
-    _name = BaseFaker.word()
-    _description = BaseFaker.sentence()
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "name": _name,
-                "description": _description,
-            }
-        }
+        json_schema_extra={"example": UtilitiesMixin._utility_update_json}
     )
 
 
 class UtilityResponse(UtilityBase):
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
 
-    # Faker attributes
-    _name = BaseFaker.word()
-    _description = BaseFaker.sentence()
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "name": _name,
-                "description": _description,
-            }
-        }
-    )
+    model_config = ConfigDict(from_attributes=True)

@@ -1,33 +1,28 @@
-from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from pydantic import BaseModel, ConfigDict
 
-# Schema
-from app.modules.common.schema.base_schema import BaseFaker 
+# enums
+from app.modules.billing.enums.billing_enums import TransactionTypeEnum
 
-# Model
-from app.modules.billing.models.transaction_type import TransactionType as TransactionTypeModel  
+# schemas
+from app.modules.billing.schema.mixins.transaction_type_mixin import (
+    TransactionTypeInfoMixin,
+)
 
-# Enum
-from app.modules.billing.enums.billing_enums import TransactionTypeEnum  
+# model
+from app.modules.billing.models.transaction_type import (
+    TransactionType as TransactionTypeModel,
+)
 
 
 class TransactionTypeBase(BaseModel):
-    transaction_type_name: TransactionTypeEnum  
+    transaction_type_name: TransactionTypeEnum
     transaction_type_description: Optional[str]
 
 
-class TransactionTypeCreateSchema(TransactionTypeBase):
-    # Adding BaseFaker to auto-generate example values
-    _transaction_type_name = BaseFaker.random_element([e.value for e in TransactionTypeEnum])
-    _transaction_type_description = BaseFaker.sentence()
-
+class TransactionTypeCreateSchema(TransactionTypeBase, TransactionTypeInfoMixin):
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "transaction_type_name": _transaction_type_name,
-                "transaction_type_description": _transaction_type_description,
-            }
-        }
+        json_schema_extra={"example": TransactionTypeInfoMixin._transaction_create_json}
     )
 
     @classmethod
@@ -38,21 +33,12 @@ class TransactionTypeCreateSchema(TransactionTypeBase):
         ).model_dump()
 
 
-class TransactionTypeUpdateSchema(TransactionTypeBase):
+class TransactionTypeUpdateSchema(TransactionTypeBase, TransactionTypeInfoMixin):
     transaction_type_name: Optional[TransactionTypeEnum] = None  # Enum used here
     transaction_type_description: Optional[str] = None
 
-    # Adding BaseFaker to auto-generate example values
-    _transaction_type_name = BaseFaker.random_element([e.value for e in TransactionTypeEnum])
-    _transaction_type_description = BaseFaker.sentence()
-
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "transaction_type_name": _transaction_type_name,
-                "transaction_type_description": _transaction_type_description,
-            }
-        }
+        json_schema_extra={"example": TransactionTypeInfoMixin._transaction_update_json}
     )
 
     @classmethod
@@ -63,23 +49,14 @@ class TransactionTypeUpdateSchema(TransactionTypeBase):
         ).model_dump()
 
 
-class TransactionTypeResponse(TransactionTypeBase):
+class TransactionTypeResponse(TransactionTypeBase, TransactionTypeInfoMixin):
     transaction_type_id: int
-
-    # Adding BaseFaker to auto-generate example values
-    _transaction_type_id = BaseFaker.random_int(min=1, max=100)
-    _transaction_type_name = BaseFaker.random_element([e.value for e in TransactionTypeEnum])
-    _transaction_type_description = BaseFaker.sentence()
 
     model_config = ConfigDict(
         json_schema_extra={
-            "example": {
-                "transaction_type_id": _transaction_type_id,
-                "transaction_type_name": _transaction_type_name,
-                "transaction_type_description": _transaction_type_description,
-            }
+            "example": TransactionTypeInfoMixin._transaction_response_json
         },
-        from_attributes=True
+        from_attributes=True,
     )
 
     @classmethod

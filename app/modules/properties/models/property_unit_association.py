@@ -27,7 +27,7 @@ class PropertyUnitAssoc(Base):
         foreign_keys="[Property.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
         # lazy="selectin",
-        viewonly=True,
+        # viewonly=True,
     )
 
     # units

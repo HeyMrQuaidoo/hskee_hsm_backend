@@ -3,53 +3,31 @@ from datetime import date
 from typing import Optional
 from pydantic import ConfigDict
 
-# Base Faker
-from app.modules.common.schema.base_schema import BaseFaker
+# schemas
+from app.modules.resources.schema.mixins.amenities_mixin import (
+    AmenityBase,
+    AmenityInfoMixin,
+)
 
-# Schema mixin
-from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
-
-# Models
+# models
 from app.modules.resources.models.amenity import Amenities as AmenitiesModel
 
 
-class AmenityCreateSchema(AmenityBase):
-    # Faker attributes
-    _amenity_name = BaseFaker.word()
-    _amenity_short_name = BaseFaker.word()
-    _description = BaseFaker.sentence()
-
+class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
-        json_schema_extra={
-            "example": {
-                "amenity_name": _amenity_name,
-                "amenity_short_name": _amenity_short_name,
-                "description": _description,
-            }
-        },
+        json_schema_extra={"example": AmenityInfoMixin._amenity_create_json},
     )
 
 
 class AmenityUpdateSchema(AmenityBase):
-    # Faker attributes
-    _amenity_name = BaseFaker.word()
-    _amenity_short_name = BaseFaker.word()
-    _description = BaseFaker.sentence()
-
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
         json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
-        json_schema_extra={
-            "example": {
-                "amenity_name": _amenity_name,
-                "amenity_short_name": _amenity_short_name,
-                "description": _description,
-            }
-        },
+        json_schema_extra={"example": AmenityInfoMixin._amenity_update_json},
     )
 
 

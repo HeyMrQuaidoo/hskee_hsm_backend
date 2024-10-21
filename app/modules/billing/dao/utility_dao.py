@@ -9,8 +9,9 @@ from app.modules.billing.models.utility import Utilities
 
 
 class UtilityDAO(BaseDAO[Utilities]):
-    def __init__(self, excludes: Optional[List[str]] = None):
+    def __init__(self, excludes: Optional[List[str]] = []):
         self.model = Utilities
+
         self.media_dao = MediaDAO()
         self.detail_mappings = {"media": self.media_dao}
 

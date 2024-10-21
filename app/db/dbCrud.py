@@ -96,7 +96,9 @@ class BaseMixin:
             valid_fields = self.get_model_fields()
             print("VALID FIELDS ARE:", valid_fields)
 
-            return {k: v for k, v in obj_in.items() if k in valid_fields and v is not None}
+            return {
+                k: v for k, v in obj_in.items() if k in valid_fields and v is not None
+            }
         except Exception as e:
             print("Error is", e)
             raise Exception(e)
@@ -186,7 +188,7 @@ class BaseMixin:
                 if detail_obj_list is None:
                     print("HERE0")
                     continue
-                    
+
                 print("HERE-1")
                 # Find entity parent params
                 config = registry.get_config()
@@ -208,7 +210,7 @@ class BaseMixin:
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
                 print("HRE3")
-            
+
                 # Call the helper method to update the None values
                 self.update_none_values_with_parent(
                     detail_obj_list, entity_parent_params_attr, parent_obj
@@ -248,9 +250,11 @@ class BaseMixin:
                             entity_config = config.get(self.model.__name__.lower(), {})
 
                         # Get keys for relationship fields
-                        entity_param_keys = entity_config.get(
-                            mapped_obj_key.lower(), {}
-                        ).get("item_params_attr", {}).keys()
+                        entity_param_keys = (
+                            entity_config.get(mapped_obj_key.lower(), {})
+                            .get("item_params_attr", {})
+                            .keys()
+                        )
 
                         # Filter keys based on what is passed in the detail object
                         if entity_param_keys:
@@ -292,10 +296,13 @@ class BaseMixin:
 
                 await db_session.flush()
                 await db_session.refresh(mapped_obj_created_item)
-                db_obj = await self.commit_and_refresh(db_session=db_session, obj=db_obj)
+                db_obj = await self.commit_and_refresh(
+                    db_session=db_session, obj=db_obj
+                )
 
         except Exception as e:
             raise Exception(f"Error in create_or_update_relationships: {str(e)}")
+
 
 class CreateMixin(BaseMixin):
     async def create(
@@ -502,10 +509,10 @@ class UpdateMixin(BaseMixin):
         try:
             obj_in_fields = self.filter_input_fields(obj_in)
             print(f"Object fields: {obj_in_fields}\n\n Object in fields: {obj_in}")
-             # Ensure obj_in_fields is not None before iterating
+            # Ensure obj_in_fields is not None before iterating
             if obj_in_fields is None:
                 raise ValueError("Input fields cannot be None")
-            
+
             print(f"Fields: {obj_in_fields}")
 
             for field, value in obj_in_fields.items():

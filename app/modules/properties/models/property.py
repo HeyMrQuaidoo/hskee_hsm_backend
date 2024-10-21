@@ -107,6 +107,7 @@ class Property(PropertyUnitAssoc):
         "EntityMedia",
         primaryjoin="and_(foreign(Property.property_unit_assoc_id) == EntityMedia.entity_id, EntityMedia.entity_type == 'property')",
         lazy="selectin",
+        overlaps="property",
     )
 
     # media

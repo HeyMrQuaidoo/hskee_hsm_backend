@@ -1,17 +1,18 @@
 from enum import Enum
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, List, Optional, Union
 from pydantic import ConfigDict, model_validator
 
 # schemas
+from app.modules.common.schema.base_schema import BaseFaker
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBase
 from app.modules.properties.schema.mixins.property_mixin import (
-    PropertyDetailsMixin,
     PropertyBase,
-    PropertyUnitAssocBase,
     PropertyUnitBase,
+    PropertyDetailsMixin,
+    PropertyUnitAssocBase,
 )
 
 # models
@@ -68,6 +69,31 @@ class PropertyAssignment(PropertyAssignmentBase):
 
 class PropertyAssignmentMixin(PropertyAssignmentBase, PropertyDetailsMixin):
     property_assignment_id: UUID
+
+    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
+    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
+    _notes = BaseFaker.text(max_nb_chars=200)
+    _assignment_type = BaseFaker.random_choices(
+        ["other", "handler", "landlord", "contractor"], length=1
+    )
+
+    _property_assignment_create_json = {
+        "property_unit_assoc_id": str(BaseFaker.uuid4()),
+        "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
+        "assignment_type": _assignment_type[0],
+        "date_from": _date_from,
+        "date_to": _date_to,
+        "notes": _notes,
+    }
+
+    _property_assignment_update_json = {
+        "property_unit_assoc_id": str(BaseFaker.uuid4()),
+        "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
+        "assignment_type": _assignment_type[0],
+        "date_from": _date_from,
+        "date_to": _date_to,
+        "notes": _notes,
+    }
 
     @classmethod
     def get_property_assignment_info(

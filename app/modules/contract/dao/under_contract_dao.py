@@ -6,6 +6,7 @@ from app.modules.contract.models.under_contract import UnderContract
 # from app.modules.properties.dao.property_unit_assoc_dao import PropertyUnitAssocDAO
 # from app.modules.auth.dao.user_dao import UserDAO
 
+
 class UnderContractDAO(BaseDAO[UnderContract]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = UnderContract
@@ -13,8 +14,7 @@ class UnderContractDAO(BaseDAO[UnderContract]):
         # DAOs for related entities
         # self.user_dao = UserDAO()
         # Assuming we are mapping a user to a contract and at the same time want to map it to a property
-        # self.property_unit_assoc_dao = PropertyUnitAssocDAO() 
-
+        # self.property_unit_assoc_dao = PropertyUnitAssocDAO()
 
         # Detail mappings to resolve relationships
         self.detail_mappings = {

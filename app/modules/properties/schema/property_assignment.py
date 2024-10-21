@@ -1,14 +1,13 @@
-from uuid import uuid4
 from pydantic import ConfigDict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 # schema
-from app.modules.common.schema.base_schema import BaseFaker
-from app.modules.properties.schema.mixins.property_assignment_mixin import (
-    PropertyAssignmentBase,
-)
 from app.modules.properties.schema.mixins.property_mixin import (
     PropertyDetailsMixin,
+)
+from app.modules.properties.schema.mixins.property_assignment_mixin import (
+    PropertyAssignmentBase,
+    PropertyAssignmentMixin,
 )
 
 # models
@@ -17,14 +16,7 @@ from app.modules.properties.models.property_assignment import (
 )
 
 
-class PropertyAssignmentCreate(PropertyAssignmentBase):
-    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
-    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
-    _notes = BaseFaker.text(max_nb_chars=200)
-    _assignment_type = BaseFaker.random_choices(
-        ["other", "handler", "landlord", "contractor"], length=1
-    )
-
+class PropertyAssignmentCreate(PropertyAssignmentBase, PropertyAssignmentMixin):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
@@ -33,14 +25,7 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
             datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         },
         json_schema_extra={
-            "example": {
-                "property_unit_assoc_id": str(uuid4()),
-                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
-                "assignment_type": _assignment_type[0],
-                "date_from": _date_from,
-                "date_to": _date_to,
-                "notes": _notes,
-            }
+            "example": PropertyAssignmentMixin._property_assignment_create_json
         },
     )
 
@@ -57,13 +42,6 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
 
 
 class PropertyAssignmentUpdate(PropertyAssignmentBase):
-    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
-    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
-    _notes = BaseFaker.text(max_nb_chars=200)
-    _assignment_type = BaseFaker.random_choices(
-        ["other", "handler", "landlord", "contractor"], length=1
-    )
-
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
@@ -72,14 +50,7 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
             datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         },
         json_schema_extra={
-            "example": {
-                "property_unit_assoc_id": str(uuid4()),
-                "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
-                "assignment_type": _assignment_type[0],
-                "date_from": _date_from,
-                "date_to": _date_to,
-                "notes": _notes,
-            }
+            "example": PropertyAssignmentMixin._property_assignment_update_json
         },
     )
 
