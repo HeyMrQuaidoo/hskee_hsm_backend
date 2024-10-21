@@ -14,12 +14,16 @@ from app.modules.resources.router.media_router import MediaRouter
 from app.modules.billing.router.account_router import AccountRouter
 from app.modules.auth.router.permission_router import PermissionRouter
 from app.modules.properties.router.property_router import PropertyRouter
+from app.modules.auth.router.auth_router import AuthRouter
 
 router = APIRouter()
 
 
 def configure_routes(app: FastAPI):
     app.include_router(router)
+
+    # Create an instance of AuthRouter
+    app.include_router(AuthRouter(prefix="/auth", tags=["Auth"]).router)
 
     # Create an instance of RoleRouter
     app.include_router(RoleRouter(prefix="/roles", tags=["Roles"]).router)

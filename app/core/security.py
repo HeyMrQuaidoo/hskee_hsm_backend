@@ -1,3 +1,4 @@
+import time
 import jwt
 import bcrypt
 from typing import Any
@@ -5,6 +6,7 @@ from cryptography.fernet import Fernet
 from datetime import datetime, timedelta
 
 from app.core.config import settings
+from app.modules.auth.schema.user_schema import UserBase
 
 fernet = Fernet(str.encode(settings.ENCRYPT_KEY))
 
@@ -25,20 +27,56 @@ class Hash:
 
 
 class SecureAccessTokens:
-    def create_access_token(subject: str | Any, expires_delta: timedelta = None) -> str:
+    def token_response(token: str):
+        payload: dict = SecureAccessTokens.decode_token(token)
+        payload.update({"access_token": token, "token_type": "Bearer"})
+
+        return payload
+
+    def create_access_token(
+        subject: UserBase | Any, expires_delta: timedelta = None
+    ) -> str:
+        ###
+        user = subject
+        payload = user.to_dict(
+        exclude={"password_hash", "updated_at", "created_at", "gender", "user_id"}
+        )
+        payload = {key: payload[key] for key in payload if key in UserBase.model_fields}
+        payload.update({"expires": time.time() + 1800})
+
+        # create the access token with the user's scopes as permissions
+        user_permissions = [p.name for r in user.roles for p in r.permissions]
+        payload.update({"scope": ",".join(user_permissions)})
+        ###
+        
         if expires_delta:
             expire = datetime.now() + expires_delta
         else:
             expire = datetime.now() + timedelta(
-                minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+                minutes=int(settings.ACCESS_TOKEN_EXPIRE_MINUTES)
             )
-        to_encode = {"exp": expire, "sub": str(subject), "type": "access"}
+        to_encode = {"exp": expire, "sub": str(payload), "type": "access"}
+        # to_encode = {"exp": expire, "sub": str(subject), "type": "access"}
 
-        return jwt.encode(
+        token = jwt.encode(
             payload=to_encode,
             key=settings.ENCRYPT_KEY,
             algorithm=JWT_ALGORITHM,
         )
+
+        # return token
+        token_data = SecureAccessTokens.token_response(token)
+        token_data.update(
+            {
+                "first_name": subject.first_name,
+                "email": subject.email,
+                "user_id": subject.to_dict().get("user_id"),
+                "last_name": subject.last_name,
+                "expires": payload["expires"],
+                "roles": subject.roles,
+            }
+        )
+        return token_data
 
     def create_refresh_token(
         subject: str | Any, expires_delta: timedelta = None
