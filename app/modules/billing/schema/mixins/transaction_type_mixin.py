@@ -20,7 +20,7 @@ class TransactionTypeBase(BaseSchema):
     transactions: Optional[List[TransactionBase]] = []
 
 
-class TransactionTypeInfoMixin(TransactionTypeBase):
+class TransactionTypeInfoMixin:
     _transaction_type_name = BaseFaker.random_element(
         [e.value for e in TransactionTypeEnum]
     )
