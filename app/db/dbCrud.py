@@ -189,9 +189,9 @@ class BaseMixin:
                 # Find entity parent params
                 config = registry.get_config()
 
-                 # skip if config is None
+                # skip if config is None
                 if not config:
-                    continue 
+                    continue
 
                 parent_obj = db_obj.model_dump()
 
@@ -205,7 +205,7 @@ class BaseMixin:
 
                 # skip if entity_child_attrs is None or empty
                 if not entity_child_attrs:
-                    continue  
+                    continue
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
 
