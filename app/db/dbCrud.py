@@ -94,13 +94,11 @@ class BaseMixin:
                 raise ValueError("Input must be a dictionary or a BaseModel instance.")
 
             valid_fields = self.get_model_fields()
-            print("VALID FIELDS ARE:", valid_fields)
 
             return {
                 k: v for k, v in obj_in.items() if k in valid_fields and v is not None
             }
         except Exception as e:
-            print("Error is", e)
             raise Exception(e)
 
     def validate_primary_key(
@@ -186,41 +184,39 @@ class BaseMixin:
 
                 # Safeguard against None values in the obj_data
                 if detail_obj_list is None:
-                    print("HERE0")
                     continue
 
-                print("HERE-1")
                 # Find entity parent params
                 config = registry.get_config()
+
+                 # skip if config is None
                 if not config:
-                    print(f"HERE-2 {config}")
-                    continue  # skip if config is None
-                print("HERE-3")
+                    continue 
+
                 parent_obj = db_obj.model_dump()
+
+                # skip if parent_obj is None
                 if not parent_obj:
-                    continue  # skip if parent_obj is None
-                print("HERE-4")
+                    continue
+
                 entity_child_attrs = config.get(db_obj.__tablename__.lower(), {}).get(
                     mapped_obj_key.lower(), {}
                 )
-                print("HRE1")
+
+                # skip if entity_child_attrs is None or empty
                 if not entity_child_attrs:
-                    print("HRE2")
-                    continue  # skip if entity_child_attrs is None or empty
+                    continue  
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
-                print("HRE3")
 
                 # Call the helper method to update the None values
                 self.update_none_values_with_parent(
                     detail_obj_list, entity_parent_params_attr, parent_obj
                 )
-                print("HRE4")
 
                 if not detail_obj_list:
-                    print("HRE5")
                     continue
-                print("HRE6")
+
                 mapped_obj_dao: DBOperations = mapped_obj_dao
                 if not isinstance(detail_obj_list, list):
                     detail_obj_list = [detail_obj_list]
@@ -508,12 +504,9 @@ class UpdateMixin(BaseMixin):
     ) -> DBModelType:
         try:
             obj_in_fields = self.filter_input_fields(obj_in)
-            print(f"Object fields: {obj_in_fields}\n\n Object in fields: {obj_in}")
-            # Ensure obj_in_fields is not None before iterating
+            # ensure obj_in_fields is not None before iterating
             if obj_in_fields is None:
                 raise ValueError("Input fields cannot be None")
-
-            print(f"Fields: {obj_in_fields}")
 
             for field, value in obj_in_fields.items():
                 if hasattr(db_obj, field):
