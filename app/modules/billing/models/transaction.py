@@ -51,6 +51,7 @@ class Transaction(Base):
             use_alter=True,
             name="fk_transaction_invoice_number",
         ),
+        nullable=True
     )
 
     # payment_type

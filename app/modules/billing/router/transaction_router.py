@@ -21,6 +21,7 @@ from app.modules.billing.schema.transaction_schema import (
 from app.core.lifespan import get_db
 from app.core.errors import CustomException
 
+
 class TransactionRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: TransactionDAO = TransactionDAO(excludes=[])
@@ -28,7 +29,9 @@ class TransactionRouter(BaseCRUDRouter):
         TransactionSchema["update_schema"] = TransactionUpdateSchema
         TransactionSchema["response_schema"] = TransactionResponse
 
-        super().__init__(dao=self.dao, schemas=TransactionSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao, schemas=TransactionSchema, prefix=prefix, tags=tags
+        )
         self.register_routes()
 
     def register_routes(self):

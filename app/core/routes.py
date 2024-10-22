@@ -76,9 +76,7 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of TransactionRouter
     app.include_router(
-        TransactionRouter(
-            prefix="/transaction", tags=["Transaction"]
-        ).router
+        TransactionRouter(prefix="/transaction", tags=["Transaction"]).router
     )
     # Create an instance of TransactionTypeRouter
     app.include_router(

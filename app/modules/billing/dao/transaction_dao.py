@@ -14,6 +14,7 @@ from app.modules.auth.dao.user_dao import UserDAO
 # Errors
 from app.core.errors import RecordNotFoundException
 
+
 class TransactionDAO(BaseDAO[Transaction]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Transaction

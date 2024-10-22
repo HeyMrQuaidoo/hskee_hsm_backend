@@ -1,6 +1,7 @@
-from sqlalchemy import UUID
+from uuid import UUID
 from datetime import datetime
 from typing import Any, List, Optional, Union
+
 
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.address.schema.address_schema import AddressBase

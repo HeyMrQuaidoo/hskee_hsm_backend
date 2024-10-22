@@ -28,14 +28,15 @@ class TransactionTypeCreateSchema(TransactionTypeBase, TransactionTypeInfoMixin)
     @classmethod
     def model_validate(cls, transaction_type: TransactionTypeModel):
         return cls(
+            transaction_type_id=transaction_type.transaction_type_id,
             transaction_type_name=transaction_type.transaction_type_name,
             transaction_type_description=transaction_type.transaction_type_description,
         ).model_dump()
 
 
 class TransactionTypeUpdateSchema(TransactionTypeBase, TransactionTypeInfoMixin):
-    transaction_type_name: Optional[TransactionTypeEnum] = None  # Enum used here
     transaction_type_description: Optional[str] = None
+    transaction_type_name: Optional[TransactionTypeEnum] = None  # Enum used here
 
     model_config = ConfigDict(
         json_schema_extra={"example": TransactionTypeInfoMixin._transaction_update_json}
@@ -44,6 +45,7 @@ class TransactionTypeUpdateSchema(TransactionTypeBase, TransactionTypeInfoMixin)
     @classmethod
     def model_validate(cls, transaction_type: TransactionTypeModel):
         return cls(
+            transaction_type_id=transaction_type.transaction_type_id,
             transaction_type_name=transaction_type.transaction_type_name,
             transaction_type_description=transaction_type.transaction_type_description,
         ).model_dump()

@@ -20,7 +20,9 @@ from app.modules.billing.models.transaction import Transaction as TransactionMod
 class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
     invoice: Optional[InvoiceBase] = None
     model_config = ConfigDict(
-        json_schema_extra={"example": TransactionInfoMixin._transaction_create_json},
+        json_schema_extra={
+            "example": TransactionInfoMixin._transaction_create_json
+        },
     )
 
 
@@ -35,7 +37,9 @@ class TransactionUpdateSchema(TransactionBase):
     invoice_number: Optional[str] = None
 
     model_config = ConfigDict(
-        json_schema_extra={"example": TransactionInfoMixin._transaction_update_json},
+        json_schema_extra={
+            "example": TransactionInfoMixin._transaction_update_json
+        },
     )
 
 
@@ -45,5 +49,24 @@ class TransactionResponse(TransactionBase, TransactionInfoMixin):
 
     @classmethod
     def model_validate(cls, transaction: TransactionModel):
-        return cls.get_transaction_info(transaction)
-        # return cls(**transaction_info).model_dump()
+        return cls(
+            transaction_id=transaction.transaction_id,
+            transaction_number=transaction.transaction_number,
+            transaction_details=transaction.transaction_details,
+            transaction_status=transaction.transaction_status,
+            payment_type_id=transaction.payment_type_id,
+            transaction_type=transaction.transaction_type
+            if transaction.transaction_type
+            else None,
+            transaction_date=transaction.transaction_date,
+            invoice_number=transaction.invoice_number
+            if transaction.invoice_number
+            else None,
+            client_offered=transaction.client_offered
+            if transaction.client_offered
+            else None,
+            client_requested=transaction.client_requested
+            if transaction.client_requested
+            else None,
+            invoice=transaction.transaction_invoice
+        ).model_dump()
