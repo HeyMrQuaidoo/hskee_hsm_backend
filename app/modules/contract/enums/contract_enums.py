@@ -10,6 +10,7 @@ class ContractStatusEnum(enum.Enum):
 
 
 class ContractTypeEnum(enum.Enum):
-    annual = "annual"
     rent = "rent"
     lease = "lease"
+    purchase = "purchase"
+    sale = "sale"

@@ -7,6 +7,7 @@ from pydantic import ConfigDict
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum
 
 # mixins
+from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 from app.modules.billing.schema.mixins.transaction_mixin import (
     TransactionBase,
     TransactionInfoMixin,
@@ -17,6 +18,7 @@ from app.modules.billing.models.transaction import Transaction as TransactionMod
 
 
 class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
+    invoice: Optional[InvoiceBase] = None
     model_config = ConfigDict(
         json_schema_extra={"example": TransactionInfoMixin._transaction_create_json},
     )
@@ -43,5 +45,5 @@ class TransactionResponse(TransactionBase, TransactionInfoMixin):
 
     @classmethod
     def model_validate(cls, transaction: TransactionModel):
-        transaction_info = cls.get_transaction_info(transaction)
-        return cls(**transaction_info)
+        return cls.get_transaction_info(transaction)
+        # return cls(**transaction_info).model_dump()

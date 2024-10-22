@@ -35,6 +35,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
         self.model_schema = schemas["model_schema"]
         self.create_schema = schemas["create_schema"]
         self.update_schema = schemas["update_schema"]
+        self.get_db = get_db
         self.router = APIRouter(prefix=prefix, tags=tags)
 
         if show_default_routes:
