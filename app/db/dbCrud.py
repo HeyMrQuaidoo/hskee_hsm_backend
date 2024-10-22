@@ -139,7 +139,6 @@ class BaseMixin:
             parent_obj (dict): The parent object containing values for the linked keys.
         """
         for item in detail_obj_list:
-            print(f"WHY ARE WE HERE {detail_obj_list} {type(detail_obj_list)}")
             # Find keys with None values in the item
             keys_with_none = [key for key, value in item.items() if value is None]
 
@@ -181,13 +180,11 @@ class BaseMixin:
 
                 # Get the list of objects to check from obj_data
                 detail_obj_list = obj_data.get(mapped_obj_key, [])
+                print(f"\tdetail_obj_list: {detail_obj_list}")
 
                 # Safeguard against None values in the obj_data
                 if detail_obj_list is None:
                     continue
-                elif not isinstance(detail_obj_list, list):
-                    detail_obj_list = [detail_obj_list]
-                    print(f"\tdetail_obj_list: {detail_obj_list}")
 
                 # Find entity parent params
                 config = registry.get_config()
@@ -211,12 +208,12 @@ class BaseMixin:
                     continue
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
-                print(f"\n\tentity_child_attrs: {entity_child_attrs}")
 
                 # Call the helper method to update the None values
-                self.update_none_values_with_parent(
-                    detail_obj_list, entity_parent_params_attr, parent_obj
-                )
+                if isinstance(detail_obj_list, list):
+                    self.update_none_values_with_parent(
+                        detail_obj_list, entity_parent_params_attr, parent_obj
+                    )
 
                 if not detail_obj_list:
                     continue
@@ -283,16 +280,28 @@ class BaseMixin:
                         )
 
                         for item in new_items:
-                            await model_attr.append_item(item, db_session)
+                            if hasattr(item, "_sa_instance_state"):
+                                await model_attr.append_item(item, db_session)
+                            else:
+                                raise ValueError(
+                                    f"Item {item} is not a valid ORM instance"
+                                )
                     else:
                         model_attr.extend(new_items)
                 else:
-                    new_collection = (
-                        BaseModelCollection(new_items, parent=db_obj)
-                        if isinstance(model_attr, BaseModelCollection)
-                        else new_items
-                    )
-                    setattr(db_obj, mapped_obj_key, new_collection)
+                    if all(hasattr(item, "_sa_instance_state") for item in new_items):
+                        new_collection = (
+                            BaseModelCollection(new_items, parent=db_obj)
+                            if isinstance(model_attr, BaseModelCollection)
+                            else new_items
+                        )
+                        if isinstance(new_collection, list):
+                            for item in new_collection:
+                                setattr(db_obj, mapped_obj_key, item)
+                        else:
+                            setattr(db_obj, mapped_obj_key, new_collection)
+                    else:
+                        raise ValueError("Not all items are valid ORM instances")
 
                 await db_session.flush()
                 await db_session.refresh(mapped_obj_created_item)

@@ -23,6 +23,32 @@ class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
         json_schema_extra={"example": TransactionInfoMixin._transaction_create_json},
     )
 
+    @classmethod
+    def model_validate(cls, transaction: TransactionModel):
+        print(f"DO I EVER REACH HERE: {transaction}")
+
+        return cls(
+            transaction_id=transaction.transaction_id,
+            transaction_number=transaction.transaction_number,
+            transaction_details=transaction.transaction_details,
+            transaction_status=transaction.transaction_status,
+            payment_type_id=transaction.payment_type_id,
+            transaction_type=transaction.transaction_type
+            if transaction.transaction_type
+            else None,
+            transaction_date=transaction.transaction_date,
+            invoice_number=transaction.invoice_number
+            if transaction.invoice_number
+            else None,
+            client_offered=transaction.client_offered
+            if transaction.client_offered
+            else None,
+            client_requested=transaction.client_requested
+            if transaction.client_requested
+            else None,
+            invoice=transaction.invoice,
+        ).model_dump()
+
 
 class TransactionUpdateSchema(TransactionBase):
     payment_type_id: Optional[int] = None
@@ -64,5 +90,5 @@ class TransactionResponse(TransactionBase, TransactionInfoMixin):
             client_requested=transaction.client_requested
             if transaction.client_requested
             else None,
-            invoice=transaction.transaction_invoice,
+            invoice=transaction.invoice,
         ).model_dump()

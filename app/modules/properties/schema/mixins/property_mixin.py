@@ -158,7 +158,7 @@ class PropertyUnitInfoMixin:
             if entity_utilities
             else []
         )
-    
+
     @classmethod
     def get_property_unit_info(
         cls, property_unit: Union[PropertyUnit | List[PropertyUnit]]
@@ -347,7 +347,7 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
                 "start_period": _start_date.isoformat(),
                 "end_period": _end_date.isoformat(),
             }
-        ]
+        ],
     }
 
     _property_update_json = {

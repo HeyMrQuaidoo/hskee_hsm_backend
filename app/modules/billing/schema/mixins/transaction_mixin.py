@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import Optional
+from typing import Any, Optional
 from datetime import datetime
 
 # enums
@@ -25,7 +25,7 @@ class TransactionBase(BaseSchema):
     transaction_type: int
     transaction_status: PaymentStatusEnum
     invoice_number: Optional[str] = None
-    invoice: Optional[InvoiceBase] = []
+    invoice: Optional[InvoiceBase | Any] = None
 
 
 class Transaction(BaseSchema):
@@ -51,7 +51,6 @@ class TransactionInfoMixin:
         "transaction_details": _transaction_details,
         "transaction_type": _transaction_type,
         "transaction_status": _transaction_status,
-        # "invoice_number": "INV20241020135905",
         "invoice": {
             "issued_by": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
             "issued_to": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
@@ -128,7 +127,7 @@ class TransactionInfoMixin:
             client_requested=transaction.client_requested
             if transaction.client_requested
             else None,
-            invoice=transaction.transaction_invoice,
+            invoice=transaction.invoice,
         )
 
     @classmethod

@@ -207,4 +207,4 @@ def receive_after_insert(mapper, connection, target):
 
 
 # Register model outside the class definition
-Base.setup_model_dynamic_listener("contract", Contract)
+# Base.setup_model_dynamic_listener("contract", Contract)
