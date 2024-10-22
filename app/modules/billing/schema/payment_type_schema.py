@@ -22,6 +22,7 @@ class PaymentTypeCreateSchema(PaymentTypeBase, PaymentTypeInfoMixin):
     @classmethod
     def model_validate(cls, payment_type: PaymentTypeModel):
         return cls(
+            payment_type_id=payment_type.payment_type_id,
             payment_type_name=payment_type.payment_type_name,
             payment_type_description=payment_type.payment_type_description,
             payment_partitions=payment_type.payment_partitions,
