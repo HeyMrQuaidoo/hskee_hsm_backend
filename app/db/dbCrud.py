@@ -139,6 +139,7 @@ class BaseMixin:
             parent_obj (dict): The parent object containing values for the linked keys.
         """
         for item in detail_obj_list:
+            print(f"WHY ARE WE HERE {detail_obj_list} {type(detail_obj_list)}")
             # Find keys with None values in the item
             keys_with_none = [key for key, value in item.items() if value is None]
 
@@ -180,11 +181,13 @@ class BaseMixin:
 
                 # Get the list of objects to check from obj_data
                 detail_obj_list = obj_data.get(mapped_obj_key, [])
-                print(f"\tdetail_obj_list: {detail_obj_list}")
 
                 # Safeguard against None values in the obj_data
                 if detail_obj_list is None:
                     continue
+                elif not isinstance(detail_obj_list, list):
+                    detail_obj_list = [detail_obj_list]
+                    print(f"\tdetail_obj_list: {detail_obj_list}")
 
                 # Find entity parent params
                 config = registry.get_config()
@@ -208,6 +211,7 @@ class BaseMixin:
                     continue
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
+                print(f"\n\tentity_child_attrs: {entity_child_attrs}")
 
                 # Call the helper method to update the None values
                 self.update_none_values_with_parent(

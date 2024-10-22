@@ -20,9 +20,7 @@ from app.modules.billing.models.transaction import Transaction as TransactionMod
 class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
     invoice: Optional[InvoiceBase] = None
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": TransactionInfoMixin._transaction_create_json
-        },
+        json_schema_extra={"example": TransactionInfoMixin._transaction_create_json},
     )
 
 
@@ -37,9 +35,7 @@ class TransactionUpdateSchema(TransactionBase):
     invoice_number: Optional[str] = None
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": TransactionInfoMixin._transaction_update_json
-        },
+        json_schema_extra={"example": TransactionInfoMixin._transaction_update_json},
     )
 
 
@@ -68,5 +64,5 @@ class TransactionResponse(TransactionBase, TransactionInfoMixin):
             client_requested=transaction.client_requested
             if transaction.client_requested
             else None,
-            invoice=transaction.transaction_invoice
+            invoice=transaction.transaction_invoice,
         ).model_dump()

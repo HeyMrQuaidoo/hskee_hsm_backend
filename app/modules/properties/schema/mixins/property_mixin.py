@@ -10,11 +10,18 @@ from app.modules.common.schema.base_schema import BaseFaker
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.address.schema.address_schema import AddressBase
 from app.modules.address.schema.address_mixin import AddressMixin
+from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
 from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
+from app.modules.resources.schema.mixins.media_mixin import MediaBase, Media
+
+from app.modules.billing.schema.utility_schema import UtilityResponse
 
 # models
 from app.modules.properties.models.property_unit_association import (
     PropertyUnitAssoc as PropertyUnitAssocModel,
+)
+from app.modules.associations.models.entity_billable import (
+    EntityBillable as EntityBillableModel,
 )
 
 
@@ -29,6 +36,9 @@ class PropertyUnitBase(BaseSchema):
     property_unit_security_deposit: Optional[float] = None
     property_unit_commission: Optional[float] = None
     has_amenities: Optional[bool] = False
+    amenities: Optional[List[AmenityBase] | List[AmenityBase]] = []
+    media: Optional[List[Media] | List[MediaBase]] = []
+    utilities: Optional[List[UtilityBase]] = None
 
 
 class PropertyUnit(PropertyUnitBase):
@@ -51,8 +61,17 @@ class PropertyUnitInfoMixin:
     _floor_space = BaseFaker.random_number(digits=3)
     _address_type = BaseFaker.random_choices(["billing", "mailing"], length=1)
 
+    # utilities
+    _utility_name = BaseFaker.word()
+    _utility_description = BaseFaker.text(max_nb_chars=100)
+    _billable_amount = round(BaseFaker.random_number(digits=4), 2)
+    _apply_to_units = BaseFaker.boolean()
+    _start_date = BaseFaker.date_this_year()
+    _end_date = BaseFaker.future_date()
+    _payment_type_id = BaseFaker.random_int(min=1, max=1)
+
     _unit_create_json = {
-        "property_id": str(BaseFaker.uuid4()),
+        "property_id": "402c0deb-b978-40d6-a269-c690cbd99589",
         "property_unit_code": f"Unit {BaseFaker.random_letter().upper()}{BaseFaker.random_digit()}",
         "property_unit_floor_space": BaseFaker.random_int(min=50, max=150),
         "property_unit_amount": BaseFaker.random_number(digits=4),
@@ -62,10 +81,41 @@ class PropertyUnitInfoMixin:
         "property_unit_security_deposit": BaseFaker.random_number(digits=3),
         "property_unit_commission": BaseFaker.random_number(digits=2),
         "has_amenities": BaseFaker.boolean(),
+        "media": [
+            {
+                "media_name": BaseFaker.word(),
+                "media_type": BaseFaker.random_choices(
+                    ["image", "video", "audio", "document"]
+                )[0],
+                "content_url": BaseFaker.url(),
+                "is_thumbnail": BaseFaker.boolean(),
+                "caption": BaseFaker.sentence(),
+                "description": BaseFaker.text(max_nb_chars=200),
+            }
+        ],
+        "amenities": [
+            {
+                "amenity_name": BaseFaker.word(),
+                "amenity_short_name": BaseFaker.word(),
+                "amenity_description": BaseFaker.sentence(),
+            },
+        ],
+        "utilities": [
+            {
+                "name": _utility_name,
+                "description": _utility_description,
+                "billable_type": "utilities",
+                "billable_amount": _billable_amount,
+                "apply_to_units": _apply_to_units,
+                "payment_type_id": _payment_type_id,
+                "start_period": _start_date.isoformat(),
+                "end_period": _end_date.isoformat(),
+            }
+        ],
     }
 
     _unit_update_json = {
-        "property_id": str(BaseFaker.uuid4()),
+        "property_id": "402c0deb-b978-40d6-a269-c690cbd99589",
         "property_unit_code": f"Unit {BaseFaker.random_letter().upper()}{BaseFaker.random_digit()}",
         "property_unit_floor_space": BaseFaker.random_int(min=50, max=150),
         "property_unit_amount": BaseFaker.random_number(digits=4),
@@ -75,8 +125,40 @@ class PropertyUnitInfoMixin:
         "property_unit_security_deposit": BaseFaker.random_number(digits=3),
         "property_unit_commission": BaseFaker.random_number(digits=2),
         "has_amenities": BaseFaker.boolean(),
+        "media": [
+            {
+                "media_name": BaseFaker.word(),
+                "media_type": BaseFaker.random_choices(
+                    ["image", "video", "audio", "document"]
+                )[0],
+                "content_url": BaseFaker.url(),
+                "is_thumbnail": BaseFaker.boolean(),
+                "caption": BaseFaker.sentence(),
+                "description": BaseFaker.text(max_nb_chars=200),
+            }
+        ],
+        "amenities": [
+            {
+                "amenity_name": BaseFaker.word(),
+                "amenity_short_name": BaseFaker.word(),
+                "amenity_description": BaseFaker.sentence(),
+            },
+        ],
     }
 
+    @classmethod
+    def get_utilities_info(cls, entity_utilities: List[EntityBillableModel]):
+        return (
+            [
+                UtilityResponse.model_validate(
+                    {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
+                )
+                for entity_utility in entity_utilities
+            ]
+            if entity_utilities
+            else []
+        )
+    
     @classmethod
     def get_property_unit_info(
         cls, property_unit: Union[PropertyUnit | List[PropertyUnit]]
@@ -96,6 +178,9 @@ class PropertyUnitInfoMixin:
                 property_unit_security_deposit=property_unit.property_unit_security_deposit,
                 property_unit_commission=property_unit.property_unit_commission,
                 property_status=property_unit.property_status,
+                amenities=property_unit.amenities,
+                media=property_unit.media,
+                utilities=cls.get_utilities_info(property_unit.utilities),
             )
         else:
             for property_unit_item in property_unit:
@@ -112,6 +197,9 @@ class PropertyUnitInfoMixin:
                         property_unit_security_deposit=property_unit_item.property_unit_security_deposit,
                         property_unit_commission=property_unit_item.property_unit_commission,
                         property_status=property_unit_item.property_status,
+                        amenities=property_unit_item.amenities,
+                        media=property_unit_item.media,
+                        utilities=cls.get_utilities_info(property_unit_item.utilities),
                     )
                 )
         return result
@@ -135,6 +223,8 @@ class PropertyBase(BaseSchema):
     address: Optional[List[AddressBase]] = []
     units: Optional[List[PropertyUnit] | List[PropertyUnitBase]] = []
     amenities: Optional[List[AmenityBase] | List[AmenityBase]] = []
+    media: Optional[List[Media] | List[MediaBase]] = []
+    utilities: Optional[List[UtilityBase]] = []
 
 
 class Property(PropertyBase):
@@ -176,6 +266,15 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
     _amenity_name = BaseFaker.word()
     _amenity_short_name = BaseFaker.word()
     _description = BaseFaker.sentence()
+
+    # utilities
+    _utility_name = BaseFaker.word()
+    _utility_description = BaseFaker.text(max_nb_chars=100)
+    _billable_amount = round(BaseFaker.random_number(digits=4), 2)
+    _apply_to_units = BaseFaker.boolean()
+    _start_date = BaseFaker.date_this_year()
+    _end_date = BaseFaker.future_date()
+    _payment_type_id = BaseFaker.random_int(min=1, max=1)
 
     _property_create_json = {
         "name": BaseFaker.company(),
@@ -237,6 +336,18 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
                 "amenity_description": BaseFaker.sentence(),
             },
         ],
+        "utilities": [
+            {
+                "name": _utility_name,
+                "description": _utility_description,
+                "billable_type": "utilities",
+                "billable_amount": _billable_amount,
+                "apply_to_units": _apply_to_units,
+                "payment_type_id": _payment_type_id,
+                "start_period": _start_date.isoformat(),
+                "end_period": _end_date.isoformat(),
+            }
+        ]
     }
 
     _property_update_json = {
@@ -321,6 +432,8 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
             address=cls.get_address_base(property.address),
             units=cls.get_property_unit_info(property.units),
             amenities=property.amenities,
+            media=property.media,
+            utilities=cls.get_utilities_info(property.utilities),
         ).model_dump()
 
 

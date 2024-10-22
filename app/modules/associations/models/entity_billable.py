@@ -1,6 +1,5 @@
-from typing import Optional
-
 import uuid
+from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import validates, relationship, Mapped, mapped_column
 from sqlalchemy import (

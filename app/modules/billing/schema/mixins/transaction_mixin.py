@@ -15,6 +15,7 @@ from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 # models
 from app.modules.billing.models.transaction import Transaction as TransactionModel
 
+
 class TransactionBase(BaseSchema):
     payment_type_id: int
     client_offered: UUID
@@ -43,7 +44,7 @@ class TransactionInfoMixin:
     _invoice_number = f"INV{BaseFaker.random_number(digits=8)}"
 
     _transaction_create_json = {
-        "payment_type_id": "5",
+        "payment_type_id": _payment_type_id,
         "client_offered": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
         "client_requested": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
         "transaction_date": _transaction_date.isoformat(),
@@ -127,7 +128,7 @@ class TransactionInfoMixin:
             client_requested=transaction.client_requested
             if transaction.client_requested
             else None,
-            invoice=transaction.transaction_invoice
+            invoice=transaction.transaction_invoice,
         )
 
     @classmethod

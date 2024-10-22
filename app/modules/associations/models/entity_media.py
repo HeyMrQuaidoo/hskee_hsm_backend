@@ -1,6 +1,6 @@
 import uuid
-from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import Enum, CheckConstraint, UUID, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 
 # Base model
 from app.modules.common.models.model_base import BaseModel as Base

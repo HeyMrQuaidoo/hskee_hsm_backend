@@ -143,14 +143,23 @@ class Property(PropertyUnitAssoc):
     )
 
     # utilities
-    utilities: Mapped[List["Utilities"]] = relationship(
-        "Utilities",
-        secondary="entity_billable",
-        primaryjoin="and_(Property.property_unit_assoc_id == EntityBillable.entity_id, EntityBillable.entity_type == 'property', EntityBillable.billable_type=='utilities')",
-        secondaryjoin="EntityBillable.billable_id == Utilities.billable_assoc_id",
-        back_populates="properties",
-        overlaps="entity_billables",
+    # utilities: Mapped[List["Utilities"]] = relationship(
+    #     "Utilities",
+    #     secondary="entity_billable",
+    #     primaryjoin="and_(Property.property_unit_assoc_id == EntityBillable.entity_id, EntityBillable.entity_type == 'property', EntityBillable.billable_type=='utilities')",
+    #     secondaryjoin="EntityBillable.billable_id == Utilities.billable_assoc_id",
+    #     back_populates="properties",
+    #     overlaps="entity_billables",
+    #     lazy="selectin",
+    #     collection_class=BaseModelCollection,
+    # )
+
+    utilities: Mapped[List["EntityBillable"]] = relationship(
+        "EntityBillable",
+        primaryjoin="and_(EntityBillable.entity_id==Property.property_unit_assoc_id,  EntityBillable.entity_type=='property', EntityBillable.billable_type=='utilities')",
+        foreign_keys="[EntityBillable.entity_id]",
         lazy="selectin",
+        viewonly=True,
         collection_class=BaseModelCollection,
     )
 

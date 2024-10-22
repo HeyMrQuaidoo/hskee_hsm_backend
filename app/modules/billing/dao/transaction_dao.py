@@ -1,18 +1,14 @@
 from typing import Optional, List
-from sqlalchemy.ext.asyncio import AsyncSession
 
-# Base DAO
+# dao
 from app.modules.common.dao.base_dao import BaseDAO
 
-# Models
+# models
 from app.modules.billing.models.transaction import Transaction
 from app.modules.billing.dao.invoice_dao import InvoiceDAO
 from app.modules.billing.dao.payment_type_dao import PaymentTypeDAO
 from app.modules.billing.dao.transaction_type_dao import TransactionTypeDAO
 from app.modules.auth.dao.user_dao import UserDAO
-
-# Errors
-from app.core.errors import RecordNotFoundException
 
 
 class TransactionDAO(BaseDAO[Transaction]):

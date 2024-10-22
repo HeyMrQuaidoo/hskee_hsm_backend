@@ -59,10 +59,16 @@ class Invoice(Base):
     )
 
     # transactions
+    # transaction: Mapped["Transaction"] = relationship(
+    #     "Transaction",
+    #     primaryjoin="Invoice.invoice_number==Transaction.invoice_number",
+    #     back_populates="transaction_invoice",
+    #     lazy="selectin",
+    # )
     transaction: Mapped["Transaction"] = relationship(
         "Transaction",
         primaryjoin="Invoice.invoice_number==Transaction.invoice_number",
-        back_populates="transaction_invoice",
+        back_populates="invoice",
         lazy="selectin",
     )
 

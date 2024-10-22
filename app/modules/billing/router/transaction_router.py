@@ -1,25 +1,18 @@
 from typing import List
-from uuid import UUID
-from fastapi import Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
-# DAO
+# dao
 from app.modules.billing.dao.transaction_dao import TransactionDAO
 
-# Base CRUD Router
+# router
 from app.modules.common.router.base_router import BaseCRUDRouter
 
-# Schemas
+# schemas
 from app.modules.common.schema.schemas import TransactionSchema
 from app.modules.billing.schema.transaction_schema import (
     TransactionCreateSchema,
     TransactionUpdateSchema,
     TransactionResponse,
 )
-
-# Core
-from app.core.lifespan import get_db
-from app.core.errors import CustomException
 
 
 class TransactionRouter(BaseCRUDRouter):

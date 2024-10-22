@@ -12,10 +12,10 @@ from app.modules.properties.schema.mixins.property_mixin import (
 from app.modules.properties.models.unit import Units as UnitModel
 
 
-class UnitResponse(PropertyUnitBase, PropertyUnitInfoMixin):
+class UnitsResponse(PropertyUnitBase, PropertyUnitInfoMixin):
     @classmethod
     def model_validate(cls, property_unit: UnitModel):
-        return cls.get_property_unit_info(property_unit)
+        return cls.get_property_unit_info(property_unit).model_dump()
 
 
 class UnitCreateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):

@@ -72,6 +72,7 @@ class UtilitiesMixin:
             payment_type: PaymentTypeModel = entity_utility.payment_type
             utility: UtilitiesModel = entity_utility.utility
 
+            print("erlekjrl")
             result.append(
                 UtilityInfo(
                     utility=utility.name,

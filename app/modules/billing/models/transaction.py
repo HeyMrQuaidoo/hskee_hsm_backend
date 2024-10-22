@@ -4,11 +4,12 @@ from datetime import datetime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy import ForeignKey, DateTime, Enum, Integer, String, Text, UUID, event
 
-# models
-from app.modules.common.models.model_base import BaseModel as Base
-
 # enums
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum
+
+# models
+from app.modules.common.models.model_base import BaseModel as Base
+from app.modules.common.models.model_base_collection import BaseModelCollection
 
 
 class Transaction(Base):
@@ -51,7 +52,7 @@ class Transaction(Base):
             use_alter=True,
             name="fk_transaction_invoice_number",
         ),
-        nullable=True
+        nullable=True,
     )
 
     # payment_type
@@ -79,11 +80,12 @@ class Transaction(Base):
     )
 
     # invoice
-    transaction_invoice: Mapped["Invoice"] = relationship(
+    invoice: Mapped["Invoice"] = relationship(
         "Invoice",
         primaryjoin="Invoice.invoice_number==Transaction.invoice_number",
         back_populates="transaction",
         lazy="selectin",
+        collection_class=BaseModelCollection,
     )
 
 
@@ -104,3 +106,6 @@ def receive_after_insert(mapper, connection, target):
             .where(target.__table__.c.transaction_id == target.transaction_id)
             .values(transaction_number=target.transaction_number)
         )
+
+# register model
+Base.setup_model_dynamic_listener("transaction", Transaction)

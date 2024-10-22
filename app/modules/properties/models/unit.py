@@ -23,6 +23,8 @@ from app.modules.properties.models.property_unit_association import PropertyUnit
 # enums
 from app.modules.properties.enums.property_enums import PropertyStatus
 
+from app.modules.common.models.model_base import BaseModel as Base, BaseModelCollection
+
 
 # TODO: (DQ) Review calendar events
 # - review if this is needed is_contract_active
@@ -91,11 +93,11 @@ class Units(PropertyUnitAssoc):
     # utilities
     utilities: Mapped[List["EntityBillable"]] = relationship(
         "EntityBillable",
-        primaryjoin="and_(EntityBillable.entity_id==Units.property_unit_assoc_id, EntityBillable.entity_type=='units', EntityBillable.billable_type=='utilities')",
+        primaryjoin="and_(EntityBillable.entity_id==Units.property_unit_assoc_id,  EntityBillable.entity_type=='units', EntityBillable.billable_type=='utilities')",
         foreign_keys="[EntityBillable.entity_id]",
-        # overlaps="entity_billable,utilities",
         lazy="selectin",
         viewonly=True,
+        collection_class=BaseModelCollection,
     )
 
     # property
@@ -111,9 +113,11 @@ class Units(PropertyUnitAssoc):
         "Media",
         secondary="entity_media",
         primaryjoin="and_(EntityMedia.entity_id==Units.property_unit_assoc_id, EntityMedia.entity_type=='units')",
+        secondaryjoin="EntityMedia.media_id == Media.media_id",
         # overlaps="entity_media,media",
         lazy="selectin",
         viewonly=True,
+        collection_class=BaseModelCollection,
     )
 
     # entity_amenities
@@ -133,9 +137,14 @@ class Units(PropertyUnitAssoc):
         secondaryjoin="EntityAmenities.amenity_id == Amenities.amenity_id",
         lazy="selectin",
         viewonly=True,
+        collection_class=BaseModelCollection,
     )
 
     # property_assignment
     assigned_users: Mapped[List["PropertyAssignment"]] = relationship(
         "PropertyAssignment", lazy="selectin", viewonly=True
     )
+
+
+# Register model outside the class definition
+Base.setup_model_dynamic_listener("units", Units)
