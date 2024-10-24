@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 # schemas
 from app.modules.common.schema.base_schema import BaseSchema
@@ -16,7 +16,7 @@ from app.modules.billing.models.account import Account as AccountModel
 class AccountMixin(BaseSchema, AddressMixin):
     @classmethod
     def get_account_info(
-        cls, accounts: Union[AccountModel | List[AccountModel]]
+        cls, accounts: Union[AccountModel | List[AccountModel] | Any]
     ) -> List[AccountModel]:
         # create account model for each entity_account
         if not accounts and len(accounts) == 0:

@@ -32,7 +32,7 @@ class EntityAmenities(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "entity_type IN ('property')", name="check_entity_type_amenities"
+            "entity_type IN ('property', 'units')", name="check_entity_type_amenities"
         ),
     )
     # amenity
@@ -60,6 +60,10 @@ class EntityAmenities(Base):
 
         entity_map = {
             EntityTypeEnum.property: (
+                "property_unit_assoc",
+                "property_unit_assoc_id",
+            ),
+            EntityTypeEnum.units: (
                 "property_unit_assoc",
                 "property_unit_assoc_id",
             ),

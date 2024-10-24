@@ -1,7 +1,7 @@
-from pydantic import UUID4
-from sqlalchemy import UUID
+from uuid import UUID
 from datetime import datetime
 from typing import Any, List, Optional, Union
+
 
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.address.schema.address_schema import AddressBase
@@ -18,12 +18,12 @@ class PastRentalHistoryBase(BaseSchema):
     property_owner_mobile: str
     start_date: datetime
     end_date: datetime
-    user_id: Optional[UUID4] = None
+    user_id: Optional[UUID] = None
     address: Optional[List[AddressBase]] = []
 
 
 class PastRentalHistory(PastRentalHistoryBase, AddressMixin):
-    rental_history_id: UUID4
+    rental_history_id: UUID
 
     @classmethod
     def model_validate(cls, rental_history: PastRentalHistoryModel):
@@ -51,7 +51,7 @@ class PastRentalHistoryResponse(BaseSchema, AddressMixin):
     property_owner_mobile: Union[str | int] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    user_id: Optional[UUID4] = None
+    user_id: Optional[UUID] = None
     address: Optional[List[AddressBase]] = []
 
     @classmethod

@@ -5,9 +5,8 @@ from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, FileSystemLoader
 from smtplib import SMTP_SSL, SMTPAuthenticationError
 
-from app.config import template_path
-from app.utils.settings import settings
-from app.schema.message import EmailBody
+from app.core.config import template_path, settings
+from app.modules.auth.schema.auth_schema import EmailBody
 
 
 class EmailSendException(HTTPException):

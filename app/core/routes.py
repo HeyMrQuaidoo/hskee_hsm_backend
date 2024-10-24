@@ -5,17 +5,26 @@ from fastapi import APIRouter, FastAPI
 
 from app.modules.auth.router.role_router import RoleRouter
 from app.modules.auth.router.user_router import UserRouter
+from app.modules.billing.router.payment_type_router import PaymentTypeRouter
+from app.modules.billing.router.transaction_router import TransactionRouter
+from app.modules.billing.router.transaction_type_router import TransactionTypeRouter
+from app.modules.contract.router.contract_router import ContractRouter
+from app.modules.contract.router.contract_type_router import ContractTypeRouter
 from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.resources.router.media_router import MediaRouter
 from app.modules.billing.router.account_router import AccountRouter
 from app.modules.auth.router.permission_router import PermissionRouter
 from app.modules.properties.router.property_router import PropertyRouter
+from app.modules.auth.router.auth_router import AuthRouter
 
 router = APIRouter()
 
 
 def configure_routes(app: FastAPI):
     app.include_router(router)
+
+    # Create an instance of AuthRouter
+    app.include_router(AuthRouter(prefix="/auth", tags=["Auth"]).router)
 
     # Create an instance of RoleRouter
     app.include_router(RoleRouter(prefix="/roles", tags=["Roles"]).router)
@@ -56,6 +65,30 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of PropertyRouter
     app.include_router(PropertyRouter(prefix="/property", tags=["Property"]).router)
+
+    # Create an instance of ContractRouter
+    app.include_router(ContractRouter(prefix="/contract", tags=["Contract"]).router)
+
+    # Create an instance of PaymentTypeRouter
+    app.include_router(
+        PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router
+    )
+
+    # Create an instance of TransactionRouter
+    app.include_router(
+        TransactionRouter(prefix="/transaction", tags=["Transaction"]).router
+    )
+    # Create an instance of TransactionTypeRouter
+    app.include_router(
+        TransactionTypeRouter(
+            prefix="/transaction_type", tags=["TransactionType"]
+        ).router
+    )
+
+    # Create an instance of ContractTypeRouter
+    app.include_router(
+        ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router
+    )
 
     # Create an instance of UnitRouter
     app.include_router(UnitRouter(prefix="/unit", tags=["Unit"]).router)

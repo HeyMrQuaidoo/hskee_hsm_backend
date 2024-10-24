@@ -1,8 +1,12 @@
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.modules.billing.dao.invoice_dao import InvoiceDAO
+from app.modules.billing.dao.utility_dao import UtilityDAO
 from app.modules.common.dao.base_dao import BaseDAO
 
 # enums
+from app.modules.contract.dao.under_contract_dao import UnderContractDAO
+from app.modules.resources.dao.media_dao import MediaDAO
 from app.modules.resources.enums.resource_enums import MediaType
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
@@ -22,9 +26,18 @@ from app.services.upload_service import MediaUploaderService
 class ContractDAO(BaseDAO[Contract]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Contract
+
+        # DAOs for related entities
+        self.under_contract_dao = UnderContractDAO()
+        self.media_dao = MediaDAO()
+        self.utility_dao = UtilityDAO()
+        self.invoice_dao = InvoiceDAO()
+
         self.detail_mappings = {
-            "assigned_users": "ContractAssignment",
-            "media": "Media",
+            "media": self.media_dao,
+            "utilities": self.utility_dao,
+            "under_contract": self.under_contract_dao,
+            "invoices": self.invoice_dao,
         }
         super().__init__(
             model=self.model,
@@ -33,9 +46,7 @@ class ContractDAO(BaseDAO[Contract]):
             primary_key="contract_id",
         )
 
-    # Existing methods...
-
-    async def upload_media_to_contract(
+    async def upload_contract_media(
         self,
         db_session: AsyncSession,
         contract_id: str,

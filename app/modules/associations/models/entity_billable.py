@@ -1,6 +1,5 @@
-from typing import Optional
-
 import uuid
+from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import validates, relationship, Mapped, mapped_column
 from sqlalchemy import (
@@ -118,7 +117,7 @@ class EntityBillable(Base):
             ),
             EntityTypeEnum.contract: (
                 "contract",
-                "contract_number",
+                "contract_id",
             ),
         }
 

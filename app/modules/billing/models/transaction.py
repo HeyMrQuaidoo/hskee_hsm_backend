@@ -1,14 +1,26 @@
 import uuid
 import pytz
 from datetime import datetime
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from sqlalchemy import ForeignKey, DateTime, Enum, Integer, String, Text, UUID, event
-
-# models
-from app.modules.common.models.model_base import BaseModel as Base
+from importlib import import_module
+from sqlalchemy.orm import relationship, Session, Mapped, mapped_column
+from sqlalchemy import (
+    ForeignKey,
+    DateTime,
+    Enum,
+    Integer,
+    String,
+    Text,
+    UUID,
+    event,
+    inspect,
+)
 
 # enums
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum
+
+# models
+from app.modules.common.models.model_base import BaseModel as Base
+from app.modules.common.models.model_base_collection import BaseModelCollection
 
 
 class Transaction(Base):
@@ -51,6 +63,7 @@ class Transaction(Base):
             use_alter=True,
             name="fk_transaction_invoice_number",
         ),
+        nullable=True,
     )
 
     # payment_type
@@ -78,11 +91,12 @@ class Transaction(Base):
     )
 
     # invoice
-    transaction_invoice: Mapped["Invoice"] = relationship(
+    invoice: Mapped["Invoice"] = relationship(
         "Invoice",
         primaryjoin="Invoice.invoice_number==Transaction.invoice_number",
         back_populates="transaction",
         lazy="selectin",
+        collection_class=BaseModelCollection,
     )
 
 
@@ -103,3 +117,34 @@ def receive_after_insert(mapper, connection, target):
             .where(target.__table__.c.transaction_id == target.transaction_id)
             .values(transaction_number=target.transaction_number)
         )
+
+
+@event.listens_for(Transaction, "after_update")
+def update_transaction_number_on_invoice(mapper, connection, target):
+    # Check if the invoice_number is set on the Transaction object
+    state = inspect(target)
+
+    if state.attrs.invoice_number.history.has_changes():
+        models_module = import_module("app.modules.billing.models.invoice")
+        invoice_model = getattr(models_module, "Invoice")
+
+        # session = Session.object_session(target)  # Get the current session
+        session = Session(connection)
+        # Query the Invoice model to find the related invoice
+        invoice = (
+            session.query(invoice_model)
+            .filter_by(invoice_number=target.invoice_number)
+            .first()
+        )
+
+        if invoice:
+            # Update the transaction_number on the Invoice
+            invoice.transaction_number = target.transaction_number
+
+            # Commit the changes to the database
+            session.commit()
+        session.close()
+
+
+# register model
+Base.setup_model_dynamic_listener("transaction", Transaction)

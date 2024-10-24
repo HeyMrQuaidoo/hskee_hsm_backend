@@ -3,6 +3,7 @@ from typing import Annotated, Optional
 from pydantic import ConfigDict, constr
 
 # schema
+from app.modules.common.schema.base_schema import BaseFaker
 from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.resources.enums.resource_enums import MediaType
 
@@ -37,3 +38,32 @@ class MediaBase(BaseSchema):
 
 class Media(MediaBase):
     media_id: Optional[UUID]
+
+
+class MediaInfoMixin:
+    _media_name = BaseFaker.word()
+    _media_type = BaseFaker.random_choices(
+        ["image", "video", "audio", "document"], length=1
+    )
+    _content_url = BaseFaker.url()
+    _is_thumbnail = BaseFaker.boolean()
+    _caption = BaseFaker.sentence()
+    _description = BaseFaker.text(max_nb_chars=200)
+
+    _media_create_json = {
+        "media_name": _media_name,
+        "media_type": _media_type[0],
+        "content_url": _content_url,
+        "is_thumbnail": _is_thumbnail,
+        "caption": _caption,
+        "description": _description,
+    }
+
+    _media_update_json = {
+        "media_name": _media_name,
+        "media_type": _media_type[0],
+        "content_url": _content_url,
+        "is_thumbnail": _is_thumbnail,
+        "caption": _caption,
+        "description": _description,
+    }

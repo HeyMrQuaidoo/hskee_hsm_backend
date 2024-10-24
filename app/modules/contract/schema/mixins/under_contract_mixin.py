@@ -1,31 +1,63 @@
 from uuid import UUID
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 # enums
 from app.modules.contract.enums.contract_enums import ContractStatusEnum
 
 # schemas
-from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBase
-from app.modules.contract.schema.mixins.contract_mixin import ContractBase
-from app.modules.properties.schema.mixins.property_mixin import PropertyBase
+from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
+from app.modules.properties.schema.mixins.property_mixin import (
+    Property,
+    PropertyUnit,
+)
 
 
 class UnderContractBase(BaseSchema):
-    property_unit_assoc_id: UUID
+    property_unit_assoc_id: Optional[UUID] = None
     contract_status: Optional[ContractStatusEnum]
-    contract_number: str
+    contract_number: Optional[str] = None
     client_id: Optional[UUID] = None
     employee_id: Optional[UUID] = None
     start_date: datetime
     end_date: datetime
     next_payment_due: datetime
-    properties: Optional[List[PropertyBase]] = []
-    contract: Optional[List[ContractBase]] = []
-    employee_representative: Optional[List[UserBase]] = []
-    client_representative: Optional[List[UserBase]] = []
+    properties: Optional[Union[List[Property] | List[PropertyUnit]]] = []
+    employee_representative: Optional[Union[List[UserBase] | UserBase]] = []
+    client_representative: Optional[Union[List[UserBase] | UserBase]] = []
 
 
-class UnderContract(BaseSchema):
+class UnderContract(UnderContractBase):
     under_contract_id: Optional[UUID]
+
+
+class UnderContractInfoMixin:
+    # base attributes
+    _contract_status = BaseFaker.random_element([e.value for e in ContractStatusEnum])
+    _contract_number = f"CTR-{BaseFaker.bothify(text='#####')}"
+    _start_date = BaseFaker.date_this_year()
+    _end_date = BaseFaker.future_date()
+    _next_payment_due = BaseFaker.future_datetime()
+
+    _under_contract_create_json = {
+        "property_unit_assoc_id": str(BaseFaker.uuid4()),
+        "contract_status": _contract_status,
+        "contract_number": _contract_number,
+        "client_id": str(BaseFaker.uuid4()),
+        "employee_id": str(BaseFaker.uuid4()),
+        "start_date": _start_date.isoformat(),
+        "end_date": _end_date.isoformat(),
+        "next_payment_due": _next_payment_due.isoformat(),
+    }
+
+    _under_contract_update_json = {
+        "property_unit_assoc_id": str(BaseFaker.uuid4()),
+        "contract_status": _contract_status,
+        "contract_number": _contract_number,
+        "client_id": str(BaseFaker.uuid4()),
+        "employee_id": str(BaseFaker.uuid4()),
+        "start_date": _start_date.isoformat(),
+        "end_date": _end_date.isoformat(),
+        "next_payment_due": _next_payment_due.isoformat(),
+    }

@@ -2,29 +2,27 @@ from fastapi import UploadFile
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# Models
+# models
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.property import Property
 from app.modules.associations.models.entity_media import EntityMedia
 
-# Enums
+# enums
 from app.modules.resources.enums.resource_enums import MediaType
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
-# DAOs for relationships
+# daos
+from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.properties.dao.unit_dao import UnitDAO
 from app.modules.resources.dao.media_dao import MediaDAO
 from app.modules.billing.dao.utility_dao import UtilityDAO
 from app.modules.address.dao.address_dao import AddressDAO
 from app.modules.resources.dao.amenity_dao import AmenityDAO
 
-# Base DAO
-from app.modules.common.dao.base_dao import BaseDAO
-
-# Core
+# core
 from app.core.errors import RecordNotFoundException
 
-# Services
+# services
 from app.services.upload_service import MediaUploaderService
 
 
@@ -32,10 +30,9 @@ class PropertyDAO(BaseDAO[Property]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Property
 
-        # DAOs for related entities
-        self.address_dao = AddressDAO()
         self.unit_dao = UnitDAO()
         self.media_dao = MediaDAO()
+        self.address_dao = AddressDAO()
         self.amenity_dao = AmenityDAO()
         self.utility_dao = UtilityDAO()
 

@@ -15,7 +15,7 @@ class Invoice(Base):
     __tablename__ = "invoice"
     INVOICE_PREFIX: str = "INV"
 
-    id: Mapped[uuid.UUID] = mapped_column(
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         unique=True,
@@ -62,7 +62,7 @@ class Invoice(Base):
     transaction: Mapped["Transaction"] = relationship(
         "Transaction",
         primaryjoin="Invoice.invoice_number==Transaction.invoice_number",
-        back_populates="transaction_invoice",
+        back_populates="invoice",
         lazy="selectin",
     )
 
@@ -103,7 +103,7 @@ def receive_after_insert(mapper, connection, target):
         target.invoice_number = f"{Invoice.INVOICE_PREFIX}{current_time_str}"
         connection.execute(
             target.__table__.update()
-            .where(target.__table__.c.id == target.id)
+            .where(target.__table__.c.invoice_id == target.invoice_id)
             .values(invoice_number=target.invoice_number)
         )
 
@@ -114,6 +114,34 @@ def update_invoice_amount(mapper, connection, target):
     total_amount = sum(item.total_price for item in target.invoice_items)
     connection.execute(
         target.__table__.update()
-        .where(target.__table__.c.id == target.id)
+        .where(target.__table__.c.invoice_id == target.invoice_id)
         .values(invoice_amount=total_amount)
     )
+
+
+def parse_dates(mapper, connection, target):
+    """Listener to convert date_paid and date_to to a datetime if it's provided as a string."""
+    if isinstance(target.date_paid, str):
+        # Try to convert 'date_paid' string to datetime with or without microseconds
+        try:
+            target.date_paid = datetime.strptime(
+                target.date_paid, "%Y-%m-%d %H:%M:%S.%f"
+            )
+        except ValueError:
+            # Fallback to parsing without microseconds if not present
+            target.date_paid = datetime.strptime(target.date_paid, "%Y-%m-%d %H:%M:%S")
+
+    if isinstance(target.due_date, str):
+        # Try to convert 'due_date' string to datetime with or without microseconds
+        try:
+            target.due_date = datetime.strptime(target.due_date, "%Y-%m-%d %H:%M:%S.%f")
+        except ValueError:
+            # Fallback to parsing without microseconds if not present
+            target.due_date = datetime.strptime(target.due_date, "%Y-%m-%d %H:%M:%S")
+
+
+event.listen(Invoice, "before_insert", parse_dates)
+event.listen(Invoice, "before_update", parse_dates)
+
+# register model
+Base.setup_model_dynamic_listener("invoice", Invoice)

@@ -1,6 +1,8 @@
+from typing import List
 import uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import DateTime, ForeignKey, Enum, UUID, String
+from sqlalchemy import DateTime, ForeignKey, Enum, UUID, String, event
+from datetime import datetime
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
@@ -38,13 +40,36 @@ class UnderContract(Base):
     employee_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=True
     )
-    start_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
-    end_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
-    next_payment_due: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
+    start_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    next_payment_due: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     # properties
     properties: Mapped["PropertyUnitAssoc"] = relationship(
-        "PropertyUnitAssoc", back_populates="under_contract", lazy="selectin"
+        "PropertyUnitAssoc",
+        back_populates="under_contract",
+        lazy="selectin",
+        viewonly=True,
+    )
+
+    # property
+    property: Mapped[List["Property"]] = relationship(
+        "Property",
+        primaryjoin="UnderContract.property_unit_assoc_id == Property.property_unit_assoc_id",
+        foreign_keys="[Property.property_unit_assoc_id]",
+        # remote_side="[UnderContract.property_unit_assoc_id]",
+        lazy="selectin",
+        viewonly=True,
+    )
+
+    # units
+    units: Mapped[List["Units"]] = relationship(
+        "Units",
+        primaryjoin="UnderContract.property_unit_assoc_id == Units.property_unit_assoc_id",
+        foreign_keys="[Units.property_unit_assoc_id]",
+        # remote_side="[UnderContract.property_unit_assoc_id]",
+        lazy="selectin",
+        viewonly=True,
     )
 
     # contract
@@ -69,3 +94,42 @@ class UnderContract(Base):
         back_populates="employee_under_contract",
         lazy="selectin",
     )
+
+
+def parse_dates(mapper, connection, target):
+    """Listener to convert start date and date_to to a datetime if it's provided as a string."""
+    if isinstance(target.start_date, str):
+        # Try to convert 'start date' string to datetime with or without microseconds
+        try:
+            target.start_date = datetime.strptime(
+                target.start_date, "%Y-%m-%d %H:%M:%S.%f"
+            )
+        except ValueError:
+            # Fallback to parsing without microseconds if not present
+            target.start_date = datetime.strptime(
+                target.start_date, "%Y-%m-%d %H:%M:%S"
+            )
+
+    if isinstance(target.end_date, str):
+        # Try to convert 'end_date' string to datetime with or without microseconds
+        try:
+            target.end_date = datetime.strptime(target.end_date, "%Y-%m-%d %H:%M:%S.%f")
+        except ValueError:
+            # Fallback to parsing without microseconds if not present
+            target.end_date = datetime.strptime(target.end_date, "%Y-%m-%d %H:%M:%S")
+
+    if isinstance(target.next_payment_due, str):
+        # Try to convert 'next_payment_due' string to datetime with or without microseconds
+        try:
+            target.next_payment_due = datetime.strptime(
+                target.next_payment_due, "%Y-%m-%d %H:%M:%S.%f"
+            )
+        except ValueError:
+            # Fallback to parsing without microseconds if not present
+            target.next_payment_due = datetime.strptime(
+                target.next_payment_due, "%Y-%m-%d %H:%M:%S"
+            )
+
+
+event.listen(UnderContract, "before_insert", parse_dates)
+event.listen(UnderContract, "before_update", parse_dates)
