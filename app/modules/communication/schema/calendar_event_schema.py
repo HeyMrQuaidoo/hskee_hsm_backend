@@ -1,23 +1,47 @@
-from pydantic import UUID4
+from uuid import UUID
 from typing import Optional
 from datetime import datetime
+from pydantic import ConfigDict
 
-from app.modules.common.schema.base_schema import BaseSchema
+# Enums
+from app.modules.communication.enums.communication_enums import (
+    CalendarStatusEnum,
+    EventTypeEnum,
+)
 
+# Mixins
+from app.modules.communication.models.calendar_event import CalendarEvent
+from app.modules.communication.schema.mixins.calendar_event_mixin import (
+    CalendarEventBase,
+    CalendarEventInfoMixin,
+)
 
-class CalendarEventBase(BaseSchema):
-    # id: UUID4
-    # event_id: str
-    title: str
+class CalendarEventCreateSchema(CalendarEventBase, CalendarEventInfoMixin):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": CalendarEventInfoMixin._calendar_event_create_json
+        },
+    )
+
+class CalendarEventUpdateSchema(CalendarEventBase, CalendarEventInfoMixin):
+    title: Optional[str] = None
     description: Optional[str] = None
-    status: str
-    event_type: str
+    status: Optional[CalendarStatusEnum] = None
+    event_type: Optional[EventTypeEnum] = None
     event_start_date: Optional[datetime] = None
     event_end_date: Optional[datetime] = None
     completed_date: Optional[datetime] = None
-    organizer_id: UUID4
 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": CalendarEventInfoMixin._calendar_event_update_json
+        },
+    )
 
-class CalendarEvent(BaseSchema):
-    id: UUID4
+class CalendarEventResponse(CalendarEventBase, CalendarEventInfoMixin):
+    id: UUID
     event_id: str
+
+    @classmethod
+    def model_validate(cls, calendar_event: CalendarEvent):
+        return super().model_validate(calendar_event)

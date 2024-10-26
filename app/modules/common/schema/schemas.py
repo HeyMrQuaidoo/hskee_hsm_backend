@@ -4,6 +4,8 @@ from app.modules.auth.models.role import Role
 from app.modules.billing.models.payment_type import PaymentType
 from app.modules.billing.models.transaction import Transaction
 from app.modules.billing.models.transaction_type import TransactionType
+from app.modules.communication.models.calendar_event import CalendarEvent
+from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
@@ -44,6 +46,14 @@ PaymentTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 
 ContractTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     ContractType, excludes=["contract_type_id"]
+)
+
+MaintenanceRequestSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    MaintenanceRequest, excludes=["id"]
+)
+
+CalendarEventSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    CalendarEvent, excludes=["id"]
 )
 
 

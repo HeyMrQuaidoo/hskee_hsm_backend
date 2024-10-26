@@ -13,7 +13,7 @@ class EventTypeEnum(enum.Enum):
     meeting = "meeting"
     birthday = "birthday"
     inspection = "inspection"
-    maintenance_request = "maintenance_request"
+    maintenance_requests = "maintenance_requests"
 
 
 class MaintenanceStatusEnum(enum.Enum):

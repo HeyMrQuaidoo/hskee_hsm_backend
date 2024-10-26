@@ -8,6 +8,8 @@ from app.modules.auth.router.user_router import UserRouter
 from app.modules.billing.router.payment_type_router import PaymentTypeRouter
 from app.modules.billing.router.transaction_router import TransactionRouter
 from app.modules.billing.router.transaction_type_router import TransactionTypeRouter
+from app.modules.common.router.calendar_event_router import CalendarEventRouter
+from app.modules.communication.router.maintenance_request_router import MaintenanceRequestRouter
 from app.modules.contract.router.contract_router import ContractRouter
 from app.modules.contract.router.contract_type_router import ContractTypeRouter
 from app.modules.properties.router.unit_router import UnitRouter
@@ -71,7 +73,7 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of PaymentTypeRouter
     app.include_router(
-        PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router
+        PaymentTypeRouter(prefix="/payment-type", tags=["PaymentType"]).router
     )
 
     # Create an instance of TransactionRouter
@@ -81,13 +83,13 @@ def configure_routes(app: FastAPI):
     # Create an instance of TransactionTypeRouter
     app.include_router(
         TransactionTypeRouter(
-            prefix="/transaction_type", tags=["TransactionType"]
+            prefix="/transaction-type", tags=["TransactionType"]
         ).router
     )
 
     # Create an instance of ContractTypeRouter
     app.include_router(
-        ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router
+        ContractTypeRouter(prefix="/contract-type", tags=["ContractType"]).router
     )
 
     # Create an instance of UnitRouter
@@ -98,3 +100,9 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of AccountRouter
     app.include_router(AccountRouter(prefix="/account", tags=["Account"]).router)
+
+  # Create an instance of MaintenanceRequestRouter
+    app.include_router(MaintenanceRequestRouter(prefix="/maintenance-request", tags=["maintenanceRequest"]).router)
+
+  # Create an instance of EventTypeRouter
+    app.include_router(CalendarEventRouter(prefix="/calendar-event", tags=["calendarEvent"]).router)

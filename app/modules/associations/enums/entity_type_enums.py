@@ -5,7 +5,7 @@ class EntityTypeEnum(enum.Enum):
     property = "property"
     units = "units"
     utilities = "utilities"
-    contract = "contract"
+    contract = "contract",
     user = "user"
     role = "role"
     amenities = "amenities"
@@ -13,3 +13,5 @@ class EntityTypeEnum(enum.Enum):
     comapany = "comapany"
     entityamenities = "entityamenities"
     pastrentalhistory = "pastrentalhistory"
+    maintenancerequests = "maintenancerequests",
+
