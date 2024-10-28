@@ -31,7 +31,7 @@ class EntityMedia(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities', 'contract', 'maintenancerequests')",
+            "entity_type IN ('property', 'user', 'units', 'amenities', 'entityamenities', 'contract', 'maintenance_requests')",
             name="check_entity_type_media",
         ),
     )
@@ -69,7 +69,7 @@ class EntityMedia(Base):
             EntityTypeEnum.account: ("accounts", "account_id"),
             EntityTypeEnum.role: ("role", "role_id"),
             EntityTypeEnum.contract: ("contract", "contract_id"),  # Added 'contract'
-            EntityTypeEnum.maintenancerequests: ("maintenance_requests", "maintenance_request_id"),
+            EntityTypeEnum.maintenance_requests: ("maintenance_requests", "maintenance_request_id"),
         }
 
         if entity_type and EntityTypeEnum(str(entity_type)) in entity_map:

@@ -49,11 +49,11 @@ ContractTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 )
 
 MaintenanceRequestSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
-    MaintenanceRequest, excludes=["id"]
+    MaintenanceRequest, excludes=["maintenance_request_id"]
 )
 
 CalendarEventSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
-    CalendarEvent, excludes=["id"]
+    CalendarEvent, excludes=["calendar_event_id"]
 )
 
 

@@ -102,7 +102,7 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
         entity_media = EntityMedia(
             media_id=media.media_id,
             entity_id=request_id,
-            entity_type=EntityTypeEnum.maintenancerequests,
+            entity_type=EntityTypeEnum.maintenance_requests,
             media_type=media.media_type,
         )
         db_session.add(entity_media)

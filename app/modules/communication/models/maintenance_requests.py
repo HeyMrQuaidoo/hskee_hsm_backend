@@ -109,7 +109,7 @@ class MaintenanceRequest(Base):
     media: Mapped[List["Media"]] = relationship(
         "Media",
         secondary="entity_media",
-        primaryjoin="and_(MaintenanceRequest.maintenance_request_id == EntityMedia.entity_id, EntityMedia.entity_type == 'maintenancerequests')",
+        primaryjoin="and_(MaintenanceRequest.maintenance_request_id == EntityMedia.entity_id, EntityMedia.entity_type == 'maintenance_requests')",
         secondaryjoin="EntityMedia.media_id == Media.media_id",
         viewonly=True,
         lazy="selectin",

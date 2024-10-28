@@ -73,7 +73,7 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
     _media = [
         {
             "media_name": _media_name,
-            "media_type": _media_type[0],
+            "media_type": "image",
             "content_url": _content_url,
             "is_thumbnail": _is_thumbnail,
             "caption": _caption,
@@ -81,7 +81,7 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
         },
         {
                 "media_name": _media_name,
-                "media_type": _media_type[0],
+                "media_type": "image",
                 "content_url": _content_url,
                 "is_thumbnail": _is_thumbnail,
                 "caption": _caption,
