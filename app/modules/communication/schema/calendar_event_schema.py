@@ -16,12 +16,14 @@ from app.modules.communication.schema.mixins.calendar_event_mixin import (
     CalendarEventInfoMixin,
 )
 
+
 class CalendarEventCreateSchema(CalendarEventBase, CalendarEventInfoMixin):
     model_config = ConfigDict(
         json_schema_extra={
             "example": CalendarEventInfoMixin._calendar_event_create_json
         },
     )
+
 
 class CalendarEventUpdateSchema(CalendarEventBase, CalendarEventInfoMixin):
     title: Optional[str] = None
@@ -37,6 +39,7 @@ class CalendarEventUpdateSchema(CalendarEventBase, CalendarEventInfoMixin):
             "example": CalendarEventInfoMixin._calendar_event_update_json
         },
     )
+
 
 class CalendarEventResponse(CalendarEventBase, CalendarEventInfoMixin):
     id: UUID

@@ -8,4 +8,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_dir)
 
 # Add the project root to the Python module search path
-sys.path.append(project_root)
+sys.path.append(f"{project_root}/app")
+
+# from main import app as app

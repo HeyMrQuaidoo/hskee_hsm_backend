@@ -42,6 +42,7 @@ class PaymentTypeEnum(enum.Enum):
     bi_annual = "bi_annual"
     custom = "custom"
 
+
 class TransactionTypeEnum(enum.Enum):
     card = "card"
     mobile_money = "mobile_money"

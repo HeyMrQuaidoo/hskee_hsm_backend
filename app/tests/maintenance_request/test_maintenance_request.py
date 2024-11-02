@@ -10,7 +10,7 @@ from httpx import AsyncClient
 class TestMaintenanceRequest:
     default_maintenance_request: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_maintenance_request")
     async def test_create_maintenance_request(self, client: AsyncClient):
         response = await client.post(
@@ -30,7 +30,7 @@ class TestMaintenanceRequest:
 
         TestMaintenanceRequest.default_maintenance_request = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_maintenance_requests(self, client: AsyncClient):
         response = await client.get(
             "/maintenance_request/", params={"limit": 10, "offset": 0}
@@ -38,7 +38,7 @@ class TestMaintenanceRequest:
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["create_maintenance_request"], name="get_maintenance_request_by_id"
     )
@@ -50,7 +50,7 @@ class TestMaintenanceRequest:
         assert response.status_code == 200
         assert response.json()["data"]["task_number"] == maintenance_request_id
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_maintenance_request_by_id"],
         name="update_maintenance_request_by_id",
@@ -74,7 +74,7 @@ class TestMaintenanceRequest:
         assert response.status_code == 200
         assert response.json()["data"]["title"] == "Fix AC and Heater"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_maintenance_request_by_id"],
         name="delete_maintenance_request_by_id",

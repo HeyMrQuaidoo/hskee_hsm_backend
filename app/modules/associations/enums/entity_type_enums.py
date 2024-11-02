@@ -15,4 +15,3 @@ class EntityTypeEnum(enum.Enum):
     pastrentalhistory = "pastrentalhistory"
     # maintenancerequests = "maintenancerequests"
     maintenance_requests = "maintenance_requests"
-

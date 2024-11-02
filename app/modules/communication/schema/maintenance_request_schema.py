@@ -21,14 +21,20 @@ from app.modules.resources.schema.media_schema import MediaCreateSchema
 # Models
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 
-class MaintenanceRequestCreateSchema(MaintenanceRequestBase, MaintenanceRequestInfoMixin):
+
+class MaintenanceRequestCreateSchema(
+    MaintenanceRequestBase, MaintenanceRequestInfoMixin
+):
     model_config = ConfigDict(
         json_schema_extra={
             "example": MaintenanceRequestInfoMixin._maintenance_request_create_json
         },
     )
 
-class MaintenanceRequestUpdateSchema(MaintenanceRequestBase, MaintenanceRequestInfoMixin):
+
+class MaintenanceRequestUpdateSchema(
+    MaintenanceRequestBase, MaintenanceRequestInfoMixin
+):
     title: Optional[str] = None
     status: Optional[MaintenanceStatusEnum] = None
     priority: Optional[PriorityEnum] = None
@@ -40,6 +46,7 @@ class MaintenanceRequestUpdateSchema(MaintenanceRequestBase, MaintenanceRequestI
             "example": MaintenanceRequestInfoMixin._maintenance_request_update_json
         },
     )
+
 
 class MaintenanceRequestResponse(MaintenanceRequestBase, MaintenanceRequestInfoMixin):
     id: UUID

@@ -21,6 +21,7 @@ from app.modules.communication.schema.calendar_event_schema import (
 from app.core.lifespan import get_db
 from app.core.errors import CustomException
 
+
 class CalendarEventRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: CalendarEventDAO = CalendarEventDAO(excludes=[])

@@ -6,7 +6,7 @@ from httpx import AsyncClient
 class TestInvoice:
     default_invoice: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_invoice")
     async def test_create_invoice(self, client: AsyncClient):
         response = await client.post(
@@ -31,13 +31,13 @@ class TestInvoice:
         assert response.status_code == 200
         TestInvoice.default_invoice = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_invoices(self, client: AsyncClient):
         response = await client.get("/invoice/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_invoice"], name="get_invoice_by_id")
     async def test_get_invoice_by_id(self, client: AsyncClient):
         invoice_number = self.default_invoice["invoice_number"]
@@ -47,7 +47,7 @@ class TestInvoice:
         assert response.status_code == 200
         assert response.json()["data"]["invoice_number"] == invoice_number
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["get_invoice_by_id"], name="update_invoice_by_id")
     async def test_update_invoice(self, client: AsyncClient):
         invoice_number = self.default_invoice["invoice_number"]
@@ -80,7 +80,7 @@ class TestInvoice:
             == "Updated consulting services and utilities for the month of June 2024"
         )
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_invoice_by_id"], name="delete_invoice_by_id"
     )

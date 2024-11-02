@@ -9,6 +9,7 @@ from app.modules.common.dao.base_dao import BaseDAO
 # Models
 from app.modules.communication.models.calendar_event import CalendarEvent
 
+
 class CalendarEventDAO(BaseDAO[CalendarEvent]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = CalendarEvent

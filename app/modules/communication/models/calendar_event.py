@@ -79,6 +79,7 @@ def receive_after_insert(mapper, connection, target: CalendarEvent):
             .values(event_id=target.event_id)
         )
 
+
 def parse_dates(mapper, connection, target):
     """Listener to convert date_paid and date_to to a datetime if it's provided as a string."""
     if isinstance(target.event_start_date, str):
@@ -89,23 +90,33 @@ def parse_dates(mapper, connection, target):
             )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.event_start_date = datetime.strptime(target.event_start_date, "%Y-%m-%d %H:%M:%S")
+            target.event_start_date = datetime.strptime(
+                target.event_start_date, "%Y-%m-%d %H:%M:%S"
+            )
 
     if isinstance(target.event_end_date, str):
         # Try to convert 'event_end_date' string to datetime with or without microseconds
         try:
-            target.event_end_date = datetime.strptime(target.event_end_date, "%Y-%m-%d %H:%M:%S.%f")
+            target.event_end_date = datetime.strptime(
+                target.event_end_date, "%Y-%m-%d %H:%M:%S.%f"
+            )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.event_end_date = datetime.strptime(target.event_end_date, "%Y-%m-%d %H:%M:%S")
+            target.event_end_date = datetime.strptime(
+                target.event_end_date, "%Y-%m-%d %H:%M:%S"
+            )
 
     if isinstance(target.completed_date, str):
         # Try to convert 'completed_date' string to datetime with or without microseconds
         try:
-            target.completed_date = datetime.strptime(target.completed_date, "%Y-%m-%d %H:%M:%S.%f")
+            target.completed_date = datetime.strptime(
+                target.completed_date, "%Y-%m-%d %H:%M:%S.%f"
+            )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.completed_date = datetime.strptime(target.completed_date, "%Y-%m-%d %H:%M:%S")
+            target.completed_date = datetime.strptime(
+                target.completed_date, "%Y-%m-%d %H:%M:%S"
+            )
 
 
 event.listen(CalendarEvent, "before_insert", parse_dates)

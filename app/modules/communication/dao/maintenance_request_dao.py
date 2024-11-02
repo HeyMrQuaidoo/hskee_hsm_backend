@@ -28,7 +28,7 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
         self.calendar_event_dao = CalendarEventDAO()
 
         # DAOs for Media
-        self.media_dao = MediaDAO() 
+        self.media_dao = MediaDAO()
 
         # Detail mappings for creating related entities
         self.detail_mappings = {
@@ -42,7 +42,6 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
             excludes=excludes or [],
             primary_key="maintenance_request_id",
         )
-
 
     async def upload_request_media(
         self,
@@ -107,6 +106,3 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
         )
         db_session.add(entity_media)
         await db_session.commit()
-
-
-

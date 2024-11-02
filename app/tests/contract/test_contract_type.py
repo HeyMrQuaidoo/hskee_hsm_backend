@@ -6,7 +6,7 @@ from httpx import AsyncClient
 class TestContractType:
     default_contract_type: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_contract_type")
     async def test_create_contract_type(self, client: AsyncClient):
         response = await client.post(
@@ -17,7 +17,7 @@ class TestContractType:
 
         TestContractType.default_contract_type = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_contract_types(self, client: AsyncClient):
         response = await client.get(
             "/contract_type/", params={"limit": 10, "offset": 0}
@@ -25,7 +25,7 @@ class TestContractType:
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["create_contract_type"], name="get_contract_type_by_id"
     )
@@ -37,7 +37,7 @@ class TestContractType:
         assert response.status_code == 200
         assert response.json()["data"]["contract_type_id"] == contract_type_id
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_contract_type_by_id"], name="update_contract_type_by_id"
     )
@@ -51,7 +51,7 @@ class TestContractType:
         assert response.status_code == 200
         assert response.json()["data"]["contract_type_name"] == "lease"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_contract_type_by_id"], name="delete_contract_type_by_id"
     )

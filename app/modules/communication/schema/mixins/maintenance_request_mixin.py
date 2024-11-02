@@ -3,7 +3,10 @@ from typing import List, Optional
 from datetime import datetime
 
 # Enums
-from app.modules.communication.enums.communication_enums import EventTypeEnum, MaintenanceStatusEnum
+from app.modules.communication.enums.communication_enums import (
+    EventTypeEnum,
+    MaintenanceStatusEnum,
+)
 from app.modules.common.enums.common_enums import PriorityEnum
 
 # Base schema
@@ -16,8 +19,11 @@ from app.modules.communication.models.maintenance_requests import (
 
 # Mixins
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
-from app.modules.communication.schema.mixins.calendar_event_mixin import CalendarEventBase, CalendarEventInfoMixin
-from app.modules.resources.schema.media_schema import MediaBase 
+from app.modules.communication.schema.mixins.calendar_event_mixin import (
+    CalendarEventBase,
+    CalendarEventInfoMixin,
+)
+from app.modules.resources.schema.media_schema import MediaBase
 
 
 class MaintenanceRequestBase(BaseSchema):
@@ -32,6 +38,7 @@ class MaintenanceRequestBase(BaseSchema):
     is_emergency: bool
     calendar_event: Optional[CalendarEventBase] = None
     media: Optional[List[MediaBase]] = None
+
 
 class MaintenanceRequestInfoMixin(UserBaseMixin):
     # Faker attributes
@@ -56,8 +63,7 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
     _caption = BaseFaker.sentence()
     _description = BaseFaker.text(max_nb_chars=200)
 
-
-     # Faker attributes for calendar_event
+    # Faker attributes for calendar_event
     _calendar_event = {
         "title": _title,
         "description": _description,
@@ -69,7 +75,7 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
         "organizer_id": _requested_by,
     }
 
-     # Faker attributes for media
+    # Faker attributes for media
     _media = [
         {
             "media_name": _media_name,
@@ -80,13 +86,13 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
             "description": _description,
         },
         {
-                "media_name": _media_name,
-                "media_type": "image",
-                "content_url": _content_url,
-                "is_thumbnail": _is_thumbnail,
-                "caption": _caption,
-                "description": _description,
-            },
+            "media_name": _media_name,
+            "media_type": "image",
+            "content_url": _content_url,
+            "is_thumbnail": _is_thumbnail,
+            "caption": _caption,
+            "description": _description,
+        },
     ]
 
     _maintenance_request_create_json = {
@@ -136,5 +142,5 @@ class MaintenanceRequestInfoMixin(UserBaseMixin):
             ),
             media=[
                 MediaBase.model_validate(media) for media in maintenance_requests.media
-            ]
+            ],
         )

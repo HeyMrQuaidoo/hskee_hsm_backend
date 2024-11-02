@@ -6,7 +6,7 @@ from httpx import AsyncClient
 class TestTransactionType:
     default_transaction_type: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_transaction_type")
     async def test_create_transaction_type(self, client: AsyncClient):
         response = await client.post(
@@ -20,7 +20,7 @@ class TestTransactionType:
 
         TestTransactionType.default_transaction_type = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_transaction_types(self, client: AsyncClient):
         response = await client.get(
             "/transaction-type/", params={"limit": 10, "offset": 0}
@@ -28,7 +28,7 @@ class TestTransactionType:
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["create_transaction_type"], name="get_transaction_type_by_id"
     )
@@ -40,7 +40,7 @@ class TestTransactionType:
         assert response.status_code == 200
         assert response.json()["data"]["transaction_type_name"] == transaction_type_name
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_transaction_type_by_id"], name="update_transaction_type_by_id"
     )
@@ -60,7 +60,7 @@ class TestTransactionType:
             == "Sale transaction type"
         )
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_transaction_type_by_id"], name="delete_transaction_type_by_id"
     )

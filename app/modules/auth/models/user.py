@@ -210,7 +210,7 @@ class User(Base):
         "PastRentalHistory",
         foreign_keys="[PastRentalHistory.user_id]",
         back_populates="user",
-        lazy="selectin"
+        lazy="selectin",
     )
 
     def update_last_login_time(self):

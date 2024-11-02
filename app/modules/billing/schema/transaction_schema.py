@@ -25,7 +25,6 @@ class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
 
     @classmethod
     def model_validate(cls, transaction: TransactionModel):
-
         return cls(
             transaction_id=transaction.transaction_id,
             transaction_number=transaction.transaction_number,

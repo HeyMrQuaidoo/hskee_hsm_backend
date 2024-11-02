@@ -31,7 +31,7 @@ class PastRentalHistory(Base):
     user: Mapped["User"] = relationship(
         "User",
         back_populates="rental_history",
-        )
+    )
 
     # addresses
     address: Mapped[List["Addresses"]] = relationship(

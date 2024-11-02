@@ -17,13 +17,18 @@ from app.services.upload_service import MediaUploaderService
 
 # schemas
 from app.modules.resources.schema.mixins.media_mixin import MediaBase
-from app.modules.resources.schema.media_schema import MediaCreateSchema, MediaResponse, MediaUpdateSchema
+from app.modules.resources.schema.media_schema import (
+    MediaCreateSchema,
+    MediaResponse,
+    MediaUpdateSchema,
+)
+
 
 class MediaDAO(BaseDAO[Media]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Media
         self.detail_mappings = {}
-        
+
         super().__init__(
             model=self.model,
             detail_mappings=self.detail_mappings,
@@ -43,18 +48,16 @@ class MediaDAO(BaseDAO[Media]):
             media_store = self.model.__name__ if media_store is None else media_store
 
             # process media information
-            media_info = await self.upload_and_process_media(obj_in.model_dump(), media_store)
+            media_info = await self.upload_and_process_media(
+                obj_in.model_dump(), media_store
+            )
 
             # create new media
             new_media: Media = await super().create(
                 db_session=db_session, obj_in=media_info
             )
 
-            return (
-                new_media
-                if isinstance(new_media, DAOResponse)
-                else new_media
-            )
+            return new_media if isinstance(new_media, DAOResponse) else new_media
         except Exception as e:
             await db_session.rollback()
             return DAOResponse(success=False, error=f"{str(e)}")
