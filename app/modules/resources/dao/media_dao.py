@@ -43,7 +43,7 @@ class MediaDAO(BaseDAO[Media]):
             media_store = self.model.__name__ if media_store is None else media_store
 
             # process media information
-            media_info = await self.upload_and_process_media(obj_in, media_store)
+            media_info = await self.upload_and_process_media(obj_in.model_dump(), media_store)
 
             # create new media
             new_media: Media = await super().create(
