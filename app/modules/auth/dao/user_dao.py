@@ -1,4 +1,6 @@
 from typing import List, Optional
+from app.modules.properties.dao.property_assignment_dao import PropertyAssignmentDAO
+from app.modules.properties.dao.rental_history_dao import PastRentalHistoryDAO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -22,23 +24,13 @@ class UserDAO(BaseDAO[User]):
         self.role_dao = RoleDAO()
         self.address_dao = AddressDAO()
         self.account_dao = AccountDAO()
-        self.rental_history_dao = BaseDAO(
-            model=PastRentalHistory,
-            detail_mappings={"address": self.address_dao},
-            excludes=excludes,
-            primary_key="rental_history_id",
-        )
+        self.rental_history_dao = PastRentalHistoryDAO()
         self.detail_mappings = {
             "address": self.address_dao,
             "roles": self.role_dao,
             "rental_history": self.rental_history_dao,
             "accounts": self.account_dao,
-            "property_assignment": BaseDAO(
-                model=PropertyAssignment,
-                detail_mappings={},
-                excludes=excludes,
-                primary_key="property_assignment_id",
-            ),
+            "property_assignment": PropertyAssignmentDAO(),
         }
 
         super().__init__(
