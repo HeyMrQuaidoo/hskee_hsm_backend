@@ -6,7 +6,7 @@ from httpx import AsyncClient
 class TestPermissions:
     default_permission: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_permission")
     async def test_create_permission(self, client: AsyncClient):
         response = await client.post(
@@ -21,13 +21,13 @@ class TestPermissions:
 
         TestPermissions.default_permission = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_permissions(self, client: AsyncClient):
         response = await client.get("/permissions/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_permission"], name="get_permission_by_id")
     async def test_get_permission_by_id(self, client: AsyncClient):
         permission_id = self.default_permission["permission_id"]
@@ -37,7 +37,7 @@ class TestPermissions:
         assert response.status_code == 200
         assert response.json()["data"]["permission_id"] == permission_id
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_permission_by_id"], name="update_permission_by_id"
     )
@@ -55,7 +55,7 @@ class TestPermissions:
         assert response.status_code == 200
         assert response.json()["data"]["name"] == "write"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_permission_by_id"], name="delete_permission_by_id"
     )

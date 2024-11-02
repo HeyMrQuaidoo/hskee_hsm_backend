@@ -69,7 +69,10 @@ class EntityMedia(Base):
             EntityTypeEnum.account: ("accounts", "account_id"),
             EntityTypeEnum.role: ("role", "role_id"),
             EntityTypeEnum.contract: ("contract", "contract_id"),  # Added 'contract'
-            EntityTypeEnum.maintenance_requests: ("maintenance_requests", "maintenance_request_id"),
+            EntityTypeEnum.maintenance_requests: (
+                "maintenance_requests",
+                "maintenance_request_id",
+            ),
         }
 
         if entity_type and EntityTypeEnum(str(entity_type)) in entity_map:

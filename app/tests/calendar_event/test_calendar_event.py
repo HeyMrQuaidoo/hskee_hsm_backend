@@ -8,7 +8,7 @@ from httpx import AsyncClient
 class TestCalendarEvent:
     default_calendar_event: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_calendar_event")
     async def test_create_calendar_event(self, client: AsyncClient):
         response = await client.post(
@@ -28,7 +28,7 @@ class TestCalendarEvent:
 
         TestCalendarEvent.default_calendar_event = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_calendar_events(self, client: AsyncClient):
         response = await client.get(
             "/calendar_event/", params={"limit": 10, "offset": 0}
@@ -36,7 +36,7 @@ class TestCalendarEvent:
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["create_calendar_event"], name="get_calendar_event_by_id"
     )
@@ -48,7 +48,7 @@ class TestCalendarEvent:
         assert response.status_code == 200
         assert response.json()["data"]["event_id"] == calendar_event_id
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_calendar_event_by_id"], name="update_calendar_event_by_id"
     )
@@ -71,7 +71,7 @@ class TestCalendarEvent:
         assert response.status_code == 200
         assert response.json()["data"]["title"] == "Updated Meeting"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_calendar_event_by_id"], name="delete_calendar_event_by_id"
     )

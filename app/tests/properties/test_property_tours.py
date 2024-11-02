@@ -5,7 +5,7 @@
 # class TestPropertyTours:
 #     default_property_tour: Dict[str, Any] = {}
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(name="create_property_tour")
 #     async def test_create_property_tour(self, client: AsyncClient):
 #         response = await client.post(
@@ -25,13 +25,13 @@
 
 #         TestPropertyTours.default_property_tour = response.json()["data"]
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     async def test_get_all_property_tours(self, client: AsyncClient):
 #         response = await client.get("/tour_booking/", params={"limit": 10, "offset": 0})
 #         assert response.status_code == 200
 #         assert isinstance(response.json(), dict)
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["create_property_tour"], name="get_property_tour_by_id")
 #     async def test_get_property_tour_by_id(self, client: AsyncClient):
 #         property_tour_id = self.default_property_tour["property_tour_id"]
@@ -41,7 +41,7 @@
 #         assert response.status_code == 200
 #         assert response.json()["data"]["property_tour_id"] == property_tour_id
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["get_property_tour_by_id"], name="update_property_tour_by_id")
 #     async def test_update_property_tour(self, client: AsyncClient):
 #         property_tour_id = self.default_property_tour["property_tour_id"]
@@ -62,7 +62,7 @@
 #         assert response.status_code == 200
 #         assert response.json()["data"]["name"] == "Jane Doe"
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["update_property_tour_by_id"], name="delete_property_tour_by_id")
 #     async def test_delete_property_tour(self, client: AsyncClient):
 #         property_tour_id = self.default_property_tour["property_tour_id"]

@@ -6,7 +6,7 @@
 # class TestMessages:
 #     default_message: Dict[str, Any] = {}
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(name="create_message")
 #     async def test_create_message(self, client: AsyncClient):
 #         response = await client.post(
@@ -27,13 +27,13 @@
 
 #         TestMessages.default_message = response.json()["data"]
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     async def test_get_all_messages(self, client: AsyncClient):
 #         response = await client.get("/messages/", params={"limit": 10, "offset": 0})
 #         assert response.status_code == 200
 #         assert isinstance(response.json(), dict)
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["create_message"], name="get_message_by_id")
 #     async def test_get_message_by_id(self, client: AsyncClient):
 #         message_id = self.default_message["message_id"]
@@ -43,7 +43,7 @@
 #         assert response.status_code == 200
 #         assert response.json()["data"]["message_id"] == message_id
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["get_message_by_id"], name="update_message_by_id")
 #     async def test_update_message(self, client: AsyncClient):
 #         message_id = self.default_message["message_id"]
@@ -65,7 +65,7 @@
 #         assert response.status_code == 200
 #         assert response.json()["data"]["subject"] == "Updated Subject"
 
-#     @pytest.mark.asyncio(scope="session")
+#     @pytest.mark.asyncio(loop_scope="session")
 #     @pytest.mark.dependency(depends=["update_message_by_id"], name="delete_message_by_id")
 #     async def test_delete_message(self, client: AsyncClient):
 #         message_id = self.default_message["message_id"]

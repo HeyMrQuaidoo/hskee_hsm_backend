@@ -7,7 +7,7 @@ class TestTransaction:
     default_invoice: Dict[str, Any] = {}
     default_transaction: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_invoice")
     async def test_create_invoice(self, client: AsyncClient):
         response = await client.post(
@@ -33,7 +33,7 @@ class TestTransaction:
 
         TestTransaction.default_invoice = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_invoice"], name="create_transaction")
     async def test_create_transaction(self, client: AsyncClient):
         response = await client.post(
@@ -54,13 +54,13 @@ class TestTransaction:
 
         TestTransaction.default_transaction = response.json()["data"]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_transactions(self, client: AsyncClient):
         response = await client.get("/transaction/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["create_transaction"], name="get_transaction_by_id"
     )
@@ -72,7 +72,7 @@ class TestTransaction:
         assert response.status_code == 200
         assert response.json()["data"]["transaction_number"] == transaction_number
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_transaction_by_id"], name="update_transaction_by_id"
     )
@@ -96,7 +96,7 @@ class TestTransaction:
         assert response.status_code == 200
         assert response.json()["data"]["transaction_status"] == "completed"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_transaction_by_id"], name="delete_transaction_by_id"
     )
@@ -111,7 +111,7 @@ class TestTransaction:
         assert response.status_code == 200
         assert response.json()["data"] == {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["delete_transaction_by_id"], name="delete_invoice_by_id"
     )

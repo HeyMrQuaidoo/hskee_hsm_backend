@@ -17,6 +17,7 @@ from app.modules.communication.models.calendar_event import (
 )
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 
+
 class CalendarEventBase(BaseSchema):
     title: str
     description: Optional[str] = None
@@ -26,6 +27,7 @@ class CalendarEventBase(BaseSchema):
     event_end_date: Optional[datetime] = None
     completed_date: Optional[datetime] = None
     organizer_id: UUID
+
 
 class CalendarEventInfoMixin(UserBaseMixin):
     # Faker attributes

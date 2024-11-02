@@ -50,9 +50,11 @@ class MaintenanceRequest(Base):
     )
     is_emergency: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-   # Foreign key to CalendarEvent
+    # Foreign key to CalendarEvent
     calendar_event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("calendar_events.calendar_event_id"), nullable=True
+        UUID(as_uuid=True),
+        ForeignKey("calendar_events.calendar_event_id"),
+        nullable=True,
     )
     # property
     property: Mapped["Property"] = relationship(
@@ -92,7 +94,6 @@ class MaintenanceRequest(Base):
     user: Mapped["User"] = relationship(
         "User", back_populates="maintenance_requests", lazy="selectin"
     )
-
 
     # CalendarEvent
     calendar_event: Mapped[Optional["CalendarEvent"]] = relationship(
@@ -146,15 +147,21 @@ def parse_dates(mapper, connection, target):
             )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.scheduled_date = datetime.strptime(target.scheduled_date, "%Y-%m-%d %H:%M:%S")
+            target.scheduled_date = datetime.strptime(
+                target.scheduled_date, "%Y-%m-%d %H:%M:%S"
+            )
 
     if isinstance(target.completed_date, str):
         # Try to convert 'completed_date' string to datetime with or without microseconds
         try:
-            target.completed_date = datetime.strptime(target.completed_date, "%Y-%m-%d %H:%M:%S.%f")
+            target.completed_date = datetime.strptime(
+                target.completed_date, "%Y-%m-%d %H:%M:%S.%f"
+            )
         except ValueError:
             # Fallback to parsing without microseconds if not present
-            target.completed_date = datetime.strptime(target.completed_date, "%Y-%m-%d %H:%M:%S")
+            target.completed_date = datetime.strptime(
+                target.completed_date, "%Y-%m-%d %H:%M:%S"
+            )
 
 
 event.listen(MaintenanceRequest, "before_insert", parse_dates)

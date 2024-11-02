@@ -9,7 +9,7 @@ from httpx import AsyncClient
 class TestUsers:
     default_user: Dict[str, Any] = {}
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_user")
     async def test_create_user(self, client: AsyncClient):
         response = await client.post(
@@ -64,13 +64,13 @@ class TestUsers:
 
         TestUsers.default_user = response.json()["data"][0]
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_users(self, client: AsyncClient):
         response = await client.get("/users/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_user"], name="get_user_by_id")
     async def test_get_user_by_id(self, client: AsyncClient):
         user_id = self.default_user["user_id"]
@@ -80,7 +80,7 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["data"]["user_id"] == user_id
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["get_user_by_id"], name="update_user_by_id")
     async def test_update_user(self, client: AsyncClient):
         user_id = self.default_user["user_id"]
@@ -135,7 +135,7 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["data"]["first_name"] == "John Updated"
 
-    @pytest.mark.asyncio(scope="session")
+    @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["update_user_by_id"], name="delete_user_by_id")
     async def test_delete_user(self, client: AsyncClient):
         user_id = self.default_user["user_id"]
