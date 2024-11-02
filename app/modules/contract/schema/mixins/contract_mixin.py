@@ -112,8 +112,8 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
         ],
         "invoices": [
             {
-                "issued_by": "d0e356e8-4a7f-43ed-b395-3366a773ab19",
-                "issued_to": "d0e356e8-4a7f-43ed-b395-3366a773ab19",
+                "issued_by": "e0cadbcb-fae1-4ae5-97ea-26acb80e20a5",
+                "issued_to": "0803b131-0416-4aad-aaf8-3678ef108a55",
                 "invoice_details": BaseFaker.text(max_nb_chars=200),
                 "invoice_amount": _invoice_amount,
                 "due_date": BaseFaker.future_datetime().isoformat(),
@@ -131,10 +131,10 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
         ],
         "under_contract": [
             {
-                "property_unit_assoc_id": "b9f0ba78-34b3-4e5d-811c-5d84ed1cacd9",
+                "property_unit_assoc_id": "5afb1996-e135-470f-a267-8a937be11be8",
                 "contract_status": _contract_status,
-                "client_id": "d0e356e8-4a7f-43ed-b395-3366a773ab19",
-                "employee_id": "d0e356e8-4a7f-43ed-b395-3366a773ab19",
+                "client_id": "e0cadbcb-fae1-4ae5-97ea-26acb80e20a5",
+                "employee_id": "0803b131-0416-4aad-aaf8-3678ef108a55",
                 "start_date": _start_date.isoformat(),
                 "end_date": _end_date.isoformat(),
                 "next_payment_due": BaseFaker.future_datetime().isoformat(),
@@ -299,7 +299,7 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
 
     @classmethod
     def get_utilities_info(cls, entity_utilities: List[EntityBillableModel]):
-        return (
+        value = (
             [
                 UtilityResponse.model_validate(
                     {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
@@ -309,6 +309,7 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
             if entity_utilities
             else []
         )
+        return value
 
     @classmethod
     def get_invoices_info(cls, invoices):

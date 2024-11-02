@@ -366,6 +366,7 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
                 ],
                 "property_assignment": [
                     {
+                        "property_unit_assoc_id": "5afb1996-e135-470f-a267-8a937be11be8",
                         "assignment_type": _assignment_type[0],
                         "date_from": _date_from,
                         "date_to": _date_to,

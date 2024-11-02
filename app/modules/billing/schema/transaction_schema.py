@@ -25,7 +25,6 @@ class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
 
     @classmethod
     def model_validate(cls, transaction: TransactionModel):
-        print(f"DO I EVER REACH HERE: {transaction}")
 
         return cls(
             transaction_id=transaction.transaction_id,
