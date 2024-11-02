@@ -12,7 +12,7 @@ class TestCalendarEvent:
     @pytest.mark.dependency(name="create_calendar_event")
     async def test_create_calendar_event(self, client: AsyncClient):
         response = await client.post(
-            "/calendar_event/",
+            "/calendar-event/",
             json={
                 "title": "Meeting",
                 "description": "Team meeting",
@@ -31,7 +31,7 @@ class TestCalendarEvent:
     @pytest.mark.asyncio(scope="session")
     async def test_get_all_calendar_events(self, client: AsyncClient):
         response = await client.get(
-            "/calendar_event/", params={"limit": 10, "offset": 0}
+            "/calendar-event/", params={"limit": 10, "offset": 0}
         )
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
@@ -43,7 +43,7 @@ class TestCalendarEvent:
     async def test_get_calendar_event_by_id(self, client: AsyncClient):
         calendar_event_id = self.default_calendar_event["event_id"]
 
-        response = await client.get(f"/calendar_event/{calendar_event_id}")
+        response = await client.get(f"/calendar-event/{calendar_event_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["event_id"] == calendar_event_id
@@ -56,7 +56,7 @@ class TestCalendarEvent:
         calendar_event_id = self.default_calendar_event["event_id"]
 
         response = await client.put(
-            f"/calendar_event/{calendar_event_id}",
+            f"/calendar-event/{calendar_event_id}",
             json={
                 "title": "Updated Meeting",
                 "description": "Updated team meeting",
@@ -79,10 +79,10 @@ class TestCalendarEvent:
         calendar_event_get_id = self.default_calendar_event["event_id"]
         # calendar_event_id = self.default_calendar_event["id"]
 
-        response = await client.delete(f"/calendar_event/{calendar_event_get_id}")
+        response = await client.delete(f"/calendar-event/{calendar_event_get_id}")
         assert response.status_code == 204
 
         # Verify the calendar event is deleted
-        response = await client.get(f"/calendar_event/{calendar_event_get_id}")
+        response = await client.get(f"/calendar-event/{calendar_event_get_id}")
         assert response.status_code == 200
         assert response.json()["data"] == {}
