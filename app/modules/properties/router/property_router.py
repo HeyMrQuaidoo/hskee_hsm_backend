@@ -1,9 +1,11 @@
 from typing import List, Optional
+from uuid import UUID
 from pydantic import UUID4
-from fastapi import Depends, UploadFile, File, Form, status
+from fastapi import Depends, Query, UploadFile, File, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # DAO
+from app.core.response import DAOResponse
 from app.modules.properties.dao.property_dao import PropertyDAO
 
 # Router
@@ -31,7 +33,7 @@ class PropertyRouter(BaseCRUDRouter):
 
         super().__init__(dao=self.dao, schemas=PropertySchema, prefix=prefix, tags=tags)
         self.register_routes()
-
+            
     def register_routes(self):
         @self.router.post(
             "/{property_id}/upload_media", status_code=status.HTTP_201_CREATED

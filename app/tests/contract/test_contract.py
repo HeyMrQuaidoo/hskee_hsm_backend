@@ -124,6 +124,7 @@ class TestContract:
         TestContract.default_contract = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
+    @pytest.mark.dependency(depends=["create_contract"], name="get_contract_by")
     async def test_get_all_contracts(self, client: AsyncClient):
         response = await client.get("/contract/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200

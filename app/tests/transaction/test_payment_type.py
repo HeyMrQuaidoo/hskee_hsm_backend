@@ -10,7 +10,7 @@ class TestPaymentType:
     @pytest.mark.dependency(name="create_payment_type")
     async def test_create_payment_type(self, client: AsyncClient):
         response = await client.post(
-            "/payment_type/",
+            "/payment-type/",
             json={
                 "payment_type_name": "partial_pay_four_month",
                 "payment_type_description": "Pay every four months payment plan",
@@ -23,7 +23,7 @@ class TestPaymentType:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_payment_types(self, client: AsyncClient):
-        response = await client.get("/payment_type/", params={"limit": 10, "offset": 0})
+        response = await client.get("/payment-type/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
@@ -34,7 +34,7 @@ class TestPaymentType:
     async def test_get_payment_type_by_id(self, client: AsyncClient):
         payment_type_id = self.default_payment_type["payment_type_id"]
 
-        response = await client.get(f"/payment_type/{payment_type_id}")
+        response = await client.get(f"/payment-type/{payment_type_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["payment_type_id"] == payment_type_id
@@ -47,7 +47,7 @@ class TestPaymentType:
         payment_type_id = self.default_payment_type["payment_type_id"]
 
         response = await client.put(
-            f"/payment_type/{payment_type_id}",
+            f"/payment-type/{payment_type_id}",
             json={
                 "payment_type_name": "recurring",
                 "payment_type_description": "Recurring payment",
@@ -64,9 +64,9 @@ class TestPaymentType:
     async def test_delete_payment_type(self, client: AsyncClient):
         payment_type_id = self.default_payment_type["payment_type_id"]
 
-        response = await client.delete(f"/payment_type/{payment_type_id}")
+        response = await client.delete(f"/payment-type/{payment_type_id}")
         assert response.status_code == 204
 
         # Verify the payment type is deleted
-        response = await client.get(f"/payment_type/{payment_type_id}")
+        response = await client.get(f"/payment-type/{payment_type_id}")
         assert response.status_code == 404

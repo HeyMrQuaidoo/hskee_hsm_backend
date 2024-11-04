@@ -1,8 +1,11 @@
+from uuid import UUID
 from fastapi import UploadFile
 from typing import Optional, List
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # models
+from app.core.response import DAOResponse
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.property import Property
 from app.modules.associations.models.entity_media import EntityMedia
@@ -20,7 +23,7 @@ from app.modules.address.dao.address_dao import AddressDAO
 from app.modules.resources.dao.amenity_dao import AmenityDAO
 
 # core
-from app.core.errors import RecordNotFoundException
+from app.core.errors import CustomException, RecordNotFoundException
 
 # services
 from app.services.upload_service import MediaUploaderService
@@ -51,6 +54,29 @@ class PropertyDAO(BaseDAO[Property]):
             primary_key="property_unit_assoc_id",
         )
 
+    async def get_properties(
+            self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
+        ) -> DAOResponse:
+            try:
+                query = select(self.model)
+                if user_id:
+                    query = query.where(self.model.user_id == user_id)
+                query = query.limit(limit).offset(offset)
+                result = await db_session.execute(query)
+                items = result.scalars().all()
+
+                # Build pagination metadata
+                total_items = await db_session.execute(select(func.count()).select_from(query.subquery()))
+                total_count = total_items.scalar()
+                meta = {
+                    "total_items": total_count,
+                    "limit": limit,
+                    "offset": offset,
+                }
+
+                return DAOResponse(success=True, data=items, meta=meta)
+            except Exception as e:
+                raise CustomException(str(e))
     async def upload_media(
         self,
         property_id: str,

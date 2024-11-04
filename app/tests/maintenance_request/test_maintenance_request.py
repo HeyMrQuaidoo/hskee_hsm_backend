@@ -14,7 +14,7 @@ class TestMaintenanceRequest:
     @pytest.mark.dependency(name="create_maintenance_request")
     async def test_create_maintenance_request(self, client: AsyncClient):
         response = await client.post(
-            "/maintenance_request/",
+            "/maintenance-request/",
             json={
                 "title": "Fix AC",
                 "description": "Air conditioning needs repair",
@@ -33,7 +33,7 @@ class TestMaintenanceRequest:
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_maintenance_requests(self, client: AsyncClient):
         response = await client.get(
-            "/maintenance_request/", params={"limit": 10, "offset": 0}
+            "/maintenance-request/", params={"limit": 10, "offset": 0}
         )
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
@@ -45,7 +45,7 @@ class TestMaintenanceRequest:
     async def test_get_maintenance_request_by_id(self, client: AsyncClient):
         maintenance_request_id = self.default_maintenance_request["task_number"]
 
-        response = await client.get(f"/maintenance_request/{maintenance_request_id}")
+        response = await client.get(f"/maintenance-request/{maintenance_request_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["task_number"] == maintenance_request_id
@@ -59,7 +59,7 @@ class TestMaintenanceRequest:
         maintenance_request_id = self.default_maintenance_request["task_number"]
 
         response = await client.put(
-            f"/maintenance_request/{maintenance_request_id}",
+            f"/maintenance-request/{maintenance_request_id}",
             json={
                 "title": "Fix AC and Heater",
                 "description": "AC and Heater need repair",
@@ -82,10 +82,10 @@ class TestMaintenanceRequest:
     async def test_delete_maintenance_request(self, client: AsyncClient):
         maintenance_request_id = self.default_maintenance_request["task_number"]
 
-        response = await client.delete(f"/maintenance_request/{maintenance_request_id}")
+        response = await client.delete(f"/maintenance-request/{maintenance_request_id}")
         assert response.status_code == 204
 
         # Verify the maintenance request is deleted
-        response = await client.get(f"/maintenance_request/{maintenance_request_id}")
+        response = await client.get(f"/maintenance-request/{maintenance_request_id}")
         assert response.status_code == 200
         assert response.json()["data"] == {}

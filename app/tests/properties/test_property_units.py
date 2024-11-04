@@ -94,7 +94,7 @@ class TestUnits:
         utility = response_utility.json()["data"][0]
 
         response = await client.post(
-            "/units/",
+            "/unit/",
             json={
                 "property_id": TestUnits.default_property["property_unit_assoc_id"],
                 "property_unit_code": "string",
@@ -137,7 +137,7 @@ class TestUnits:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_units(self, client: AsyncClient):
-        response = await client.get("/units/", params={"limit": 10, "offset": 0})
+        response = await client.get("/unit/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
@@ -146,7 +146,7 @@ class TestUnits:
     async def test_get_unit_by_id(self, client: AsyncClient):
         unit_id = self.default_unit["property_unit_assoc_id"]
 
-        response = await client.get(f"/units/{unit_id}")
+        response = await client.get(f"/unit/{unit_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["property_unit_assoc_id"] == unit_id
@@ -157,7 +157,7 @@ class TestUnits:
         unit_id = self.default_unit["property_unit_assoc_id"]
 
         response = await client.put(
-            f"/units/{unit_id}",
+            f"/unit/{unit_id}",
             json={
                 "property_id": TestUnits.default_property["property_unit_assoc_id"],
                 "property_unit_code": "updated_code",
@@ -190,11 +190,11 @@ class TestUnits:
     async def test_delete_unit(self, client: AsyncClient):
         unit_id = self.default_unit["property_unit_assoc_id"]
 
-        response = await client.delete(f"/units/{unit_id}")
+        response = await client.delete(f"/unit/{unit_id}")
         assert response.status_code == 204
 
         # Verify the unit is deleted
-        response = await client.get(f"/units/{unit_id}")
+        response = await client.get(f"/unit/{unit_id}")
         assert response.status_code == 200
         assert response.json()["data"] == {}
 
