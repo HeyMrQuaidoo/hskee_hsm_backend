@@ -133,7 +133,7 @@ class TestContractAssignments:
     )
     async def test_create_contract_assignment(self, client: AsyncClient):
         response = await client.post(
-            "/assign_contracts/",
+            "assign-contracts/",
             json={
                 "contract_id": self.default_contract["contract_number"],
                 "client_id": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
@@ -151,7 +151,7 @@ class TestContractAssignments:
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_contract_assignments(self, client: AsyncClient):
         response = await client.get(
-            "/assign_contracts/", params={"limit": 10, "offset": 0}
+            "assign-contracts/", params={"limit": 10, "offset": 0}
         )
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
@@ -164,7 +164,7 @@ class TestContractAssignments:
         under_contract_id = self.default_contract["contract_info"][0][
             "under_contract_id"
         ]
-        response = await client.get(f"/assign_contracts/{under_contract_id}")
+        response = await client.get(f"assign-contracts/{under_contract_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["under_contract_id"] == under_contract_id
@@ -180,7 +180,7 @@ class TestContractAssignments:
         ]
 
         response = await client.put(
-            f"/assign_contracts/{under_contract_id}",
+            f"assign-contracts/{under_contract_id}",
             json={
                 "contract_id": self.default_contract["contract_number"],
                 "client_id": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
@@ -207,9 +207,9 @@ class TestContractAssignments:
             "under_contract_id"
         ]
 
-        response = await client.delete(f"/assign_contracts/{under_contract_id}")
+        response = await client.delete(f"assign-contracts/{under_contract_id}")
         assert response.status_code == 204
 
         # Verify the contract assignment is deleted
-        response = await client.get(f"/assign_contracts/{under_contract_id}")
+        response = await client.get(f"assign-contracts/{under_contract_id}")
         assert response.status_code == 404

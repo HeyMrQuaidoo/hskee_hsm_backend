@@ -1,22 +1,18 @@
 from pydantic import ConfigDict
 from datetime import date, datetime
 
-# schema
-from app.modules.properties.schema.mixins.property_mixin import (
-    PropertyDetailsMixin,
-)
+# schema imports
+from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
 from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
 )
 
 # models
-from app.modules.properties.models.property_assignment import (
-    PropertyAssignment as PropertyAssignmentModel,
-)
+from app.modules.properties.models.property_assignment import PropertyAssignment as PropertyAssignmentModel
 
 
-class PropertyAssignmentCreate(PropertyAssignmentBase, PropertyAssignmentMixin):
+class PropertyAssignmentCreate(PropertyAssignmentBase):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
@@ -31,8 +27,9 @@ class PropertyAssignmentCreate(PropertyAssignmentBase, PropertyAssignmentMixin):
 
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
+        # Using the model fields directly from the property assignment instance
         return cls(
-            property_unit_assoc_id=property_assignment.property_assignment_id,
+            property_unit_assoc_id=property_assignment.property_unit_assoc_id,
             user_id=property_assignment.user_id,
             assignment_type=property_assignment.assignment_type,
             date_from=property_assignment.date_from,
@@ -57,7 +54,7 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
         return cls(
-            property_unit_assoc_id=property_assignment.property_assignment_id,
+            property_unit_assoc_id=property_assignment.property_unit_assoc_id,
             user_id=property_assignment.user_id,
             assignment_type=property_assignment.assignment_type,
             date_from=property_assignment.date_from,
@@ -66,7 +63,9 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
         ).model_dump()
 
 
-class PropertyAssignmentResponse(PropertyAssignmentBase, PropertyDetailsMixin):
+class PropertyAssignmentResponse(PropertyAssignmentBase):
+    property_info: PropertyDetailsMixin = None  # Use composition for property details
+
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
         return cls(

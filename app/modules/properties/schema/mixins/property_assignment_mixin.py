@@ -5,14 +5,10 @@ from typing import Any, List, Optional, Union
 from pydantic import ConfigDict, model_validator
 
 # schemas
-from app.modules.common.schema.base_schema import BaseFaker
-from app.modules.common.schema.base_schema import BaseSchema
+from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBase
 from app.modules.properties.schema.mixins.property_mixin import (
-    PropertyBase,
-    PropertyUnitBase,
-    PropertyDetailsMixin,
-    PropertyUnitAssocBase,
+    PropertyDetailsMixin,  # Use directly instead of inheriting
 )
 
 # models
@@ -25,7 +21,6 @@ class AssignmentType(str, Enum):
     """
     Enum representing types of assignments.
     """
-
     other = "other"
     handler = "handler"
     landlord = "landlord"
@@ -34,24 +29,17 @@ class AssignmentType(str, Enum):
 
 class PropertyAssignmentBase(BaseSchema):
     property_unit_assoc_id: UUID
-    user_id: Optional[Union[UserBase | UUID]] = None
+    user_id: Optional[Union[UserBase, UUID]] = None
     assignment_type: AssignmentType
     date_from: Optional[datetime]
     date_to: Optional[datetime]
     notes: Optional[str] = None
     property_info: Optional[
         Union[
-            PropertyUnitAssocBase
-            | PropertyUnitBase
-            | PropertyBase
-            | Any
-            | List[PropertyUnitAssocBase]
-            | List[PropertyUnitBase]
-            | List[PropertyBase]
+            PropertyDetailsMixin,  # Simplify this to use the main mixin type
+            Any,
         ]
     ] = []
-    # units: Optional[List[PropertyUnitBase]] = []
-    # property: Optional[List[PropertyBase]] = []
 
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
@@ -59,7 +47,6 @@ class PropertyAssignmentBase(BaseSchema):
     def flatten_nested_info(cls, values: "PropertyAssignmentBase"):
         if not values.user_id:
             values.user_id = None
-
         return values
 
 
@@ -67,7 +54,7 @@ class PropertyAssignment(PropertyAssignmentBase):
     property_assignment_id: UUID
 
 
-class PropertyAssignmentMixin(PropertyAssignmentBase, PropertyDetailsMixin):
+class PropertyAssignmentMixin(PropertyAssignmentBase):
     property_assignment_id: UUID
 
     _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
@@ -97,42 +84,38 @@ class PropertyAssignmentMixin(PropertyAssignmentBase, PropertyDetailsMixin):
 
     @classmethod
     def get_property_assignment_info(
-        cls, property_assigment: Union[PropertyAssignment | List[PropertyAssignment]]
-    ) -> PropertyAssignmentModel:
+        cls, property_assignment: Union[PropertyAssignment, List[PropertyAssignment]]
+    ):
         result = []
 
-        if not isinstance(property_assigment, list):
+        if not isinstance(property_assignment, list):
             return cls(
-                property_assignment_id=property_assigment.property_assignment_id,
-                property_unit_assoc_id=property_assigment.property_unit_assoc_id,
-                user_id=property_assigment.user_id,
-                assignment_type=property_assigment.assignment_type,
-                date_from=property_assigment.date_from,
-                date_to=property_assigment.date_to,
-                notes=property_assigment.notes,
-                property_info=cls.get_property_unit_info(property_assigment.units)
-                if property_assigment.property_info.property_type
-                == PropertyDetailsMixin._PROPERTY_TYPE_DEFAULT
-                else cls.get_property_info(property_assigment.property),
+                property_assignment_id=property_assignment.property_assignment_id,
+                property_unit_assoc_id=property_assignment.property_unit_assoc_id,
+                user_id=property_assignment.user_id,
+                assignment_type=property_assignment.assignment_type,
+                date_from=property_assignment.date_from,
+                date_to=property_assignment.date_to,
+                notes=property_assignment.notes,
+                property_info=PropertyDetailsMixin.get_property_details(
+                    property_assignment.property_info
+                ),
             ).model_dump(exclude=["units", "property"])
 
         else:
-            for property_assigment_item in property_assigment:
+            for item in property_assignment:
                 result.append(
                     cls(
-                        property_assignment_id=property_assigment_item.property_assignment_id,
-                        property_unit_assoc_id=property_assigment_item.property_unit_assoc_id,
-                        user_id=property_assigment_item.user_id,
-                        assignment_type=property_assigment_item.assignment_type,
-                        date_from=property_assigment_item.date_from,
-                        date_to=property_assigment_item.date_to,
-                        notes=property_assigment_item.notes,
-                        property_info=cls.get_property_unit_info(
-                            property_assigment_item.units
-                        )
-                        if property_assigment_item.property_info.property_type
-                        == PropertyDetailsMixin._PROPERTY_TYPE_DEFAULT
-                        else cls.get_property_info(property_assigment_item.property),
+                        property_assignment_id=item.property_assignment_id,
+                        property_unit_assoc_id=item.property_unit_assoc_id,
+                        user_id=item.user_id,
+                        assignment_type=item.assignment_type,
+                        date_from=item.date_from,
+                        date_to=item.date_to,
+                        notes=item.notes,
+                        property_info=PropertyDetailsMixin.get_property_details(
+                            item.property_info
+                        ),
                     ).model_dump(exclude=["units", "property"])
                 )
 

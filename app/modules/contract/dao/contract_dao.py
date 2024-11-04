@@ -1,5 +1,8 @@
 from typing import Optional, List
+from uuid import UUID
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.response import DAOResponse
 from app.modules.billing.dao.invoice_dao import InvoiceDAO
 from app.modules.billing.dao.utility_dao import UtilityDAO
 from app.modules.common.dao.base_dao import BaseDAO
@@ -16,7 +19,7 @@ from app.modules.resources.models.media import Media
 from app.modules.associations.models.entity_media import EntityMedia
 
 # Errors
-from app.core.errors import RecordNotFoundException
+from app.core.errors import CustomException, RecordNotFoundException
 
 # Services
 from fastapi import UploadFile
@@ -45,6 +48,30 @@ class ContractDAO(BaseDAO[Contract]):
             excludes=excludes or [],
             primary_key="contract_id",
         )
+
+    async def get_contracts(
+            self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
+        ) -> DAOResponse:
+            try:
+                query = select(self.model)
+                if user_id:
+                    query = query.where(self.model.user_id == user_id)
+                query = query.limit(limit).offset(offset)
+                result = await db_session.execute(query)
+                items = result.scalars().all()
+
+                # Build pagination metadata
+                total_items = await db_session.execute(select(func.count()).select_from(query.subquery()))
+                total_count = total_items.scalar()
+                meta = {
+                    "total_items": total_count,
+                    "limit": limit,
+                    "offset": offset,
+                }
+
+                return DAOResponse(success=True, data=items, meta=meta)
+            except Exception as e:
+                raise CustomException(str(e))
 
     async def upload_contract_media(
         self,

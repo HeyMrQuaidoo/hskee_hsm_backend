@@ -10,7 +10,7 @@ class TestAmenities:
     @pytest.mark.dependency(name="create_amenity")
     async def test_create_amenity(self, client: AsyncClient):
         response = await client.post(
-            "/ammenities/",
+            "/amenities/",
             json={
                 "amenity_name": "Dishwasher",
                 "amenity_short_name": "Dishwasher",
@@ -24,7 +24,8 @@ class TestAmenities:
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_amenities(self, client: AsyncClient):
-        response = await client.get("/ammenities/", params={"limit": 10, "offset": 0})
+        response = await client.get("/amenities/", params={"limit": 10, "offset": 0})
+        print("Response:", response)
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
 
@@ -33,7 +34,7 @@ class TestAmenities:
     async def test_get_amenity_by_id(self, client: AsyncClient):
         amenity_id = self.default_amenity["amenity_id"]
 
-        response = await client.get(f"/ammenities/{amenity_id}")
+        response = await client.get(f"/amenities/{amenity_id}")
 
         assert response.status_code == 200
         assert response.json()["data"]["amenity_id"] == amenity_id
@@ -44,7 +45,7 @@ class TestAmenities:
         amenity_id = self.default_amenity["amenity_id"]
 
         response = await client.put(
-            f"/ammenities/{amenity_id}",
+            f"/amenities/{amenity_id}",
             json={
                 "amenity_name": "Updated Swimming Pool",
                 "amenity_short_name": "Updated Pool",
@@ -64,9 +65,9 @@ class TestAmenities:
     async def test_delete_amenity(self, client: AsyncClient):
         amenity_id = self.default_amenity["amenity_id"]
 
-        response = await client.delete(f"/ammenities/{amenity_id}")
+        response = await client.delete(f"/amenities/{amenity_id}")
         assert response.status_code == 204
 
         # verify the amenity is deleted
-        response = await client.get(f"/ammenities/{amenity_id}")
+        response = await client.get(f"/amenities/{amenity_id}")
         assert response.status_code == 404

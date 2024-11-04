@@ -1,9 +1,10 @@
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, status, UploadFile, File, Form
+from fastapi import Depends, Query, status, UploadFile, File, Form
 
 # DAO
+from app.core.response import DAOResponse
 from app.modules.contract.dao.contract_dao import ContractDAO
 
 # Base CRUD Router
@@ -32,6 +33,17 @@ class ContractRouter(BaseCRUDRouter):
         super().__init__(dao=self.dao, schemas=ContractSchema, prefix=prefix, tags=tags)
         self.register_routes()
 
+    def add_get_route(self):
+            @self.router.get("/")
+            async def get_contracts(
+                user_id: Optional[UUID] = Query(None),
+                limit: int = Query(default=10, ge=1),
+                offset: int = Query(default=0, ge=0),
+                db_session: AsyncSession = Depends(get_db),
+            ) -> DAOResponse:
+                return await self.dao.get_contracts(
+                    db_session=db_session, user_id=user_id, limit=limit, offset=offset
+                )
     def register_routes(self):
         @self.router.post(
             "/{contract_id}/upload_media", status_code=status.HTTP_201_CREATED

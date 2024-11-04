@@ -88,7 +88,7 @@ class TestPropertyAssignment:
     )
     async def test_create_property_assignment(self, client: AsyncClient):
         response = await client.post(
-            "/property_assignment/",
+            "/assign-properties/",
             json={
                 "property_unit_assoc_id": self.default_property[
                     "property_unit_assoc_id"
@@ -107,7 +107,7 @@ class TestPropertyAssignment:
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_property_assignments(self, client: AsyncClient):
         response = await client.get(
-            "/property_assignment/", params={"limit": 10, "offset": 0}
+            "/assign-properties/", params={"limit": 10, "offset": 0}
         )
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
@@ -121,7 +121,7 @@ class TestPropertyAssignment:
             "property_assignment_id"
         ]
 
-        response = await client.get(f"/property_assignment/{property_assignment_id}")
+        response = await client.get(f"/assign-properties/{property_assignment_id}")
 
         assert response.status_code == 200
         assert (
@@ -139,7 +139,7 @@ class TestPropertyAssignment:
         ]
 
         response = await client.put(
-            f"/property_assignment/{property_assignment_id}",
+            f"/assign-properties/{property_assignment_id}",
             json={
                 "property_unit_assoc_id": self.default_property[
                     "property_unit_assoc_id"
@@ -164,11 +164,11 @@ class TestPropertyAssignment:
             "property_assignment_id"
         ]
 
-        response = await client.delete(f"/property_assignment/{property_assignment_id}")
+        response = await client.delete(f"/assign-properties/{property_assignment_id}")
         assert response.status_code == 204
 
         # Verify the property assignment is deleted
-        response = await client.get(f"/property_assignment/{property_assignment_id}")
+        response = await client.get(f"/assign-properties/{property_assignment_id}")
         assert response.status_code == 200
         assert response.json()["data"] == {}
 
