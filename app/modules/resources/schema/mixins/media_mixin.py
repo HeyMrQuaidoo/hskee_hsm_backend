@@ -37,7 +37,7 @@ class MediaBase(BaseSchema):
 
 
 class Media(MediaBase):
-    media_id: Optional[UUID]
+    media_id: Optional[UUID] = None
 
 
 class MediaInfoMixin:

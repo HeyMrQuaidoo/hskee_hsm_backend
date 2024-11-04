@@ -1,7 +1,7 @@
 from app.db.dbDeclarative import Base
 from sqlalchemy import Column, inspect, event
 from typing import Any, Dict, Type, Union, Tuple
-from sqlalchemy.orm import DeclarativeMeta, InstrumentedAttribute, mapper
+from sqlalchemy.orm import DeclarativeMeta, InstrumentedAttribute, Mapper
 
 
 class RelationshipConfigRegistry:
@@ -19,7 +19,7 @@ class RelationshipConfigRegistry:
 
             # update the registry
             event.listen(
-                mapper,
+                Mapper,
                 "mapper_configured",
                 lambda *args, **kw: RelationshipConfigRegistry.__base_mapper_listener,
             )

@@ -114,3 +114,5 @@ def configure_routes(app: FastAPI):
     app.include_router(
         CalendarEventRouter(prefix="/calendar-event", tags=["calendarEvent"]).router
     )
+
+    return app
