@@ -1,11 +1,9 @@
 from pydantic import UUID4
 from typing import List, Optional, Union
 
-# models
-
 # schema
-from app.modules.auth.schema.permission import Permission
 from app.modules.common.schema.base_schema import BaseSchema
+from app.modules.auth.schema.permissions_schema import Permission
 
 
 class RoleBase(BaseSchema):

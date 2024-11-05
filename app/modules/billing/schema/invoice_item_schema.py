@@ -33,7 +33,7 @@ class InvoiceItemUpdateSchema(InvoiceItemBase, InvoiceItemMixin):
     )
 
 
-class InvoiceItemResponse(InvoiceItemMixin):
+class InvoiceItemResponse(InvoiceItemBase, InvoiceItemMixin):
     invoice_item_id: Optional[UUID] = None
 
     @classmethod

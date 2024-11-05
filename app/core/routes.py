@@ -126,13 +126,13 @@ def configure_routes(app: FastAPI):
     # Create an instance of MaintenanceRequestRouter
     app.include_router(
         MaintenanceRequestRouter(
-            prefix="/maintenance-request", tags=["maintenance Request"]
+            prefix="/maintenance-request", tags=["Maintenance Request"]
         ).router
     )
 
     # Create an instance of EventTypeRouter
     app.include_router(
-        CalendarEventRouter(prefix="/calendar-event", tags=["calendar Event"]).router
+        CalendarEventRouter(prefix="/calendar-event", tags=["Calendar Event"]).router
     )
 
     return app

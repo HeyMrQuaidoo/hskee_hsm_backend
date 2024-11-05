@@ -1,28 +1,26 @@
 from uuid import UUID
-from typing import List, Optional, Annotated
+from typing import List, Optional, Annotated, Union
 from pydantic import BaseModel, ConfigDict, constr
 
+# schema
+from app.modules.common.schema.base_schema import BaseSchema
 
 # models
 from app.modules.auth.models.permissions import Permissions as PermissionsModel
 
 
-class Role(BaseModel):
+class Role(BaseSchema):
     role_id: Optional[UUID] = None
     name: Optional[Annotated[str, constr(max_length=80)]] = None
     alias: Optional[Annotated[str, constr(max_length=80)]] = None
     description: Optional[str] = None
 
-    model_config = ConfigDict(from_attributes=True)
 
-
-class PermissionBase(BaseModel):
+class PermissionBase(BaseSchema):
     description: Optional[str] = None
     name: Optional[Annotated[str, constr(max_length=80)]] = None
     alias: Optional[Annotated[str, constr(max_length=80)]] = None
     # roles: Optional[Union[List[Role]]] = None #comment
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class Permission(PermissionBase):
@@ -49,17 +47,15 @@ class PermissionUpdateSchema(PermissionBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PermissionResponse(BaseModel):
-    permission_id: UUID
+class PermissionsResponse(BaseSchema):
+    permission_id: Optional[UUID] = None
     name: Optional[Annotated[str, constr(max_length=80)]] = None
     alias: Optional[Annotated[str, constr(max_length=80)]] = None
     description: Optional[str] = None
     roles: Optional[List[Role]] = None
 
-    model_config = ConfigDict(from_attributes=True)
-
     @classmethod
-    def from_orm(cls, permission: PermissionsModel):
+    def model_validate(cls, permission: PermissionsModel):
         """
         Create a PermissionResponse instance from an ORM model.
 

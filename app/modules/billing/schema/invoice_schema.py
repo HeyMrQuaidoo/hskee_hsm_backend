@@ -10,6 +10,7 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTy
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 from app.modules.billing.schema.mixins.invoice_mixin import (
     InvoiceBase,
+    Invoice,
     InvoiceInfoMixin,
 )
 from app.modules.billing.schema.mixins.invoice_item_mixin import (
@@ -21,13 +22,33 @@ from app.modules.billing.schema.mixins.invoice_item_mixin import (
 from app.modules.billing.models.invoice import Invoice as InvoiceModel
 
 
-class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin):
+class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
+    invoice_id: Optional[UUID] = None
+    invoice_number: Optional[str] = ""
     invoice_items: Optional[List[InvoiceItemBase]] = []
 
     model_config = ConfigDict(
         json_schema_extra={"example": InvoiceInfoMixin._invoice_create_json},
     )
 
+    @classmethod
+    def model_validate(cls, invoice: InvoiceModel):
+        return cls(
+            invoice_id=invoice.invoice_id,
+            invoice_number=invoice.invoice_number,
+            invoice_amount=invoice.invoice_amount,
+            invoice_details=invoice.invoice_details,
+            due_date=invoice.due_date,
+            date_paid=invoice.date_paid,
+            invoice_type=invoice.invoice_type,
+            status=invoice.status,
+            transaction_number=invoice.transaction_number,
+            issued_by=cls.get_user_info(invoice.issued_by_user),
+            issued_to=cls.get_user_info(invoice.issued_to_user),
+            invoice_items=[
+                InvoiceItemBase.model_validate(item) for item in invoice.invoice_items
+            ],
+        ).model_dump()
 
 class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin):
     issued_by: Optional[UUID] = None
@@ -44,7 +65,7 @@ class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin):
 
 
 class InvoiceResponse(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
-    invoice_id: UUID
+    invoice_id: Optional[UUID] = None
     invoice_number: str
     invoice_amount: float
     date_paid: Optional[datetime] = None

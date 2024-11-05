@@ -8,7 +8,7 @@ from app.modules.common.router.base_router import BaseCRUDRouter
 
 # schemas
 from app.modules.common.schema.schemas import PermissionSchema
-from app.modules.auth.schema.permission import (
+from app.modules.auth.schema.permissions_schema import (
     PermissionCreateSchema,
     PermissionUpdateSchema,
 )

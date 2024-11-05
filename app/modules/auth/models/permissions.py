@@ -31,4 +31,4 @@ class Permissions(Base):
 
 
 # register model
-Base.setup_model_dynamic_listener("role_permissions", Permissions)
+Base.setup_model_dynamic_listener("permissions", Permissions)
