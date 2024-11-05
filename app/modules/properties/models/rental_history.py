@@ -28,7 +28,10 @@ class PastRentalHistory(Base):
     )
 
     # users
-    user: Mapped["User"] = relationship("User", back_populates="rental_history")
+    user: Mapped["User"] = relationship(
+        "User",
+        back_populates="rental_history",
+    )
 
     # addresses
     address: Mapped[List["Addresses"]] = relationship(

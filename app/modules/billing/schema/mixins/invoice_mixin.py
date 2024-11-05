@@ -1,5 +1,4 @@
 from uuid import UUID
-from decimal import Decimal
 from datetime import datetime
 from typing import Any, Optional, List, Union
 
@@ -20,7 +19,9 @@ class InvoiceBase(BaseSchema):
     issued_to: Optional[Union[UUID | UserBase]] = None
     invoice_details: str
     due_date: datetime
+    date_paid: datetime
     invoice_amount: float
+    transaction_number: Optional[str] = None
     invoice_type: InvoiceTypeEnum
     status: PaymentStatusEnum
     invoice_items: Optional[List[InvoiceItemBase]]
@@ -31,22 +32,7 @@ class Invoice(InvoiceBase):
     invoice_number: str
 
 
-class InvoiceInfoMixin(BaseSchema):
-    issued_by: Optional[Union[UUID | UserBase]] = None
-    issued_to: Optional[Union[UUID | UserBase]] = None
-    invoice_id: Optional[UUID] = None
-    invoice_number: str
-    invoice_amount: Decimal
-    invoice_details: str
-    due_date: Optional[datetime]
-    date_paid: Optional[datetime]
-    invoice_type: Optional[InvoiceTypeEnum]
-    status: Optional[PaymentStatusEnum]
-    transaction_number: Optional[str]
-    invoice_items: Optional[List[InvoiceItemBase]] = []
-    # transaction: Optional[TransactionBase] = None
-    # contracts: Optional[List[ContractBase]] = []
-
+class InvoiceInfoMixin:
     _issued_by = str(BaseFaker.uuid4())
     _issued_to = str(BaseFaker.uuid4())
     _invoice_details = BaseFaker.text(max_nb_chars=200)
@@ -60,6 +46,7 @@ class InvoiceInfoMixin(BaseSchema):
         "issued_to": _issued_to,
         "invoice_details": _invoice_details,
         "due_date": _due_date.isoformat(),
+        "date_paid": _due_date.isoformat(),
         "invoice_type": _invoice_type,
         "status": _status,
         "invoice_items": [
