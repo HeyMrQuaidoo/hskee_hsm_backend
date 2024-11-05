@@ -14,7 +14,7 @@ class UnderContractRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         # Initialize the DAO for UnderContract
         self.dao = UnderContractDAO()
-        
+
         # Define the schemas for create and update operations
         UnderContractSchema["create_schema"] = UnderContractCreateSchema
         UnderContractSchema["update_schema"] = UnderContractUpdateSchema

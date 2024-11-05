@@ -21,9 +21,8 @@ from app.modules.communication.models.maintenance_requests import (
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 from app.modules.communication.schema.mixins.calendar_event_mixin import (
     CalendarEventBase,
-    CalendarEventInfoMixin,
 )
-from app.modules.resources.schema.media_schema import MediaBase
+from app.modules.resources.schema.mixins.media_mixin import MediaBase
 
 
 class MaintenanceRequestBase(BaseSchema):

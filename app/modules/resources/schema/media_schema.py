@@ -5,7 +5,10 @@ from pydantic import ConfigDict, constr
 
 # schema mixin
 from app.modules.common.schema.base_schema import BaseSchema
-from app.modules.resources.schema.mixins.media_mixin import MediaBase, Media, MediaInfoMixin
+from app.modules.resources.schema.mixins.media_mixin import (
+    Media,
+    MediaInfoMixin,
+)
 
 # models
 from app.modules.resources.models.media import Media as MediaModel
@@ -34,7 +37,6 @@ class MediaCreateSchema(Media, MediaInfoMixin):
 
 
 class MediaUpdateSchema(Media):
-
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,

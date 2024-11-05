@@ -50,28 +50,30 @@ class ContractDAO(BaseDAO[Contract]):
         )
 
     async def get_contracts(
-            self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
-        ) -> DAOResponse:
-            try:
-                query = select(self.model)
-                if user_id:
-                    query = query.where(self.model.user_id == user_id)
-                query = query.limit(limit).offset(offset)
-                result = await db_session.execute(query)
-                items = result.scalars().all()
+        self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
+    ) -> DAOResponse:
+        try:
+            query = select(self.model)
+            if user_id:
+                query = query.where(self.model.user_id == user_id)
+            query = query.limit(limit).offset(offset)
+            result = await db_session.execute(query)
+            items = result.scalars().all()
 
-                # Build pagination metadata
-                total_items = await db_session.execute(select(func.count()).select_from(query.subquery()))
-                total_count = total_items.scalar()
-                meta = {
-                    "total_items": total_count,
-                    "limit": limit,
-                    "offset": offset,
-                }
+            # Build pagination metadata
+            total_items = await db_session.execute(
+                select(func.count()).select_from(query.subquery())
+            )
+            total_count = total_items.scalar()
+            meta = {
+                "total_items": total_count,
+                "limit": limit,
+                "offset": offset,
+            }
 
-                return DAOResponse(success=True, data=items, meta=meta)
-            except Exception as e:
-                raise CustomException(str(e))
+            return DAOResponse(success=True, data=items, meta=meta)
+        except Exception as e:
+            raise CustomException(str(e))
 
     async def upload_contract_media(
         self,

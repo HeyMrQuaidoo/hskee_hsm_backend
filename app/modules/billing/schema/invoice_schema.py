@@ -10,7 +10,6 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTy
 from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 from app.modules.billing.schema.mixins.invoice_mixin import (
     InvoiceBase,
-    Invoice,
     InvoiceInfoMixin,
 )
 from app.modules.billing.schema.mixins.invoice_item_mixin import (
@@ -49,6 +48,7 @@ class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
                 InvoiceItemBase.model_validate(item) for item in invoice.invoice_items
             ],
         ).model_dump()
+
 
 class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin):
     issued_by: Optional[UUID] = None

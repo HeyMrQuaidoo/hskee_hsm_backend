@@ -20,7 +20,9 @@ class PropertyAssignmentRouter(BaseCRUDRouter):
         PropertyAssignmentSchema["update_schema"] = PropertyAssignmentUpdate
         self.dao: PropertyAssignmentDAO = PropertyAssignmentDAO(excludes=[])
 
-        super().__init__(dao=self.dao, schemas=PropertyAssignmentSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao, schemas=PropertyAssignmentSchema, prefix=prefix, tags=tags
+        )
         self.register_routes()
 
     def register_routes(self):

@@ -80,14 +80,14 @@ class Invoice(Base):
         foreign_keys=[issued_by],
         # backref="invoice_as_issued_by_user",
         lazy="selectin",
-        viewonly=True
+        viewonly=True,
     )
     issued_to_user: Mapped["User"] = relationship(
         "User",
         foreign_keys=[issued_to],
         # backref="invoice_as_issued_to_user",
         lazy="selectin",
-        viewonly=True
+        viewonly=True,
     )
 
 

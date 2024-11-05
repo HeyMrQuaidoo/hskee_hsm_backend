@@ -12,15 +12,13 @@ from app.modules.properties.schema.mixins.property_mixin import (
 )
 
 # models
-from app.modules.properties.models.property_assignment import (
-    PropertyAssignment as PropertyAssignmentModel,
-)
 
 
 class AssignmentType(str, Enum):
     """
     Enum representing types of assignments.
     """
+
     other = "other"
     handler = "handler"
     landlord = "landlord"

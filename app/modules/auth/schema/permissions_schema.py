@@ -1,6 +1,6 @@
 from uuid import UUID
-from typing import List, Optional, Annotated, Union
-from pydantic import BaseModel, ConfigDict, constr
+from typing import List, Optional, Annotated
+from pydantic import ConfigDict, constr
 
 # schema
 from app.modules.common.schema.base_schema import BaseSchema

@@ -44,7 +44,9 @@ class DAOResponse(BaseModel, Generic[T]):
 
         # Derive the schema name and module path based on the model name
         sa_module_name = sa_class.__module__.replace(".models.", ".schema.")
-        sa_class_name = sa_class.__name__.replace("CreateSchema", "").replace("UpdateSchema", "")
+        sa_class_name = sa_class.__name__.replace("CreateSchema", "").replace(
+            "UpdateSchema", ""
+        )
         schema_class_name = (
             f"{sa_class_name}Response"  # Deriving schema name conventionally
         )

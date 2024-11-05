@@ -9,7 +9,9 @@ from app.modules.properties.schema.mixins.property_assignment_mixin import (
 )
 
 # models
-from app.modules.properties.models.property_assignment import PropertyAssignment as PropertyAssignmentModel
+from app.modules.properties.models.property_assignment import (
+    PropertyAssignment as PropertyAssignmentModel,
+)
 
 
 class PropertyAssignmentCreate(PropertyAssignmentBase):
