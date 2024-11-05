@@ -3589,7 +3589,7 @@
         }
       }
     },
-    "/maintenance_request/": {
+    "/maintenance_requests/": {
       "get": {
         "tags": ["MaintenanceRequest"],
         "summary": "Get All",
@@ -3671,7 +3671,7 @@
         }
       }
     },
-    "/maintenance_request/{id}": {
+    "/maintenance_requests/{id}": {
       "get": {
         "tags": ["MaintenanceRequest"],
         "summary": "Get",

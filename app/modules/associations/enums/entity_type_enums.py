@@ -13,3 +13,5 @@ class EntityTypeEnum(enum.Enum):
     comapany = "comapany"
     entityamenities = "entityamenities"
     pastrentalhistory = "pastrentalhistory"
+    # maintenancerequests = "maintenancerequests"
+    maintenance_requests = "maintenance_requests"

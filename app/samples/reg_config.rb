@@ -67,7 +67,7 @@
             'item_params_attr': {'transaction_id': 'transaction_id', 'transaction_number': 'transaction_number', 'payment_type_id': 'payment_type_id', 'transaction_date': 'transaction_date', 'transaction_details': 'transaction_details', 'transaction_type': 'transaction_type_id', 'transaction_status': 'transaction_status', 'invoice_number': 'invoice_number', 'created_at': 'created_at', 'updated_at': 'updated_at'}
         },
         'maintenance_requests': {
-            'association_class': <class 'app.modules.communication.models.maintenance_request.MaintenanceRequest'>,
+            'association_class': <class 'app.modules.communication.models.maintenance_requests.MaintenanceRequest'>,
             'entity_param_key': 'maintenance_requests',
             'entity_params_attr': {'requested_by': 'user_id'},
             'item_params_attr': {'id': 'id', 'task_number': 'task_number', 'title': 'title', 'description': 'description', 'status': 'status', 'priority': 'priority', 'property_unit_assoc_id': 'property_unit_assoc_id', 'scheduled_date': 'scheduled_date', 'completed_date': 'completed_date', 'is_emergency': 'is_emergency', 'created_at': 'created_at', 'updated_at': 'updated_at'}

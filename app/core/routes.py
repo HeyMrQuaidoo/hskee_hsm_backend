@@ -5,12 +5,23 @@ from fastapi import APIRouter, FastAPI
 
 from app.modules.auth.router.role_router import RoleRouter
 from app.modules.auth.router.user_router import UserRouter
+from app.modules.billing.router.invoice_router import InvoiceRouter
 from app.modules.billing.router.payment_type_router import PaymentTypeRouter
 from app.modules.billing.router.transaction_router import TransactionRouter
 from app.modules.billing.router.transaction_type_router import TransactionTypeRouter
+from app.modules.billing.router.utility_router import UtilityRouter
+from app.modules.common.router.calendar_event_router import CalendarEventRouter
+from app.modules.communication.router.maintenance_request_router import (
+    MaintenanceRequestRouter,
+)
 from app.modules.contract.router.contract_router import ContractRouter
 from app.modules.contract.router.contract_type_router import ContractTypeRouter
+from app.modules.contract.router.under_contract_router import UnderContractRouter
+from app.modules.properties.router.property_assignment_router import (
+    PropertyAssignmentRouter,
+)
 from app.modules.properties.router.unit_router import UnitRouter
+from app.modules.resources.router.amenities_router import AmenityRouter
 from app.modules.resources.router.media_router import MediaRouter
 from app.modules.billing.router.account_router import AccountRouter
 from app.modules.auth.router.permission_router import PermissionRouter
@@ -71,7 +82,7 @@ def configure_routes(app: FastAPI):
 
     # Create an instance of PaymentTypeRouter
     app.include_router(
-        PaymentTypeRouter(prefix="/payment_type", tags=["PaymentType"]).router
+        PaymentTypeRouter(prefix="/payment-type", tags=["Payment Type"]).router
     )
 
     # Create an instance of TransactionRouter
@@ -81,13 +92,13 @@ def configure_routes(app: FastAPI):
     # Create an instance of TransactionTypeRouter
     app.include_router(
         TransactionTypeRouter(
-            prefix="/transaction_type", tags=["TransactionType"]
+            prefix="/transaction-type", tags=["Transaction Type"]
         ).router
     )
 
     # Create an instance of ContractTypeRouter
     app.include_router(
-        ContractTypeRouter(prefix="/contract_type", tags=["ContractType"]).router
+        ContractTypeRouter(prefix="/contract-type", tags=["Contract Type"]).router
     )
 
     # Create an instance of UnitRouter
@@ -96,5 +107,34 @@ def configure_routes(app: FastAPI):
     # Create an instance of MediaRouter
     app.include_router(MediaRouter(prefix="/media", tags=["Media"]).router)
 
+    app.include_router(AmenityRouter(prefix="/amenities", tags=["Amenities"]).router)
+
+    app.include_router(UtilityRouter(prefix="/utilities", tags=["Utilities"]).router)
+
+    app.include_router(InvoiceRouter(prefix="/invoice", tags=["Invoices"]).router)
+
+    app.include_router(
+        UnderContractRouter(prefix="/assign-contracts", tags=["Under Contracts"]).router
+    )
+    app.include_router(
+        PropertyAssignmentRouter(
+            prefix="/assign-properties", tags=["PropertyAssignments"]
+        ).router
+    )
+
     # Create an instance of AccountRouter
     app.include_router(AccountRouter(prefix="/account", tags=["Account"]).router)
+
+    # Create an instance of MaintenanceRequestRouter
+    app.include_router(
+        MaintenanceRequestRouter(
+            prefix="/maintenance-request", tags=["Maintenance Request"]
+        ).router
+    )
+
+    # Create an instance of EventTypeRouter
+    app.include_router(
+        CalendarEventRouter(prefix="/calendar-event", tags=["Calendar Event"]).router
+    )
+
+    return app

@@ -1,10 +1,15 @@
 # models
 from app.modules.auth.models.user import User
 from app.modules.auth.models.role import Role
+from app.modules.billing.models.invoice import Invoice
 from app.modules.billing.models.payment_type import PaymentType
 from app.modules.billing.models.transaction import Transaction
 from app.modules.billing.models.transaction_type import TransactionType
+from app.modules.communication.models.calendar_event import CalendarEvent
+from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 from app.modules.contract.models.contract_type import ContractType
+from app.modules.contract.models.under_contract import UnderContract
+from app.modules.resources.models.amenity import Amenities
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
 from app.modules.billing.models.account import Account
@@ -44,6 +49,30 @@ PaymentTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
 
 ContractTypeSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     ContractType, excludes=["contract_type_id"]
+)
+
+MaintenanceRequestSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    MaintenanceRequest, excludes=["maintenance_request_id"]
+)
+
+CalendarEventSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    CalendarEvent, excludes=["calendar_event_id"]
+)
+
+AmenitiesSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Amenities, excludes=["amenity_id"]
+)
+
+InvoiceSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Invoice, excludes=["invoice_id"]
+)
+
+UnderContractSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    UnderContract, excludes=["user_id"]
+)
+
+PropertyAssignmentSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    PropertyAssignment, excludes=["property_unit_assoc_id"]
 )
 
 

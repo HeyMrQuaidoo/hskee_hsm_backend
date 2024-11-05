@@ -315,7 +315,6 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
                         "property_owner_name": BaseFaker.name(),
                         "property_owner_email": BaseFaker.email(),
                         "property_owner_mobile": BaseFaker.phone_number(),
-                        "user_id": "e390775e-8c0d-45fd-ac4d-c7d1e75dfeff",
                         "address": [
                             {
                                 "address_type": "billing",
@@ -367,7 +366,7 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
                 ],
                 "property_assignment": [
                     {
-                        "property_unit_assoc_id": "402c0deb-b978-40d6-a269-c690cbd99589",
+                        "property_unit_assoc_id": "5afb1996-e135-470f-a267-8a937be11be8",
                         "assignment_type": _assignment_type[0],
                         "date_from": _date_from,
                         "date_to": _date_to,
@@ -477,6 +476,13 @@ class UserUpdateSchema(UserHiddenFields, UserSchema):
     user_employer_info: Optional[UserEmployerInfo] = None
     user_emergency_info: Optional[UserEmergencyInfo] = None
 
+    _assignment_type = BaseFaker.random_choices(
+        ["other", "handler", "landlord", "contractor"], length=1
+    )
+    _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
+    _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
+    _notes = BaseFaker.text(max_nb_chars=200)
+
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
@@ -516,6 +522,15 @@ class UserUpdateSchema(UserHiddenFields, UserSchema):
                     "occupation_status": "Full-time",
                     "occupation_location": "New York",
                 },
+                "property_assignment": [
+                    {
+                        "property_unit_assoc_id": "402c0deb-b978-40d6-a269-c690cbd99589",
+                        "assignment_type": _assignment_type[0],
+                        "date_from": _date_from,
+                        "date_to": _date_to,
+                        "notes": _notes,
+                    }
+                ],
             }
         },
     )

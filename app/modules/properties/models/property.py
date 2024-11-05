@@ -81,6 +81,7 @@ class Property(PropertyUnitAssoc):
         lazy="selectin",
         back_populates="property",
         viewonly=True,
+        cascade="all, delete-orphan",
     )
 
     # tour_bookings

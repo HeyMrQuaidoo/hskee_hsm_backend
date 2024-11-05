@@ -207,7 +207,10 @@ class User(Base):
 
     # - rental history
     rental_history: Mapped[List["PastRentalHistory"]] = relationship(
-        "PastRentalHistory", back_populates="user", lazy="selectin"
+        "PastRentalHistory",
+        foreign_keys="[PastRentalHistory.user_id]",
+        back_populates="user",
+        lazy="selectin",
     )
 
     def update_last_login_time(self):
