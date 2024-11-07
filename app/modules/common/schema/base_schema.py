@@ -14,7 +14,7 @@ class BaseSchema(BaseModel):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
     )
 
 

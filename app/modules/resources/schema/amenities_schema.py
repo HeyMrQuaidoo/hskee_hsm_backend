@@ -17,7 +17,7 @@ class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
-        json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": AmenityInfoMixin._amenity_create_json},
     )
 
@@ -26,7 +26,7 @@ class AmenityUpdateSchema(AmenityBase):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
-        json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": AmenityInfoMixin._amenity_update_json},
     )
 
