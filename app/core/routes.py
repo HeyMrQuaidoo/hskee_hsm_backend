@@ -17,7 +17,9 @@ from app.modules.communication.router.maintenance_request_router import (
 from app.modules.contract.router.contract_router import ContractRouter
 from app.modules.contract.router.contract_type_router import ContractTypeRouter
 from app.modules.contract.router.under_contract_router import UnderContractRouter
-from app.modules.properties.router.property_assignment_router import PropertyAssignmentRouter
+from app.modules.properties.router.property_assignment_router import (
+    PropertyAssignmentRouter,
+)
 from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.resources.router.amenities_router import AmenityRouter
 from app.modules.resources.router.media_router import MediaRouter
@@ -126,11 +128,13 @@ def configure_routes(app: FastAPI):
     # Create an instance of MaintenanceRequestRouter
     app.include_router(
         MaintenanceRequestRouter(
-            prefix="/maintenance-request", tags=["maintenance Request"]
+            prefix="/maintenance-request", tags=["Maintenance Request"]
         ).router
     )
 
     # Create an instance of EventTypeRouter
     app.include_router(
-        CalendarEventRouter(prefix="/calendar-event", tags=["calendar Event"]).router
+        CalendarEventRouter(prefix="/calendar-event", tags=["Calendar Event"]).router
     )
+
+    return app

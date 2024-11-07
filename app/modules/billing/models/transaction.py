@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Enum,
     Integer,
+    Numeric,
     String,
     Text,
     UUID,
@@ -65,6 +66,7 @@ class Transaction(Base):
         ),
         nullable=True,
     )
+    transaction_amount: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
 
     # payment_type
     payment_type: Mapped["PaymentType"] = relationship(
@@ -140,6 +142,7 @@ def update_transaction_number_on_invoice(mapper, connection, target):
         if invoice:
             # Update the transaction_number on the Invoice
             invoice.transaction_number = target.transaction_number
+            target.transaction_amount = invoice.invoice_amount
 
             # Commit the changes to the database
             session.commit()

@@ -11,7 +11,7 @@ app = FastAPI(title=settings.APP_NAME, description="", lifespan=lifespan)
 
 # configure middleware and routes
 configure_middleware(app)
-configure_routes(app)
+app2 = configure_routes(app)
 
 
 if __name__ == "__main__":

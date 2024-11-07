@@ -12,15 +12,13 @@ from app.modules.properties.schema.mixins.property_mixin import (
 )
 
 # models
-from app.modules.properties.models.property_assignment import (
-    PropertyAssignment as PropertyAssignmentModel,
-)
 
 
 class AssignmentType(str, Enum):
     """
     Enum representing types of assignments.
     """
+
     other = "other"
     handler = "handler"
     landlord = "landlord"
@@ -54,9 +52,7 @@ class PropertyAssignment(PropertyAssignmentBase):
     property_assignment_id: UUID
 
 
-class PropertyAssignmentMixin(PropertyAssignmentBase):
-    property_assignment_id: UUID
-
+class PropertyAssignmentMixin:
     _date_from = BaseFaker.date_time_between(start_date="-2y", end_date="now")
     _date_to = _date_from + timedelta(days=BaseFaker.random_int(min=30, max=365))
     _notes = BaseFaker.text(max_nb_chars=200)

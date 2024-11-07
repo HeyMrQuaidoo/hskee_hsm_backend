@@ -5,13 +5,16 @@ from pydantic import ConfigDict, constr
 
 # schema mixin
 from app.modules.common.schema.base_schema import BaseSchema
-from app.modules.resources.schema.mixins.media_mixin import MediaBase, MediaInfoMixin
+from app.modules.resources.schema.mixins.media_mixin import (
+    Media,
+    MediaInfoMixin,
+)
 
 # models
 from app.modules.resources.models.media import Media as MediaModel
 
 
-class MediaCreateSchema(MediaBase, MediaInfoMixin):
+class MediaCreateSchema(Media, MediaInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
@@ -20,8 +23,20 @@ class MediaCreateSchema(MediaBase, MediaInfoMixin):
         json_schema_extra={"example": MediaInfoMixin._media_create_json},
     )
 
+    @classmethod
+    def model_validate(cls, media: MediaModel) -> "MediaResponse":
+        return cls(
+            media_id=media.media_id,
+            media_name=media.media_name,
+            media_type=media.media_type,
+            content_url=media.content_url,
+            is_thumbnail=media.is_thumbnail,
+            caption=media.caption,
+            description=media.description,
+        ).model_dump()
 
-class MediaUpdateSchema(MediaBase):
+
+class MediaUpdateSchema(Media):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
@@ -30,8 +45,20 @@ class MediaUpdateSchema(MediaBase):
         json_schema_extra={"example": MediaInfoMixin._media_update_json},
     )
 
+    @classmethod
+    def model_validate(cls, media: MediaModel) -> "MediaResponse":
+        return cls(
+            media_id=media.media_id,
+            media_name=media.media_name,
+            media_type=media.media_type,
+            content_url=media.content_url,
+            is_thumbnail=media.is_thumbnail,
+            caption=media.caption,
+            description=media.description,
+        ).model_dump()
 
-class MediaResponse(MediaBase):
+
+class MediaResponse(Media):
     media_id: Optional[UUID] = None
 
     @classmethod

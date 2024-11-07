@@ -10,6 +10,7 @@ from app.modules.billing.models.invoice_item import InvoiceItem as InvoiceItemMo
 
 
 class InvoiceItemBase(BaseSchema):
+    invoice_item_id: Optional[UUID] = None
     quantity: int
     unit_price: Decimal
     total_price: Decimal = None
@@ -20,14 +21,9 @@ class InvoiceItemBase(BaseSchema):
 
 class InvoiceItem(InvoiceItemBase):
     invoice_item_id: Optional[UUID] = None
-    total_price: float
 
 
-class InvoiceItemMixin(InvoiceItemBase):
-    invoice_item_id: Optional[UUID] = None
-    invoice_number: str
-    total_price: float
-
+class InvoiceItemMixin:
     _quantity = BaseFaker.random_int(min=1, max=100)
     _unit_price = round(BaseFaker.random_number(digits=5), 2)
     _description = BaseFaker.text(max_nb_chars=200)

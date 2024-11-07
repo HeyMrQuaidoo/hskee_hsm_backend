@@ -13,8 +13,6 @@ from app.modules.address.dao.address_dao import AddressDAO
 
 # models
 from app.modules.auth.models.user import User
-from app.modules.properties.models.rental_history import PastRentalHistory
-from app.modules.properties.models.property_assignment import PropertyAssignment
 
 
 class UserDAO(BaseDAO[User]):

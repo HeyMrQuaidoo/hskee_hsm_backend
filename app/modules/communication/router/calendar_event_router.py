@@ -1,7 +1,4 @@
 from typing import List
-from uuid import UUID
-from fastapi import Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # DAO
 from app.modules.communication.dao.calendar_event_dao import CalendarEventDAO
@@ -18,8 +15,6 @@ from app.modules.communication.schema.calendar_event_schema import (
 )
 
 # Core
-from app.core.lifespan import get_db
-from app.core.errors import CustomException
 
 
 class CalendarEventRouter(BaseCRUDRouter):

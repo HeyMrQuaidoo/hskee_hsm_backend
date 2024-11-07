@@ -22,8 +22,8 @@ class Addresses(Base):
     address_type: Mapped[AddressTypeEnum] = mapped_column(Enum(AddressTypeEnum))
     primary: Mapped[bool] = mapped_column(Boolean, default=True)
     address_1: Mapped[str] = mapped_column(String(80))
-    address_2: Mapped[str] = mapped_column(String(80))
-    address_postalcode: Mapped[str] = mapped_column(String(20))
+    address_2: Mapped[str] = mapped_column(String(80), nullable=True)
+    address_postalcode: Mapped[str] = mapped_column(String(20), nullable=True)
     city_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("city.city_id")
     )

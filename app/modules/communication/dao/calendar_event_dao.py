@@ -1,7 +1,6 @@
 # app/modules/communication/dao/calendar_event_dao.py
 
-from typing import Optional, List, TYPE_CHECKING
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional, List
 
 # Base DAO
 from app.modules.common.dao.base_dao import BaseDAO

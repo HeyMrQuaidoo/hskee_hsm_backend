@@ -1,8 +1,19 @@
 import uuid
 import pytz
 from datetime import datetime
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from sqlalchemy import Numeric, ForeignKey, DateTime, Enum, String, Text, UUID, event
+from importlib import import_module
+from sqlalchemy.orm import relationship, Session, Mapped, mapped_column
+from sqlalchemy import (
+    Numeric,
+    ForeignKey,
+    DateTime,
+    Enum,
+    String,
+    Text,
+    UUID,
+    event,
+    inspect,
+)
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
@@ -78,14 +89,16 @@ class Invoice(Base):
     issued_by_user: Mapped["User"] = relationship(
         "User",
         foreign_keys=[issued_by],
-        backref="invoice_as_issued_by_user",
+        # backref="invoice_as_issued_by_user",
         lazy="selectin",
+        viewonly=True,
     )
     issued_to_user: Mapped["User"] = relationship(
         "User",
         foreign_keys=[issued_to],
-        backref="invoice_as_issued_to_user",
+        # backref="invoice_as_issued_to_user",
         lazy="selectin",
+        viewonly=True,
     )
 
 
@@ -111,12 +124,36 @@ def receive_after_insert(mapper, connection, target):
 @event.listens_for(Invoice, "after_insert")
 @event.listens_for(Invoice, "after_update")
 def update_invoice_amount(mapper, connection, target):
-    total_amount = sum(item.total_price for item in target.invoice_items)
-    connection.execute(
-        target.__table__.update()
-        .where(target.__table__.c.invoice_id == target.invoice_id)
-        .values(invoice_amount=total_amount)
-    )
+    state = inspect(target)
+
+    if state.attrs.invoice_amount.history.has_changes():
+        total_amount = sum(item.total_price for item in target.invoice_items)
+        connection.execute(
+            target.__table__.update()
+            .where(target.__table__.c.invoice_id == target.invoice_id)
+            .values(invoice_amount=total_amount)
+        )
+
+        # update transaction model
+        models_module = import_module("app.modules.billing.models.transaction")
+        transaction_model = getattr(models_module, "Transaction")
+
+        session = Session(connection)
+
+        # Query the Transaction model to find the related invoice
+        transaction = (
+            session.query(transaction_model)
+            .filter_by(invoice_number=target.invoice_number)
+            .first()
+        )
+
+        if transaction:
+            # Update the transaction_amount on the Transaction
+            transaction.transaction_amount = target.invoice_amount
+
+            # Commit the changes to the database
+            session.commit()
+        session.close()
 
 
 def parse_dates(mapper, connection, target):
