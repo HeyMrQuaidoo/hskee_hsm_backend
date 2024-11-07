@@ -16,13 +16,14 @@ class TestInvoice:
                 "issued_to": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",
                 "due_date": "2024-07-31T23:59:59",
                 "status": "pending",
+                "invoice_details": "Consulting services for July 2024",
                 "invoice_items": [
                     {
-                        "name": "Item 1",
-                        "amount": 0,
-                        "unit_price": 200,
-                        "total_price": 200,
+                        "description": "Item 1",
                         "quantity": 1,
+                        "unit_price": 200,
+                        "total_price": 200,  # unit_price * quantity
+                        "reference_id": "12345"
                     }
                 ],
                 "invoice_type": "general",
@@ -60,6 +61,7 @@ class TestInvoice:
                 "issued_to": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",
                 "due_date": "2024-07-31T23:59:59",
                 "status": "pending",
+                "invoice_details": "Updated consulting services for July 2024",
                 "invoice_items": [
                     {
                         "invoice_item_id": invoice_items["invoice_item_id"],

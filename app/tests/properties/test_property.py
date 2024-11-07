@@ -81,6 +81,7 @@ class TestProperties:
                 ],
             },
         )
+        print("PROPERTY RESPONSE:", response)
         assert response.status_code == 200
 
         TestProperties.default_property = response.json()["data"]

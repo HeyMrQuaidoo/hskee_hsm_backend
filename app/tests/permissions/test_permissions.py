@@ -12,9 +12,9 @@ class TestPermissions:
         response = await client.post(
             "/permissions/",
             json={
-                "name": "read",
-                "alias": "read_permission",
-                "description": "Allows reading of resources",
+                "name": "Administrator",
+                "alias": "admin",
+                "description": "Has full access to all settings.",
             },
         )
         assert response.status_code == 200

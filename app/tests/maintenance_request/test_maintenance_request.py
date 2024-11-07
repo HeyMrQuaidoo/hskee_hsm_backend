@@ -18,8 +18,8 @@ class TestMaintenanceRequest:
             json={
                 "title": "Fix AC",
                 "description": "Air conditioning needs repair",
-                "status": "pending",
-                "priority": 1,
+                "status": "pending",  # Matches MaintenanceStatusEnum
+                "priority": "medium",  # Matches PriorityEnum
                 "requested_by": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
                 "scheduled_date": "2024-07-21T21:28:24.590Z",
                 "completed_date": "2024-07-21T21:28:24.590Z",
@@ -27,7 +27,6 @@ class TestMaintenanceRequest:
             },
         )
         assert response.status_code == 200
-
         TestMaintenanceRequest.default_maintenance_request = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
