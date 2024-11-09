@@ -23,7 +23,7 @@ from app.modules.billing.models.account import Account  # noqa: F401
 
 
 from app.modules.associations.models.entity_amenities import EntityAmenities  # noqa: F401
-from app.modules.resources.models.amenity import Amenities  # noqa: F401
+from app.modules.resources.models.amenities import Amenities  # noqa: F401
 
 # resources
 from app.modules.resources.models.media import Media  # noqa: F401

@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 # Models
-from app.modules.resources.models.amenity import Amenities
+from app.modules.resources.models.amenities import Amenities
 
 # Base DAO
 from app.modules.common.dao.base_dao import BaseDAO

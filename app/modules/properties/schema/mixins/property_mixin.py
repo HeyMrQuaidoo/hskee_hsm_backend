@@ -14,7 +14,7 @@ from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
 from app.modules.resources.schema.mixins.amenities_mixin import AmenityBase
 from app.modules.resources.schema.mixins.media_mixin import MediaBase, Media
 
-from app.modules.billing.schema.utility_schema import UtilityResponse
+from app.modules.billing.schema.utility_schema import UtilitiesResponse
 
 # models
 from app.modules.properties.models.property_unit_association import (
@@ -150,7 +150,7 @@ class PropertyUnitInfoMixin:
     def get_utilities_info(cls, entity_utilities: List[EntityBillableModel]):
         return (
             [
-                UtilityResponse.model_validate(
+                UtilitiesResponse.model_validate(
                     {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
                 )
                 for entity_utility in entity_utilities

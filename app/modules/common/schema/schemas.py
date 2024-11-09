@@ -9,7 +9,7 @@ from app.modules.communication.models.calendar_event import CalendarEvent
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.contract.models.under_contract import UnderContract
-from app.modules.resources.models.amenity import Amenities
+from app.modules.resources.models.amenities import Amenities
 from app.modules.resources.models.media import Media
 from app.modules.properties.models.unit import Units
 from app.modules.billing.models.account import Account

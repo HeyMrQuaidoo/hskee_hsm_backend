@@ -85,8 +85,6 @@ class AddressBase(BaseSchema):
     country: str | UUID | Any
     address_postalcode: Optional[str]
 
-    # model_config = ConfigDict(from_attributes=True)
-
 
 class Address(AddressBase):
     """

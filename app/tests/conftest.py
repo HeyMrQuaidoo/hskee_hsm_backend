@@ -9,7 +9,6 @@ from main import app
 
 @pytest.fixture(scope="session")
 def app_instance() -> FastAPI:
-    print("Registered routes:", [route.path for route in app.routes])
     return app
 
 

@@ -86,23 +86,23 @@ class UserBaseMixin:
 
 class UserHiddenFields(BaseSchema):
     # emergency info
-    emergency_contact_name: Optional[str] = Field(None, hidden=True)
-    emergency_contact_email: Optional[EmailStr] = Field(None, hidden=True)
-    emergency_contact_relation: Optional[str] = Field(None, hidden=True)
-    emergency_contact_number: Optional[str] = Field(None, hidden=True)
+    emergency_contact_name: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    emergency_contact_email: Optional[EmailStr] = Field(None, json_schema_extra={"hidden": True})
+    emergency_contact_relation: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    emergency_contact_number: Optional[str] = Field(None, json_schema_extra={"hidden": True})
 
     # auth info
-    login_provider: Optional[str] = Field(None, hidden=True)
-    reset_token: Optional[str] = Field(None, hidden=True)
-    verification_token: Optional[str] = Field(None, hidden=True)
-    is_subscribed_token: Optional[str] = Field(None, hidden=True)
-    is_disabled: Optional[bool] = Field(None, hidden=True)
-    is_verified: Optional[bool] = Field(None, hidden=True)
-    is_subscribed: Optional[bool] = Field(None, hidden=True)
-    current_login_time: Optional[datetime] = Field(None, hidden=True)
-    last_login_time: Optional[datetime] = Field(None, hidden=True)
+    login_provider: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    reset_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    verification_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    is_subscribed_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    is_disabled: Optional[bool] = Field(None, json_schema_extra={"hidden": True})
+    is_verified: Optional[bool] = Field(None, json_schema_extra={"hidden": True})
+    is_subscribed: Optional[bool] = Field(None, json_schema_extra={"hidden": True})
+    current_login_time: Optional[datetime] = Field(None, json_schema_extra={"hidden": True})
+    last_login_time: Optional[datetime] = Field(None, json_schema_extra={"hidden": True})
 
     # employer info
-    employer_name: Optional[str] = Field(None, hidden=True)
-    occupation_status: Optional[str] = Field(None, hidden=True)
-    occupation_location: Optional[str] = Field(None, hidden=True)
+    employer_name: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    occupation_status: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    occupation_location: Optional[str] = Field(None, json_schema_extra={"hidden": True})

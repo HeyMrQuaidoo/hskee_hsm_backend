@@ -2,7 +2,7 @@ import uuid
 from typing import Optional
 from importlib import import_module
 from sqlalchemy.orm import relationship, Session, Mapped, mapped_column
-from sqlalchemy import String, event, Integer, Numeric, ForeignKey, UUID
+from sqlalchemy import String, event, Integer, Numeric, ForeignKey, UUID, inspect
 
 # models
 from app.modules.common.models.model_base import BaseModel as Base
@@ -36,33 +36,45 @@ class InvoiceItem(Base):
 @event.listens_for(InvoiceItem, "before_insert")
 @event.listens_for(InvoiceItem, "before_update")
 def calculate_total_price(mapper, connection, target: InvoiceItem):
-    # calculate the total price as unit_price * quantity
-    target.total_price = target.unit_price * target.quantity
+    state = inspect(target)
+
+    if (
+        state.attrs.unit_price.history.has_changes()
+        or state.attrs.quantity.history.has_changes()
+    ):
+        # calculate the total price as unit_price * quantity
+        target.total_price = target.unit_price * target.quantity
 
 
 @event.listens_for(InvoiceItem, "after_insert")
 @event.listens_for(InvoiceItem, "after_update")
 @event.listens_for(InvoiceItem, "after_delete")
 def update_invoice_after_item_change(mapper, connection, target: InvoiceItem):
-    # update the invoice amount when an invoice item is added, updated, or deleted
-    models_module = import_module("app.modules.billing.models.invoice")
-    invoice_model = getattr(models_module, "Invoice")
+    state = inspect(target)
 
-    session = Session(connection)
-    invoice = (
-        session.query(invoice_model)
-        .filter_by(invoice_number=target.invoice_number)
-        .first()
-    )
+    if state.attrs.total_price.history.has_changes():
+        session = Session(connection)
+        target.total_price = target.unit_price * target.quantity
 
-    if invoice:
-        total_amount = sum(item.total_price for item in invoice.invoice_items)
-        connection.execute(
-            invoice.__table__.update()
-            .where(invoice.__table__.c.invoice_number == invoice.invoice_number)
-            .values(invoice_amount=total_amount)
+        # update the invoice amount when an invoice item is added, updated, or deleted
+        models_module = import_module("app.modules.billing.models.invoice")
+        invoice_model = getattr(models_module, "Invoice")
+
+        invoice = (
+            session.query(invoice_model)
+            .filter_by(invoice_number=target.invoice_number)
+            .first()
         )
-    session.close()
+
+        if invoice:
+            total_amount = sum(item.total_price for item in invoice.invoice_items)
+            connection.execute(
+                invoice.__table__.update()
+                .where(invoice.__table__.c.invoice_number == invoice.invoice_number)
+                .values(invoice_amount=total_amount)
+            )
+            session.commit()
+        session.close()
 
 
 # register model

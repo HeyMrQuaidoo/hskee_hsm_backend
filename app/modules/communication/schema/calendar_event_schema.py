@@ -42,8 +42,6 @@ class CalendarEventUpdateSchema(CalendarEventBase, CalendarEventInfoMixin):
 
 
 class CalendarEventResponse(CalendarEventBase, CalendarEventInfoMixin):
-    id: UUID
-    event_id: str
 
     @classmethod
     def model_validate(cls, calendar_event: CalendarEvent):
