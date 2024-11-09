@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from app.tests.users.test_users import TestUsers  
 from app.tests.properties.test_property import TestProperties
 from app.tests.payment_type.test_payment_type import TestPaymentType
-from contract.test_contract_type import TestContractType
+from app.tests.contract.test_contract_type import TestContractType
 
 class TestContract:
     default_contract: Dict[str, Any] = {}
