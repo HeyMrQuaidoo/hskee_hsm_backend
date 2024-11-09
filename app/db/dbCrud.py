@@ -102,12 +102,15 @@ class BaseMixin:
             raise Exception(e)
 
     def validate_primary_key(
-        self, uuid_to_test: Union[str, UUID], version: int = 4
-    ) -> Union[str, UUID]:
+        self, uuid_to_test: Union[int | str | UUID], version: int = 4
+    ) -> Union[int | str | UUID]:
+
+        if isinstance(uuid_to_test, int):
+            return uuid_to_test
         try:
             uuid_obj = UUID(uuid_to_test, version=version)
         except ValueError:
-            return str(uuid_to_test)
+            return uuid_to_test
 
         return uuid_obj
 
@@ -351,7 +354,7 @@ class ReadMixin(BaseMixin):
     async def get(
         self,
         db_session: AsyncSession,
-        id: Union[UUID, str, int],
+        id: Union[UUID | int | str],
         skip: int = 0,
         limit: int = 100,
     ) -> Optional[DBModelType]:
@@ -360,7 +363,6 @@ class ReadMixin(BaseMixin):
         query_options = [
             selectinload(getattr(self.model, attr)) for attr in relationships
         ]
-
         # find model object based on primary key
         filter = {f"{self.primary_key}": self.validate_primary_key(id)}
         conditions = [getattr(self.model, k) == v for k, v in filter.items()]

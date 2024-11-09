@@ -1,9 +1,11 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
+from faker import Faker
 
 class TestUsers:
     default_user: Dict[str, Any] = {}
+    faker = Faker()
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_user")
@@ -14,29 +16,29 @@ class TestUsers:
                 "date_of_birth": "1985-05-20",
                 "first_name": "John",
                 "last_name": "Doe",
-                "email": "john.doe@example.com",
-                "phone_number": "1234567890",
-                "identification_number": "123456",
+                "email": self.faker.unique.email(),
+                "phone_number": self.faker.phone_number(),
+                "identification_number": str(self.faker.random_number(digits=6, fix_len=True)),
                 "photo_url": "",
                 "gender": "male",
                 "address": [
                     {
                         "address_type": "billing",
                         "primary": True,
-                        "address_1": "123 Main St",
-                        "address_2": "Suite 456",
-                        "city": "Springfield",
-                        "region": "IL",
+                        "address_1": self.faker.street_address(),
+                        "address_2": self.faker.secondary_address(),
+                        "city": self.faker.city(),
+                        "region": self.faker.state_abbr(),
                         "country": "USA",
-                        "address_postalcode": "62704",
+                        "address_postalcode": self.faker.postcode(),
                     }
                 ],
                 "user_auth_info": {
                     "password": "password123",
                     "login_provider": "local",
-                    "reset_token": "reset_token_example",
-                    "verification_token": "verification_token_example",
-                    "is_subscribed_token": "subscribed_token_example",
+                    "reset_token": self.faker.uuid4(),
+                    "verification_token": self.faker.uuid4(),
+                    "is_subscribed_token": self.faker.uuid4(),
                     "is_disabled": False,
                     "is_verified": True,
                     "is_subscribed": True,
@@ -45,14 +47,14 @@ class TestUsers:
                 },
                 "user_emergency_info": {
                     "emergency_contact_name": "Jane Doe",
-                    "emergency_contact_email": "jane.doe@example.com",
+                    "emergency_contact_email": self.faker.unique.email(),
                     "emergency_contact_relation": "Sister",
-                    "emergency_contact_number": "0987654321",
+                    "emergency_contact_number": self.faker.phone_number(),
                 },
                 "user_employer_info": {
-                    "employer_name": "Acme Corp",
+                    "employer_name": self.faker.company(),
                     "occupation_status": "Employed",
-                    "occupation_location": "Springfield",
+                    "occupation_location": self.faker.city(),
                 },
                 "role": "user",
             },

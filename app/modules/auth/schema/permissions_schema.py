@@ -17,6 +17,7 @@ class Role(BaseSchema):
 
 
 class PermissionBase(BaseSchema):
+    permission_id: Optional[UUID] = None
     description: Optional[str] = None
     name: Optional[Annotated[str, constr(max_length=80)]] = None
     alias: Optional[Annotated[str, constr(max_length=80)]] = None
@@ -24,7 +25,6 @@ class PermissionBase(BaseSchema):
 
 
 class Permission(PermissionBase):
-    permission_id: Optional[UUID] = None
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -66,7 +66,7 @@ class PermissionsResponse(BaseSchema):
             PermissionResponse: Permission response object.
         """
         return cls(
-            permission=permission.permission_id,
+            permission_id=permission.permission_id,
             name=permission.name,
             alias=permission.alias,
             description=permission.description,

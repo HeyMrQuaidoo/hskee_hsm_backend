@@ -16,6 +16,7 @@ class RoleCreateSchema(RoleBase):
 
 
 class RoleUpdateSchema(RoleBase):
+    role_id: Optional[UUID] = None
     model_config = ConfigDict(from_attributes=True)
 
 

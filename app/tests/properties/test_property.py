@@ -130,7 +130,7 @@ class TestProperties:
                 "pets_allowed": True,
                 "description": "updated description",
                 "property_status": "available",
-                "address": {
+                "address": [{
                     "address_type": "billing",
                     "primary": True,
                     "address_1": "line 1",
@@ -139,7 +139,7 @@ class TestProperties:
                     "region": "Greater Accra",
                     "country": "Ghana",
                     "address_postalcode": "",
-                },
+                }],
                 "media": [],
                 "amenities": [],
                 "utilities": [],

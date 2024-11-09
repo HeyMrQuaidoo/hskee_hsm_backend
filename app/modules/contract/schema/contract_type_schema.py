@@ -16,6 +16,8 @@ from app.modules.contract.models.contract_type import ContractType as ContractTy
 
 
 class ContractTypeCreateSchema(ContractTypeBase, ContractTypeInfoMixin):
+    contract_type_id: Optional[int] = None
+    
     model_config = ConfigDict(
         json_schema_extra={"example": ContractTypeInfoMixin._contract_type_create_json}
     )
@@ -23,12 +25,15 @@ class ContractTypeCreateSchema(ContractTypeBase, ContractTypeInfoMixin):
     @classmethod
     def model_validate(cls, contract_type: ContractTypeModel):
         return cls(
+            contract_type_id=contract_type.contract_type_id,
             contract_type_name=contract_type.contract_type_name,
             fee_percentage=contract_type.fee_percentage,
         ).model_dump()
 
 
 class ContractTypeUpdateSchema(ContractTypeBase, ContractTypeInfoMixin):
+    contract_type_id: Optional[int] = None
+    
     fee_percentage: Optional[Decimal] = None
     contract_type_name: Optional[ContractTypeEnum] = None
 
@@ -39,6 +44,7 @@ class ContractTypeUpdateSchema(ContractTypeBase, ContractTypeInfoMixin):
     @classmethod
     def model_validate(cls, contract_type: ContractTypeModel):
         return cls(
+            contract_type_id=contract_type.contract_type_id,
             contract_type_name=contract_type.contract_type_name,
             fee_percentage=contract_type.fee_percentage,
         ).model_dump()

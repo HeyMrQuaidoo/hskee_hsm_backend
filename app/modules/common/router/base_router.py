@@ -30,6 +30,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
         tags: List[str] = [],
         show_default_routes=True,
     ):
+
         self.dao = dao
         self.model_pk = schemas["primary_keys"]
         self.model_schema = schemas["model_schema"]
@@ -86,9 +87,11 @@ class BaseCRUDRouter(Generic[DBModelType]):
     def add_get_route(self):
         @self.router.get("/{id}")
         async def get(
-            id: Union[UUID, str], db_session: AsyncSession = Depends(get_db)
+            id: Union[UUID | int | str],
+            db_session: AsyncSession = Depends(get_db)
         ) -> DAOResponse:
             try:
+                id = int(id) if isinstance(id, str) and id.isdigit() else id
                 item = await self.dao.get(db_session=db_session, id=id)
 
                 if not item:
@@ -141,11 +144,12 @@ class BaseCRUDRouter(Generic[DBModelType]):
     def add_update_route(self):
         @self.router.put("/{id}")
         async def update(
-            id: Union[UUID, str],
+            id: Union[UUID, str, int],
             item: self.update_schema,
             db_session: AsyncSession = Depends(get_db),
         ) -> DAOResponse:
             try:
+                id = int(id) if isinstance(id, str) and id.isdigit() else id
                 # Query the database for the item
                 db_item = await self.dao.query(
                     db_session, filters={f"{self.dao.primary_key}": id}, single=True
@@ -199,9 +203,10 @@ class BaseCRUDRouter(Generic[DBModelType]):
     def add_delete_route(self):
         @self.router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
         async def delete(
-            id: Union[UUID, str], db_session: AsyncSession = Depends(get_db)
+            id: Union[UUID, str, int], db_session: AsyncSession = Depends(get_db)
         ):
             try:
+                id = int(id) if isinstance(id, str) and id.isdigit() else id
                 db_item = await self.dao.get(db_session, id)
                 await self.dao.delete(db_session=db_session, db_obj=db_item)
             except RecordNotFoundException as e:
