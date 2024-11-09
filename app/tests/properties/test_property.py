@@ -1,6 +1,7 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
+from app.tests.billable.test_utilities import TestUtilities
 
 
 # TODO:
@@ -11,6 +12,7 @@ from httpx import AsyncClient
 # - Validate billable_amount in utilities is a decimal. It is a string at the moment
 class TestProperties:
     default_property: Dict[str, Any] = {}
+    default_utility: Dict[str, Any] = TestUtilities.default_utility
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_property")
@@ -21,6 +23,7 @@ class TestProperties:
             "/utilities/", params={"limit": 10, "offset": 0}
         )
         utility = response_utility.json()["data"][0]
+        self.default_utility = utility
 
         response = await client.post(
             "/property/",
@@ -39,7 +42,7 @@ class TestProperties:
                 "pets_allowed": True,
                 "description": "description",
                 "property_status": "available",
-                "address": {
+                "address": [{
                     "address_type": "billing",
                     "primary": True,
                     "address_1": "line 1",
@@ -48,11 +51,11 @@ class TestProperties:
                     "region": "Greater Accra",
                     "country": "Ghana",
                     "address_postalcode": "",
-                },
+                }],
                 "media": [
                     {
                         "media_name": "property_image",
-                        "media_type": "png",
+                        "media_type": "image",
                         "content_url": media_image,
                     }
                 ],
@@ -65,7 +68,7 @@ class TestProperties:
                         "media": [
                             {
                                 "media_name": "ammenity_image",
-                                "media_type": "png",
+                                "media_type": "image",
                                 "content_url": media_image,
                             }
                         ],
@@ -73,17 +76,18 @@ class TestProperties:
                 ],
                 "utilities": [
                     {
+                        "name": "swimming pool",
+                        "description": "A swimming pool",
                         "payment_type": "one_time",
                         "billable_amount": "100",
+                        "billable_type": "utilities",
                         "apply_to_units": False,
-                        "billable_id": utility.get("utility_id"),
+                        "billable_id": self.default_utility.get("utility_id"),
                     }
                 ],
             },
         )
-        print("PROPERTY RESPONSE:", response)
-        assert response.status_code == 200
-
+        assert response.status_code == 201
         TestProperties.default_property = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")

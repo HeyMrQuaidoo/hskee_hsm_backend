@@ -10,7 +10,7 @@ from app.modules.resources.schema.mixins.amenities_mixin import (
 )
 
 # models
-from app.modules.resources.models.amenity import Amenities as AmenitiesModel
+from app.modules.resources.models.amenities import Amenities as AmenitiesModel
 
 
 class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
@@ -31,8 +31,7 @@ class AmenityUpdateSchema(AmenityBase):
     )
 
 
-class AmenityResponse(AmenityBase):
-    amenity_id: Optional[UUID] = None
+class AmenitiesResponse(AmenityBase):
 
     @classmethod
     def model_validate(cls, amenity: AmenitiesModel) -> "AmenityResponse":
