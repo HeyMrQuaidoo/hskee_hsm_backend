@@ -18,7 +18,7 @@ from app.modules.contract.schema.mixins.under_contract_mixin import UnderContrac
 from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
 from app.modules.contract.schema.mixins.under_contract_mixin import UnderContractBase
 
-from app.modules.billing.schema.utility_schema import UtilityResponse
+from app.modules.billing.schema.utility_schema import UtilitiesResponse
 from app.modules.billing.schema.invoice_schema import InvoiceResponse
 from app.modules.resources.schema.media_schema import MediaResponse
 
@@ -301,7 +301,7 @@ class ContractInfoMixin(PropertyDetailsMixin, UserBaseMixin):
     def get_utilities_info(cls, entity_utilities: List[EntityBillableModel]):
         value = (
             [
-                UtilityResponse.model_validate(
+                UtilitiesResponse.model_validate(
                     {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
                 )
                 for entity_utility in entity_utilities

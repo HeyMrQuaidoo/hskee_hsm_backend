@@ -18,10 +18,10 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
-        json_encoders={
-            date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
-        },
+        #json_encoders={
+            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # },
         json_schema_extra={
             "example": PropertyAssignmentMixin._property_assignment_create_json
         },
@@ -44,10 +44,10 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
-        json_encoders={
-            date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
-        },
+        #json_encoders={
+            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # },
         json_schema_extra={
             "example": PropertyAssignmentMixin._property_assignment_update_json
         },

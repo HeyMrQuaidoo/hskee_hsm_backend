@@ -14,14 +14,17 @@ from app.modules.associations.models.entity_billable import (
     EntityBillable as EntityBillableModel,
 )
 
+# Enums 
+from app.modules.billing.enums.billing_enums import BillableTypeEnum
+
 
 class UtilityBase(BaseSchema):
     name: Optional[str] = None
     description: Optional[str] = None
-    billable_type: Optional[str] = None
+    billable_type: Optional[BillableTypeEnum] = None
     billable_amount: Optional[int] = None
     apply_to_units: Optional[bool] = False
-    payment_type_id: Optional[int] = (None,)
+    payment_type_id: Optional[int] = None
     start_period: Optional[datetime] = None
     end_period: Optional[datetime] = None
     billable_id: Optional[UUID] = None

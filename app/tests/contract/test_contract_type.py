@@ -6,15 +6,18 @@ from httpx import AsyncClient
 class TestContractType:
     default_contract_type: Dict[str, Any] = {}
 
+
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_contract_type")
     async def test_create_contract_type(self, client: AsyncClient):
         response = await client.post(
             "/contract-type/",
-            json={"contract_type_name": "rent", "fee_percentage": 0},
+            json={
+                "contract_type_name": "rent",
+                "fee_percentage": 20,
+            },
         )
-        assert response.status_code == 200
-
+        assert response.status_code == 201
         TestContractType.default_contract_type = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")

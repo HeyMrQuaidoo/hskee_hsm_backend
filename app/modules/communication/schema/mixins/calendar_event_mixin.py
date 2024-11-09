@@ -19,6 +19,8 @@ from app.modules.auth.schema.mixins.user_mixin import UserBaseMixin
 
 
 class CalendarEventBase(BaseSchema):
+    calendar_event_id: Optional[UUID] = None
+    event_id: Optional[str] = None
     title: str
     description: Optional[str] = None
     status: CalendarStatusEnum

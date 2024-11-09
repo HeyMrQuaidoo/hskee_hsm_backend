@@ -22,7 +22,7 @@ class UtilityUpdateSchema(UtilityBase, UtilitiesMixin):
     )
 
 
-class UtilityResponse(UtilityBase):
+class UtilitiesResponse(UtilityBase):
     name: Optional[str] = None
     description: Optional[str] = None
 

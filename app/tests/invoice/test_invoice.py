@@ -1,10 +1,12 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
+from app.tests.users.test_users import TestUsers
 
 
 class TestInvoice:
     default_invoice: Dict[str, Any] = {}
+    default_user: Dict[str, Any] = TestUsers.default_user
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_invoice")
@@ -12,23 +14,31 @@ class TestInvoice:
         response = await client.post(
             "/invoice/",
             json={
-                "issued_by": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
-                "issued_to": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",
-                "due_date": "2024-07-31T23:59:59",
-                "status": "pending",
+                "issued_by": TestInvoice.default_user.get("user_id"),
+                "issued_to": TestInvoice.default_user.get("user_id"),
+                "invoice_details": "Test invoice for services rendered",
+                "invoice_amount": 1500.50,
+                "due_date": "2024-06-23T19:11:07.570Z",
+                "date_paid": "2024-06-24T19:11:07.570Z",
+                "invoice_type": "standard", 
+                "status": "pending", 
                 "invoice_items": [
                     {
-                        "name": "Item 1",
-                        "amount": 0,
-                        "unit_price": 200,
-                        "total_price": 200,
+                        "description": "Item 1 - Consulting service",
+                        "quantity": 2,
+                        "unit_price": 750.25,
+                        "reference_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", 
+                    },
+                    {
+                        "description": "Item 2 - Support service",
                         "quantity": 1,
+                        "unit_price": 500,
+                        "reference_id": "f1e2d3c4-b5a6-7890-cbda-ab1234567890", 
                     }
-                ],
-                "invoice_type": "general",
+                ]
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == 201, f"Failed with response: {response.text}"
         TestInvoice.default_invoice = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -60,6 +70,7 @@ class TestInvoice:
                 "issued_to": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",
                 "due_date": "2024-07-31T23:59:59",
                 "status": "pending",
+                "invoice_details": "Updated consulting services for July 2024",
                 "invoice_items": [
                     {
                         "invoice_item_id": invoice_items["invoice_item_id"],

@@ -7,6 +7,7 @@ from app.modules.common.schema.base_schema import BaseSchema
 
 
 class AmenityBase(BaseSchema):
+    amenity_id: Optional[UUID] = None
     amenity_name: Optional[str] = None
     amenity_short_name: Optional[str] = None
     description: Optional[str] = None
