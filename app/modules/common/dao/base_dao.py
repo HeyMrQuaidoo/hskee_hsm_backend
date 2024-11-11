@@ -4,37 +4,41 @@ from fastapi import Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Generic, Union
 
+from app.cache.cacheModule import CacheModule
 from app.core.lifespan import get_db
-from app.db.dbCrud import DBOperations
+from app.cache.cacheCrud import DBOperationsWithCache
 from app.core.response import DAOResponse
 from app.core.errors import RecordNotFoundException
 
 DBModelType = TypeVar("DBModelType")
 
-
-class BaseDAO(DBOperations, Generic[DBModelType]):
+class BaseDAO(DBOperationsWithCache, Generic[DBModelType]):
     def __init__(
         self,
         model: Type[DBModelType],
         excludes: Optional[List[str]] = [],
         detail_mappings: Optional[Dict[str, Any]] = {},
         model_entity_params: Optional[Dict[str, Any]] = {},
+        cache_crud: Optional[CacheModule] = None,
+        model_registry: Optional[Dict[str, Type[BaseModel]]] = None,
+        cache_expiry: Optional[int] = 300,
         *args,
         **kwargs,
     ):
-        self.model = model
-        self.excludes = excludes
-        self.detail_mappings = detail_mappings
-
+        # Initialize the parent DBOperationsWithCache with all relevant parameters
         super().__init__(
-            self.model,
-            excludes=excludes,
+            model=model,
             detail_mappings=detail_mappings,
             model_entity_params=model_entity_params,
+            excludes=excludes,
+            cache_crud=cache_crud,
+            model_registry=model_registry,
+            cache_expiry=cache_expiry,
             *args,
             **kwargs,
         )
         self.primary_key = kwargs.get("primary_key")
+
 
     def extract_model_data(
         self, data: dict, schema: Type[BaseModel], nested_key: Optional[str] = None
@@ -69,7 +73,7 @@ class BaseDAO(DBOperations, Generic[DBModelType]):
     async def validate_ids(
         self,
         db_session: AsyncSession,
-        validations: List[Tuple[DBOperations, Dict]],
+        validations: List[Tuple[DBOperationsWithCache, Dict]],
     ) -> Union[None, DAOResponse]:
         """not used: validate ids"""
         queries = [
