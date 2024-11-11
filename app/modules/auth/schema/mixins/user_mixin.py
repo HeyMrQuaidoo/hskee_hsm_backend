@@ -9,7 +9,7 @@ from app.modules.auth.enums.user_enums import GenderEnum
 
 # schema
 from app.modules.common.schema.base_schema import BaseSchema
-from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
+from app.modules.properties.schema.mixins.property_mixin_schema import PropertyDetailsMixin
 
 # models
 from app.modules.auth.models.user import User as UserModel

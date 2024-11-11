@@ -52,7 +52,7 @@ class RoleDAO(BaseDAO[Role]):
 
         return DAOResponse[List[RoleResponse]](
             success=True,
-            data=[RoleResponse.from_orm(role) for role in roles],
+            data=[RoleResponse.model_validate(role) for role in roles],
             meta={"role_stats": role_stats},
         )
 

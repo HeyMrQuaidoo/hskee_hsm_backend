@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 
 # schema
 from app.modules.address.schema.address_mixin import AddressMixin
-from app.modules.properties.schema.mixins.property_mixin import (
+from app.modules.properties.schema.mixins.property_mixin_schema import (
     PropertyInfoMixin,
     PropertyBase,
 )

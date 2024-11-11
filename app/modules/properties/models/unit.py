@@ -13,7 +13,7 @@ from sqlalchemy import (
     select,
     and_,
     or_,
-    ForeignKey,
+    ForeignKey,event
 )
 
 # models
@@ -33,7 +33,8 @@ class Units(PropertyUnitAssoc):
 
     property_unit_assoc_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("property_unit_assoc.property_unit_assoc_id"),
+        ForeignKey("property_unit_assoc.property_unit_assoc_id",
+        ondelete="CASCADE"),
         primary_key=True,
     )
     property_unit_code: Mapped[str] = mapped_column(String(128))
@@ -105,7 +106,13 @@ class Units(PropertyUnitAssoc):
         "Property",
         primaryjoin="Units.property_id == Property.property_unit_assoc_id",
         back_populates="units",
+        cascade="all, delete",
         lazy="selectin",
+    )
+
+    property_unit_assoc = relationship(
+        "PropertyUnitAssoc",
+        back_populates="units"
     )
 
     # media

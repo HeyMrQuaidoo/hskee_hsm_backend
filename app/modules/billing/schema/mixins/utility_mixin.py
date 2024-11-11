@@ -19,6 +19,7 @@ from app.modules.billing.enums.billing_enums import BillableTypeEnum
 
 
 class UtilityBase(BaseSchema):
+    utility_id: Optional[UUID] = None
     name: Optional[str] = None
     description: Optional[str] = None
     billable_type: Optional[BillableTypeEnum] = None
@@ -31,6 +32,7 @@ class UtilityBase(BaseSchema):
 
 
 class Utility(BaseSchema):
+    utility_id: Optional[UUID] = None
     name: str
     description: Optional[str] = None
 
@@ -77,6 +79,7 @@ class UtilitiesMixin:
 
             result.append(
                 UtilityInfo(
+                    utility_id=utility.utility_id,
                     utility=utility.name,
                     frequency=payment_type.payment_type_name,
                     billable_amount=entity_utility.billable_amount,

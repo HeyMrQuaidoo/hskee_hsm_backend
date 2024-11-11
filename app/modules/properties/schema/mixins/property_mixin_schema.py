@@ -151,7 +151,7 @@ class PropertyUnitInfoMixin:
         return (
             [
                 UtilitiesResponse.model_validate(
-                    {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
+                    {**entity_utility.to_dict(), **entity_utility.utility.to_dict()} if entity_utility.utility else {**entity_utility.to_dict()}
                 )
                 for entity_utility in entity_utilities
             ]
@@ -434,7 +434,7 @@ class PropertyInfoMixin(AddressMixin, PropertyUnitInfoMixin):
             amenities=property.amenities,
             media=property.media,
             utilities=cls.get_utilities_info(property.utilities),
-        ).model_dump()
+        )
 
 
 class PropertyDetailsMixin(PropertyInfoMixin, PropertyUnitInfoMixin):

@@ -33,7 +33,7 @@ class MediaCreateSchema(Media, MediaInfoMixin):
             is_thumbnail=media.is_thumbnail,
             caption=media.caption,
             description=media.description,
-        ).model_dump()
+        )
 
 
 class MediaUpdateSchema(Media):
@@ -55,7 +55,7 @@ class MediaUpdateSchema(Media):
             is_thumbnail=media.is_thumbnail,
             caption=media.caption,
             description=media.description,
-        ).model_dump()
+        )
 
 
 class MediaResponse(Media):
@@ -71,7 +71,7 @@ class MediaResponse(Media):
             is_thumbnail=media.is_thumbnail,
             caption=media.caption,
             description=media.description,
-        ).model_dump()
+        )
 
 
 class EntityMediaCreateSchema(BaseSchema):

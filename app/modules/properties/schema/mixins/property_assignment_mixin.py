@@ -7,7 +7,7 @@ from pydantic import ConfigDict, model_validator
 # schemas
 from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBase
-from app.modules.properties.schema.mixins.property_mixin import (
+from app.modules.properties.schema.mixins.property_mixin_schema import (
     PropertyDetailsMixin,  # Use directly instead of inheriting
 )
 

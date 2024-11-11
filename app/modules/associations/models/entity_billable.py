@@ -33,7 +33,7 @@ class EntityBillable(Base):
     )
     entity_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     entity_type: Mapped[EntityTypeEnum] = mapped_column(
-        Enum(EntityTypeEnum), nullable=False
+        Enum(EntityTypeEnum), nullable=True
     )
 
     billable_id: Mapped[uuid.UUID] = mapped_column(

@@ -60,7 +60,8 @@ class MediaDAO(BaseDAO[Media]):
             return new_media if isinstance(new_media, DAOResponse) else new_media
         except Exception as e:
             await db_session.rollback()
-            return DAOResponse(success=False, error=f"{str(e)}")
+            raise e
+            # return DAOResponse(success=False, error=f"{str(e)}")
 
     @override
     async def update(

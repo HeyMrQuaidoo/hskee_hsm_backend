@@ -3,7 +3,7 @@ from pydantic import ConfigDict
 
 # schema
 from app.modules.address.schema.address_mixin import AddressMixin
-from app.modules.properties.schema.mixins.property_mixin import (
+from app.modules.properties.schema.mixins.property_mixin_schema import (
     PropertyUnitBase,
     PropertyUnitInfoMixin,
 )
@@ -15,7 +15,7 @@ from app.modules.properties.models.unit import Units as UnitModel
 class UnitsResponse(PropertyUnitBase, PropertyUnitInfoMixin):
     @classmethod
     def model_validate(cls, property_unit: UnitModel):
-        return cls.get_property_unit_info(property_unit).model_dump()
+        return cls.get_property_unit_info(property_unit)
 
 
 class UnitCreateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):
@@ -29,7 +29,7 @@ class UnitCreateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):
 
     @classmethod
     def model_validate(cls, property_unit: UnitModel):
-        return cls.get_property_unit_info(property_unit).model_dump()
+        return cls.get_property_unit_info(property_unit)
 
 
 class UnitUpdateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):
@@ -43,4 +43,4 @@ class UnitUpdateSchema(PropertyUnitBase, PropertyUnitInfoMixin, AddressMixin):
 
     @classmethod
     def model_validate(cls, property_unit: UnitModel):
-        return cls.get_property_unit_info(property_unit).model_dump()
+        return cls.get_property_unit_info(property_unit)

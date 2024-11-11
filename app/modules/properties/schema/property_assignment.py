@@ -2,7 +2,7 @@ from pydantic import ConfigDict
 from datetime import date, datetime
 
 # schema imports
-from app.modules.properties.schema.mixins.property_mixin import PropertyDetailsMixin
+from app.modules.properties.schema.mixins.property_mixin_schema import PropertyDetailsMixin
 from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
