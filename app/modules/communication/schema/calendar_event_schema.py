@@ -1,4 +1,3 @@
-from uuid import UUID
 from typing import Optional
 from datetime import datetime
 from pydantic import ConfigDict
@@ -42,7 +41,6 @@ class CalendarEventUpdateSchema(CalendarEventBase, CalendarEventInfoMixin):
 
 
 class CalendarEventResponse(CalendarEventBase, CalendarEventInfoMixin):
-
     @classmethod
     def model_validate(cls, calendar_event: CalendarEvent):
         return super().model_validate(calendar_event)

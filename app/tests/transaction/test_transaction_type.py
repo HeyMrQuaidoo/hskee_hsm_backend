@@ -12,7 +12,7 @@ class TestTransactionType:
         # Define the transaction type details
         transaction_type_name = "prepaid_card"
         transaction_type_description = "Payment via prepaid card"
-    
+
         # Check if a transaction type with the given name already exists
         response = await client.get(
             "/transaction-type/", params={"limit": 10, "offset": 0}

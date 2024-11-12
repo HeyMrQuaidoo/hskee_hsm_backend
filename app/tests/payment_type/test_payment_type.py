@@ -2,6 +2,7 @@ import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
 
+
 class TestPaymentType:
     default_payment_type: Dict[str, Any] = {}
 
@@ -13,7 +14,7 @@ class TestPaymentType:
             json={
                 "payment_type_name": "annually",
                 "payment_type_description": "A one-time payment",
-                "payment_partitions": 4
+                "payment_partitions": 4,
             },
         )
         assert response.status_code == 201, response.text
@@ -28,14 +29,14 @@ class TestPaymentType:
         assert response.status_code == 200, response.text
         assert response.json()["data"]["payment_type_id"] == payment_type_id
 
-
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["create_payment_type"], name="get_all_payment_types")
+    @pytest.mark.dependency(
+        depends=["create_payment_type"], name="get_all_payment_types"
+    )
     async def test_get_all_payment_types(self, client: AsyncClient):
         response = await client.get("/payment-type/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200, response.text
         assert isinstance(response.json(), dict), response.text
-
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_payment_type"], name="update_payment_type")
@@ -46,12 +47,11 @@ class TestPaymentType:
             json={
                 "payment_type_name": "one_time",
                 "payment_type_description": "A recurring payment",
-                "payment_partitions": 12
+                "payment_partitions": 12,
             },
         )
         assert response.status_code == 200, response.text
         assert response.json()["data"]["payment_type_name"] == "one_time"
-
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["update_payment_type"], name="delete_payment_type")

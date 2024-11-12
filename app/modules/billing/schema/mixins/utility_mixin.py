@@ -14,7 +14,7 @@ from app.modules.associations.models.entity_billable import (
     EntityBillable as EntityBillableModel,
 )
 
-# Enums 
+# Enums
 from app.modules.billing.enums.billing_enums import BillableTypeEnum
 
 

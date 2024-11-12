@@ -68,7 +68,6 @@ class BaseMixin:
     def validate_primary_key(
         self, uuid_to_test: Union[int | str | UUID], version: int = 4
     ) -> Union[int | str | UUID]:
-
         if isinstance(uuid_to_test, int):
             return uuid_to_test
         try:

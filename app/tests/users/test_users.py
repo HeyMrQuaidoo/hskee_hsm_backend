@@ -3,6 +3,7 @@ from typing import Any, Dict
 from httpx import AsyncClient
 from faker import Faker
 
+
 class TestUsers:
     default_user: Dict[str, Any] = {}
     faker = Faker()
@@ -18,7 +19,9 @@ class TestUsers:
                 "last_name": "Doe",
                 "email": self.faker.unique.email(),
                 "phone_number": self.faker.phone_number(),
-                "identification_number": str(self.faker.random_number(digits=6, fix_len=True)),
+                "identification_number": str(
+                    self.faker.random_number(digits=6, fix_len=True)
+                ),
                 "photo_url": "",
                 "gender": "male",
                 "address": [
@@ -145,4 +148,4 @@ class TestUsers:
 
         # Verify that the user is deleted
         response = await client.get(f"/users/{user_id}")
-        assert response.status_code == 404, f"User should be deleted but was found."
+        assert response.status_code == 404, "User should be deleted but was found."

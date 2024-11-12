@@ -2,6 +2,7 @@ import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
 
+
 class TestUtilities:
     default_utility: Dict[str, Any] = {}
 

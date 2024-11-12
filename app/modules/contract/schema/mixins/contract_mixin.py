@@ -15,7 +15,9 @@ from app.modules.resources.schema.mixins.media_mixin import MediaBase
 from app.modules.billing.schema.mixins.utility_mixin import UtilityBase
 from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 from app.modules.contract.schema.mixins.under_contract_mixin import UnderContract
-from app.modules.properties.schema.mixins.property_mixin_schema import PropertyDetailsMixin
+from app.modules.properties.schema.mixins.property_mixin_schema import (
+    PropertyDetailsMixin,
+)
 from app.modules.contract.schema.mixins.under_contract_mixin import UnderContractBase
 
 from app.modules.billing.schema.utility_schema import UtilitiesResponse

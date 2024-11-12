@@ -37,7 +37,7 @@ class PropertyUnitAssoc(Base):
         primaryjoin="and_(PropertyUnitAssoc.property_unit_type == 'Units', Units.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id)",
         foreign_keys="[Units.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
         # lazy="selectin",
         # viewonly=True,
     )

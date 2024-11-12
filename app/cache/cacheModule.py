@@ -1,27 +1,42 @@
+# import redis
 import redis.asyncio as redis
-from typing import Any, Dict, Optional
+from typing import Any, Optional
+
 
 class CacheModule:
-    def __init__(self, host: str, port: int, password: Optional[str] = None, db: int = 0, **kwargs):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        user: str,
+        password: Optional[str] = None,
+        **kwargs,
+    ):
         self.host = host
         self.port = port
         self.password = password
-        self.db = db
+        self.user = user
         self.redis = None
 
     async def connect(self):
+        print("Trying to connect to Redis")
+
         self.redis = redis.Redis(
             host=self.host,
             port=self.port,
+            username=self.user,
             password=self.password,
-            db=self.db,
-            decode_responses=True  # Automatically decode bytes to strings
+            ssl=True,
+            ssl_cert_reqs=None,
+            decode_responses=True,
         )
 
     async def disconnect(self):
         if self.redis:
             await self.redis.close()
-            await self.redis.connection_pool.disconnect()  # Disconnect the connection pool
+            await (
+                self.redis.connection_pool.disconnect()
+            )  # Disconnect the connection pool
             self.redis = None
 
     async def set(self, key: str, value: Any, expire: Optional[int] = None):

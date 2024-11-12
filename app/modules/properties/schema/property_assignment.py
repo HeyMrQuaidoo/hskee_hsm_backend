@@ -1,8 +1,9 @@
 from pydantic import ConfigDict
-from datetime import date, datetime
 
 # schema imports
-from app.modules.properties.schema.mixins.property_mixin_schema import PropertyDetailsMixin
+from app.modules.properties.schema.mixins.property_mixin_schema import (
+    PropertyDetailsMixin,
+)
 from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
@@ -18,9 +19,9 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
-        #json_encoders={
-            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # json_encoders={
+        # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+        # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         # },
         json_schema_extra={
             "example": PropertyAssignmentMixin._property_assignment_create_json
@@ -44,9 +45,9 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
-        #json_encoders={
-            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # json_encoders={
+        # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+        # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         # },
         json_schema_extra={
             "example": PropertyAssignmentMixin._property_assignment_update_json

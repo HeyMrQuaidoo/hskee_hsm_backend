@@ -37,8 +37,8 @@ class TestInvoice:
                         "quantity": 1,
                         "unit_price": 500,
                         "reference_id": "f1e2d3c4-b5a6-7890-cbda-ab1234567890",
-                    }
-                ]
+                    },
+                ],
             },
         )
         assert response.status_code == 201, f"Failed with response: {response.text}"

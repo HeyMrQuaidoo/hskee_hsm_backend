@@ -1,4 +1,3 @@
-from datetime import date
 from pydantic import ConfigDict
 from typing import Any, Optional, Union
 
@@ -24,7 +23,7 @@ class PropertyCreateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": PropertyInfoMixin._property_create_json},
     )
 
@@ -53,7 +52,7 @@ class PropertyUpdateSchema(PropertyBase, PropertyInfoMixin, AddressMixin):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": PropertyInfoMixin._property_update_json},
     )
 

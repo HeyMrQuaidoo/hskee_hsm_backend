@@ -1,5 +1,4 @@
 from uuid import UUID
-from datetime import date
 from typing import Annotated, Optional
 from pydantic import ConfigDict, constr
 
@@ -19,7 +18,7 @@ class MediaCreateSchema(Media, MediaInfoMixin):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": MediaInfoMixin._media_create_json},
     )
 
@@ -41,7 +40,7 @@ class MediaUpdateSchema(Media):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": MediaInfoMixin._media_update_json},
     )
 
