@@ -1,13 +1,14 @@
 from uuid import UUID
 from typing import List, Optional, Annotated
-from pydantic import BaseModel, ConfigDict, constr
+from pydantic import ConfigDict, constr
 
 # models
 from app.modules.auth.models.role import Role as RoleModel
 
 # schema
-from app.modules.auth.schema.permissions_schema import Permission
+from app.modules.common.schema.base_schema import BaseSchema
 from app.modules.auth.schema.mixins.role_mixin import RoleBase
+from app.modules.auth.schema.permissions_schema import Permission
 
 
 class RoleCreateSchema(RoleBase):
@@ -20,7 +21,7 @@ class RoleUpdateSchema(RoleBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RoleResponse(BaseModel):
+class RoleResponse(BaseSchema):
     role_id: Optional[UUID] = None
     name: Optional[Annotated[str, constr(max_length=80)]] = None
     alias: Optional[Annotated[str, constr(max_length=80)]] = None

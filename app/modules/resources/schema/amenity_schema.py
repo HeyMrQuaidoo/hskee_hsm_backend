@@ -1,3 +1,5 @@
+from uuid import UUID
+from typing import Optional
 from pydantic import ConfigDict
 
 # schemas
@@ -7,10 +9,12 @@ from app.modules.resources.schema.mixins.amenities_mixin import (
 )
 
 # models
-from app.modules.resources.models.amenities import Amenities as AmenitiesModel
+from app.modules.resources.models.amenity import Amenities as AmenitiesModel
 
 
-class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
+class AmenityCreateSchema(AmenityBase):
+    amenity_id: Optional[UUID] = None
+
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
@@ -19,7 +23,7 @@ class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
     )
 
 
-class AmenityUpdateSchema(AmenityBase):
+class AmenityUpdateSchema(AmenityBase, AmenityInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
@@ -29,8 +33,10 @@ class AmenityUpdateSchema(AmenityBase):
 
 
 class AmenitiesResponse(AmenityBase):
+    amenity_id: Optional[UUID] = None
+
     @classmethod
-    def model_validate(cls, amenity: AmenitiesModel) -> "AmenityResponse":
+    def model_validate(cls, amenity: AmenitiesModel) -> "AmenitiesResponse":
         return cls(
             amenity_id=amenity.amenity_id,
             amenity_name=amenity.amenity_name,

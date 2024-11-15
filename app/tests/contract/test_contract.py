@@ -1,11 +1,12 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
-from app.tests.users.test_users import TestUsers  
+from app.tests.users.test_users import TestUsers
 from app.tests.properties.test_property import TestProperties
 from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.contract.test_contract_type import TestContractType
-# from app.tests.invoice.test_invoice import TestInvoice  
+# from app.tests.invoice.test_invoice import TestInvoice
+
 
 class TestContract:
     default_contract: Dict[str, Any] = {}
@@ -17,16 +18,20 @@ class TestContract:
             "TestPaymentType::test_create_payment_type",
             "TestContractType::test_create_contract_type",
             "TestUsers::test_create_user",
-            "TestInvoice::create_invoice"
-        ], 
-        name="create_contract"
+            "TestInvoice::create_invoice",
+        ],
+        name="create_contract",
     )
     async def test_create_contract(self, client: AsyncClient):
         response = await client.post(
             "/contract/",
             json={
-                "contract_type_id": TestContractType.default_contract_type.get("contract_type_id"),
-                "payment_type_id": TestPaymentType.default_payment_type.get("payment_type_id"),
+                "contract_type_id": TestContractType.default_contract_type.get(
+                    "contract_type_id"
+                ),
+                "payment_type_id": TestPaymentType.default_payment_type.get(
+                    "payment_type_id"
+                ),
                 "contract_status": "active",
                 "contract_details": "string",
                 "payment_amount": 0,
@@ -37,7 +42,9 @@ class TestContract:
                 "end_date": "2024-06-23T19:11:07.570Z",
                 "contract_info": [
                     {
-                        "property_unit_assoc": TestProperties.default_property.get("property_unit_assoc_id"),
+                        "property_unit_assoc": TestProperties.default_property.get(
+                            "property_unit_assoc_id"
+                        ),
                         "contract_status": "active",
                         "client_id": TestUsers.default_user.get("user_id"),
                         "employee_id": TestUsers.default_user.get("user_id"),
@@ -96,7 +103,9 @@ class TestContract:
                 "contract_info": [
                     {
                         "contract_id": contract_number,
-                        "property_unit_assoc": TestProperties.default_property.get("property_unit_assoc_id"),
+                        "property_unit_assoc": TestProperties.default_property.get(
+                            "property_unit_assoc_id"
+                        ),
                         "contract_status": "active",
                         "client_id": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
                         "employee_id": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",

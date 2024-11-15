@@ -1,5 +1,4 @@
 from uuid import UUID
-from importlib import import_module
 from sqlalchemy.future import select
 from sqlalchemy import and_, func, inspect
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,9 +13,6 @@ from app.core.errors import (
     ForeignKeyError,
     UniqueViolationError,
 )
-
-# enums
-from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 # models
 from app.modules.common.models.model_base import (
@@ -52,38 +48,6 @@ class BaseMixin:
         mapper = inspect(self.model)
         return [column.key for column in mapper.attrs if hasattr(column, "columns")]
 
-    def get_entity_type(self, db_obj: DBModelType) -> EntityTypeEnum:
-        if isinstance(
-            db_obj, getattr(import_module("app.modules.auth.models.user"), "User")
-        ):
-            return EntityTypeEnum.user
-        if isinstance(
-            db_obj, getattr(import_module("app.modules.auth.models.role"), "Role")
-        ):
-            return EntityTypeEnum.role
-        elif isinstance(
-            db_obj,
-            getattr(
-                import_module("app.modules.properties.models.property"), "Property"
-            ),
-        ):
-            return EntityTypeEnum.property
-        elif isinstance(
-            db_obj,
-            getattr(
-                import_module("app.modules.properties.models.rental_history"),
-                "PastRentalHistory",
-            ),
-        ):
-            return EntityTypeEnum.pastrentalhistory
-        elif isinstance(
-            db_obj,
-            getattr(import_module("app.modules.billing.models.account"), "Account"),
-        ):
-            return EntityTypeEnum.account
-        else:
-            raise ValueError(f"Unknown entity type for object {db_obj}")
-
     def filter_input_fields(
         self, obj_in: Union[Dict[str, Any] | PydanticBaseModel | Any]
     ) -> Dict[str, Any]:
@@ -104,7 +68,6 @@ class BaseMixin:
     def validate_primary_key(
         self, uuid_to_test: Union[int | str | UUID], version: int = 4
     ) -> Union[int | str | UUID]:
-
         if isinstance(uuid_to_test, int):
             return uuid_to_test
         try:

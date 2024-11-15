@@ -42,16 +42,18 @@ class TestProperties:
                 "pets_allowed": True,
                 "description": "description",
                 "property_status": "available",
-                "address": [{
-                    "address_type": "billing",
-                    "primary": True,
-                    "address_1": "line 1",
-                    "address_2": "line 2",
-                    "city": "Tema",
-                    "region": "Greater Accra",
-                    "country": "Ghana",
-                    "address_postalcode": "",
-                }],
+                "address": [
+                    {
+                        "address_type": "billing",
+                        "primary": True,
+                        "address_1": "line 1",
+                        "address_2": "line 2",
+                        "city": "Tema",
+                        "region": "Greater Accra",
+                        "country": "Ghana",
+                        "address_postalcode": "",
+                    }
+                ],
                 "media": [
                     {
                         "media_name": "property_image",
@@ -130,16 +132,18 @@ class TestProperties:
                 "pets_allowed": True,
                 "description": "updated description",
                 "property_status": "available",
-                "address": [{
-                    "address_type": "billing",
-                    "primary": True,
-                    "address_1": "line 1",
-                    "address_2": "line 2",
-                    "city": "Tema",
-                    "region": "Greater Accra",
-                    "country": "Ghana",
-                    "address_postalcode": "",
-                }],
+                "address": [
+                    {
+                        "address_type": "billing",
+                        "primary": True,
+                        "address_1": "line 1",
+                        "address_2": "line 2",
+                        "city": "Tema",
+                        "region": "Greater Accra",
+                        "country": "Ghana",
+                        "address_postalcode": "",
+                    }
+                ],
                 "media": [],
                 "amenities": [],
                 "utilities": [],

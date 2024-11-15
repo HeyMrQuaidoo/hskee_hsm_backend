@@ -28,9 +28,9 @@ class BaseCRUDRouter(Generic[DBModelType]):
         schemas: SchemasDictType,
         prefix: str = "",
         tags: List[str] = [],
-        show_default_routes=True,
+        show_default_routes: bool = True,
+        route_overrides: List[str] = [],
     ):
-
         self.dao = dao
         self.model_pk = schemas["primary_keys"]
         self.model_schema = schemas["model_schema"]
@@ -39,12 +39,19 @@ class BaseCRUDRouter(Generic[DBModelType]):
         self.get_db = get_db
         self.router = APIRouter(prefix=prefix, tags=tags)
 
+        self.route_overrides = route_overrides
+
         if show_default_routes:
-            self.add_get_all_route()
-            self.add_get_route()
-            self.add_create_route()
-            self.add_update_route()
-            self.add_delete_route()
+            if "get_all" not in self.route_overrides:
+                self.add_get_all_route()
+            if "get" not in self.route_overrides:
+                self.add_get_route()
+            if "create" not in self.route_overrides:
+                self.add_create_route()
+            if "update" not in self.route_overrides:
+                self.add_update_route()
+            if "delete" not in self.route_overrides:
+                self.add_delete_route()
 
     def add_get_all_route(self):
         @self.router.get("/")
@@ -87,8 +94,7 @@ class BaseCRUDRouter(Generic[DBModelType]):
     def add_get_route(self):
         @self.router.get("/{id}")
         async def get(
-            id: Union[UUID | int | str],
-            db_session: AsyncSession = Depends(get_db)
+            id: Union[UUID | int | str], db_session: AsyncSession = Depends(get_db)
         ) -> DAOResponse:
             try:
                 id = int(id) if isinstance(id, str) and id.isdigit() else id

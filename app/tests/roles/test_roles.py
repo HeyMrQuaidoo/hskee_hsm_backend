@@ -5,13 +5,16 @@ from faker import Faker  # Import Faker
 
 faker = Faker()  # Initialize a Faker instance
 
+
 class TestRoles:
     role_data: Dict[str, Any] = {}  # Use a class variable to store role data
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(name="create_role")
     async def test_create_role(self, client: AsyncClient):
-        unique_role_name = faker.unique.name()  # Generate a unique role name using Faker
+        unique_role_name = (
+            faker.unique.name()
+        )  # Generate a unique role name using Faker
         response = await client.post(
             "/roles/",
             json={
@@ -43,7 +46,9 @@ class TestRoles:
     async def test_update_role(self, client: AsyncClient):
         # Retrieve role data
         role_id = self.role_data["role_id"]
-        updated_name = faker.unique.name()  # Generate a new unique role name using Faker
+        updated_name = (
+            faker.unique.name()
+        )  # Generate a new unique role name using Faker
         response = await client.put(
             f"/roles/{role_id}",
             json={

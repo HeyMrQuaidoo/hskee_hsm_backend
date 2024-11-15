@@ -17,7 +17,7 @@ from app.modules.contract.models.contract_type import ContractType as ContractTy
 
 class ContractTypeCreateSchema(ContractTypeBase, ContractTypeInfoMixin):
     contract_type_id: Optional[int] = None
-    
+
     model_config = ConfigDict(
         json_schema_extra={"example": ContractTypeInfoMixin._contract_type_create_json}
     )
@@ -33,7 +33,7 @@ class ContractTypeCreateSchema(ContractTypeBase, ContractTypeInfoMixin):
 
 class ContractTypeUpdateSchema(ContractTypeBase, ContractTypeInfoMixin):
     contract_type_id: Optional[int] = None
-    
+
     fee_percentage: Optional[Decimal] = None
     contract_type_name: Optional[ContractTypeEnum] = None
 

@@ -25,7 +25,6 @@ class PermissionBase(BaseSchema):
 
 
 class Permission(PermissionBase):
-
     model_config = ConfigDict(
         from_attributes=True,
         json_schema_extra={

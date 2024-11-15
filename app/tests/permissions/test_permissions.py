@@ -2,6 +2,7 @@ import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
 
+
 class TestPermissions:
     default_permission: Dict[str, Any] = {}
 
@@ -17,8 +18,13 @@ class TestPermissions:
             for permission in existing_permissions:
                 if permission["name"] == "Administrator":
                     permission_id = permission["permission_id"]
-                    delete_response = await client.delete(f"/permissions/{permission_id}")
-                    assert delete_response.status_code in [200, 204], f"Failed to delete existing permission: {delete_response.text}"
+                    delete_response = await client.delete(
+                        f"/permissions/{permission_id}"
+                    )
+                    assert delete_response.status_code in [
+                        200,
+                        204,
+                    ], f"Failed to delete existing permission: {delete_response.text}"
 
         # Proceed to create a new permission
         response = await client.post(
@@ -29,13 +35,17 @@ class TestPermissions:
                 "description": "Has full access to all settings.",
             },
         )
-        assert response.status_code == 201, f"Failed to create permission: {response.text}"
+        assert (
+            response.status_code == 201
+        ), f"Failed to create permission: {response.text}"
         TestPermissions.default_permission = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_get_all_permissions(self, client: AsyncClient):
         response = await client.get("/permissions/", params={"limit": 10, "offset": 0})
-        assert response.status_code == 200, f"Failed to fetch all permissions: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Failed to fetch all permissions: {response.text}"
         assert isinstance(response.json(), dict)
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -45,7 +55,9 @@ class TestPermissions:
         permission_id = self.default_permission["permission_id"]
 
         response = await client.get(f"/permissions/{permission_id}")
-        assert response.status_code == 200, f"Failed to fetch permission by ID: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Failed to fetch permission by ID: {response.text}"
         assert response.json()["data"]["permission_id"] == permission_id
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -63,7 +75,9 @@ class TestPermissions:
                 "description": "Allows writing of resources",
             },
         )
-        assert response.status_code == 200, f"Failed to update permission: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Failed to update permission: {response.text}"
         assert response.json()["data"]["name"] == "write"
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -74,8 +88,12 @@ class TestPermissions:
         permission_id = self.default_permission["permission_id"]
 
         response = await client.delete(f"/permissions/{permission_id}")
-        assert response.status_code == 204, f"Failed to delete permission: {response.text}"
+        assert (
+            response.status_code == 204
+        ), f"Failed to delete permission: {response.text}"
 
         # Verify the permission is deleted
         response = await client.get(f"/permissions/{permission_id}")
-        assert response.status_code == 404, f"Permission was not properly deleted: {response.text}"
+        assert (
+            response.status_code == 404
+        ), f"Permission was not properly deleted: {response.text}"

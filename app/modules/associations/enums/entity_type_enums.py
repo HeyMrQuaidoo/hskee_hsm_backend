@@ -4,6 +4,8 @@ import enum
 class EntityTypeEnum(enum.Enum):
     property = "property"
     units = "units"
+    # Property = "Property"
+    # Units = "Units"
     utilities = "utilities"
     contract = "contract"
     user = "user"
