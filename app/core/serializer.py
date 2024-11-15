@@ -4,10 +4,9 @@ import json
 
 T = TypeVar("T", bound=BaseModel)
 
-
 class JSONSerializer:
     """
-    Utility class for serializing Pydantic models and deserializing data from json.
+    Utility class for serializing Pydantic models and deserializing data from JSON.
     """
 
     @staticmethod
@@ -17,7 +16,11 @@ class JSONSerializer:
 
         If the input is a Pydantic model, it includes the model class name as metadata.
         """
+        if obj is None:
+            return json.dumps(None)  # Handle None input
         if isinstance(obj, BaseModel):
+            if obj.dict(exclude_unset=True) == {}:  # Check if the model is "empty"
+                return json.dumps(None)  # Return a JSON null equivalent
             data = obj.model_dump_json()  # Serialize Pydantic model to JSON
             return f"{obj.__class__.__name__}::{data}"  # Prefix with model name
         elif isinstance(obj, (dict, list, int, float, str, bool, type(None))):
@@ -30,10 +33,13 @@ class JSONSerializer:
         data: str, model_registry: Optional[Dict[str, Type[BaseModel]]] = None
     ) -> Any:
         """
-        Deserialize a JSON string from the json back into a Pydantic model or native Python data types.
+        Deserialize a JSON string from the JSON back into a Pydantic model or native Python data types.
 
         If the data includes a model name prefix, it uses the provided model registry to find the model class.
         """
+        if data == "null" or data is None:
+            return None  # Handle null or None data input
+        
         if "::" in data:
             # Split into model name and JSON data
             model_name, json_data = data.split("::", 1)
