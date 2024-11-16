@@ -246,75 +246,32 @@ class DBOperationsWithCache(DBOperations):
         order_by: Optional[List[InstrumentedAttribute]] = None,
     ) -> Union[List[DBModelType], Optional[DBModelType]]:
         cache_key = f"{self.model.__name__}:query:{str(filters)}:{single}:{str(options)}:{str(order_by)}"
-        cached_data = None
+        self.cache_crud = await cache_manager.cache_module.redis
 
         if self.cache_crud:
-            cached_data = await self.cache_crud.get(cache_key)
+            cached_object = await self.cache_crud.get(cache_key)
+            cached_data = (
+                JSONSerializer.deserialize(cached_object) if cached_object else None
+            )
 
         if cached_data:
             print(f"Cache hit for {cache_key}")
-            deserialized_data = [
-                JSONSerializer.deserialize(item, self.model_registry)
-                for item in cached_data
-            ]
-            return deserialized_data if not single else deserialized_data[0]
+            return (
+                [self.unserialize(obj) for obj in cached_data]
+                if isinstance(cached_data, list)
+                else self.unserialize(cached_data)
+            )
 
         print(f"Cache miss for {cache_key}")
-        db_objs = await super().query(db_session, filters, single, options, order_by)
+        db_obj = await super().query(db_session, filters, single, options, order_by)
+        print(f"I AM HERE: {db_obj}")
 
-        if self.cache_crud and db_objs:
-            if isinstance(db_objs, list):
-                serialized_data = [JSONSerializer.serialize(obj) for obj in db_objs]
-            else:
-                serialized_data = [JSONSerializer.serialize(db_objs)]
+        if self.cache_crud and db_obj:
+            serialized_data = self.serialize(db_obj)
             await self.cache_crud.set(
-                cache_key, serialized_data, expire=self.cache_expiry
+                cache_key,
+                JSONSerializer.serialize(serialized_data),
+                ex=self.cache_expiry,
             )
 
-        return db_objs
-
-    async def query_on_joins(
-        self,
-        db_session: AsyncSession,
-        filters: Dict[str, Any],
-        single: bool = False,
-        options: Optional[List[InstrumentedAttribute]] = None,
-        order_by: Optional[List[InstrumentedAttribute]] = None,
-        join_conditions: Optional[List] = None,
-        skip: int = 0,
-        limit: int = 100,
-    ) -> Union[List[DBModelType], Optional[DBModelType]]:
-        """
-        Executes a query with join conditions using the cache-aware CRUD operations.
-        """
-        cache_key = f"{self.model.__name__}:joins:{filters}:{skip}:{limit}"
-        if self.cache_crud:
-            cached_data = await self.cache_crud.get(cache_key)
-            if cached_data:
-                print(f"Cache hit for {cache_key}")
-                return JSONSerializer.deserialize(cached_data, self.model_registry)
-
-        # Perform the query if no cache hit
-        result = await super().query_on_joins(
-            db_session, filters, single, options, order_by, join_conditions, skip, limit
-        )
-
-        # Cache the result
-        if self.cache_crud and result:
-            serialized_data = JSONSerializer.serialize(result)
-            await self.cache_crud.set(
-                cache_key, serialized_data, expire=self.cache_expiry
-            )
-
-        return result
-
-    # Add the query_on_create method
-    async def query_on_create(
-        self,
-        db_session: AsyncSession,
-        filters: Dict[str, Any],
-        single: bool = False,
-        options: Optional[List[InstrumentedAttribute]] = None,
-        create_if_not_exist: bool = False,
-    ) -> Optional[DBModelType]:
-        pass
+        return db_obj
