@@ -11,11 +11,12 @@ from app.cache.cacheCrud import DBOperationsWithCache
 from app.core.lifespan import get_db
 from app.core.response import DAOResponse
 from app.core.errors import RecordNotFoundException
+from app.db.dbCrud import DBOperations
 
 DBModelType = TypeVar("DBModelType")
 
 
-class BaseDAO(DBOperationsWithCache, Generic[DBModelType]):
+class BaseDAO(DBOperations, Generic[DBModelType]):
     def __init__(
         self,
         model: Type[DBModelType],

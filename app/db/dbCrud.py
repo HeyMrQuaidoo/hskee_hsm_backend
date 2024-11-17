@@ -141,6 +141,7 @@ class BaseMixin:
         obj_data: Union[Dict[str, Any], PydanticBaseModel],
     ):
         try:
+            print("Here 12")
             for mapped_obj_key, mapped_obj_dao in self.detail_mappings.items():
                 print(f"\tmapped_obj_key: {mapped_obj_key}")
 
@@ -200,6 +201,7 @@ class BaseMixin:
                     mapped_obj_created_item = await mapped_obj_dao.create_or_update(
                         db_session=db_session, obj_in=detail_obj
                     )
+                    print("Here 13")
                     await db_session.flush()
                     mapped_obj_created_item = await self.commit_and_refresh(
                         db_session=db_session, obj=mapped_obj_created_item
@@ -285,11 +287,14 @@ class CreateMixin(BaseMixin):
         db_session: AsyncSession,
         obj_in: Union[Dict[str, Any] | PydanticBaseModel | Any],
     ) -> DBModelType:
+        print("Here 13")
         try:
+            print("Here 8")
             db_obj = self.model(**self.filter_input_fields(obj_in))
             db_session.add(db_obj)
+            print("About to commit data")
             await self.commit_and_refresh(db_session=db_session, obj=db_obj)
-
+            print("Here 9")
             obj_data = (
                 obj_in.model_dump()
                 if isinstance(obj_in, PydanticBaseModel)
@@ -297,6 +302,7 @@ class CreateMixin(BaseMixin):
                 and not isinstance(obj_in, dict)
                 else obj_in
             )
+            print("Here 10")
 
             if self.detail_mappings:
                 print(f"\tin self.detail_mappings {self.detail_mappings}\n")
@@ -548,6 +554,7 @@ class DBOperations(CreateMixin, ReadMixin, UpdateMixin, DeleteMixin):
         update_existing: bool = True,
     ) -> DBModelType:
         try:
+            print("Here 11", type(obj_in), "object", obj_in)
             existing_obj = None
             primary_key_value = obj_in.get(self.primary_key)
             print(f"\tcreate_or_update: {self.primary_key} :::: {primary_key_value}")
@@ -579,6 +586,9 @@ class DBOperations(CreateMixin, ReadMixin, UpdateMixin, DeleteMixin):
                     }
                     # input_for_creation = self.model(**self.filter_input_fields(obj_in))
 
+                print("About to create model", type(input_for_creation))
+                print("Calling create function in self:", input_for_creation)
+                print("Here 16", self)
                 return await self.create(
                     db_session=db_session, obj_in=input_for_creation
                 )

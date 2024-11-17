@@ -10,6 +10,7 @@ class CacheModule:
         port: int,
         user: str,
         password: Optional[str] = None,
+        debug_mode: Optional[bool] = False,
         **kwargs,
     ):
         self.host = host
@@ -17,6 +18,7 @@ class CacheModule:
         self.password = password
         self.user = user
         self.redis = None
+        self.debug_mode = debug_mode
 
     async def connect(self):
         print("Trying to connect to Redis")
@@ -26,7 +28,7 @@ class CacheModule:
             port=self.port,
             username=self.user,
             password=self.password,
-            ssl=True,
+            ssl= not self.debug_mode,
             ssl_cert_reqs=None,
             decode_responses=True,
         )
