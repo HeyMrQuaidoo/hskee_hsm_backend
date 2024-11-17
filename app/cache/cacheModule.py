@@ -35,7 +35,9 @@ class CacheModule:
     async def disconnect(self):
         if self.redis:
             await self.redis.close()
-            await self.redis.connection_pool.disconnect()  # Disconnect the connection pool
+            await (
+                self.redis.connection_pool.disconnect()
+            )  # Disconnect the connection pool
             self.redis = None
 
     async def set(self, key: str, value: Any, expire: Optional[int] = None):

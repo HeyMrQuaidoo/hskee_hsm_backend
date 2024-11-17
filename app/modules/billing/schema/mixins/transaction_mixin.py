@@ -52,23 +52,23 @@ class TransactionInfoMixin:
             "invoice_details": BaseFaker.text(max_nb_chars=200),
             "invoice_amount": round(BaseFaker.random_number(digits=5), 2),
             "invoice_items": [
-            {
-                "description": BaseFaker.sentence(),
-                "quantity": BaseFaker.random_int(min=1, max=10),
-                "unit_price": round(BaseFaker.random_number(digits=5), 2),
-                "reference_id": str(BaseFaker.uuid4())
-            }
+                {
+                    "description": BaseFaker.sentence(),
+                    "quantity": BaseFaker.random_int(min=1, max=10),
+                    "unit_price": round(BaseFaker.random_number(digits=5), 2),
+                    "reference_id": str(BaseFaker.uuid4()),
+                }
             ],
             "invoice_type": "general",
             "issued_by": "c4a65b04-7573-410e-a2c3-7d31dc88c444",
             "issued_to": "f2d08615-147b-4682-b898-851315e6c3e5",
-            "status": BaseFaker.random_element([e.value for e in PaymentStatusEnum])
+            "status": BaseFaker.random_element([e.value for e in PaymentStatusEnum]),
         },
         "payment_type_id": 3,
         "transaction_date": _transaction_date.isoformat(),
         "transaction_details": _transaction_details,
         "transaction_type": 9,
-        "transaction_status": _transaction_status
+        "transaction_status": _transaction_status,
     }
     _transaction_update_json = {
         "payment_type_id": _payment_type_id,

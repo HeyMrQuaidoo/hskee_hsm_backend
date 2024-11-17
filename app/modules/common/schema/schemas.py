@@ -6,6 +6,7 @@ from app.modules.billing.models.payment_type import PaymentType
 from app.modules.billing.models.transaction import Transaction
 from app.modules.billing.models.transaction_type import TransactionType
 from app.modules.communication.models.calendar_event import CalendarEvent
+from app.modules.communication.models.message import Message
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.contract.models.under_contract import UnderContract
@@ -57,6 +58,10 @@ MaintenanceRequestSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model
 
 CalendarEventSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     CalendarEvent, excludes=["calendar_event_id"]
+)
+
+MessageSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    Message, excludes=["message_id"]
 )
 
 AmenitiesSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(

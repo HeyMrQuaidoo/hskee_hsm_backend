@@ -87,6 +87,7 @@ class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
             # contracts=[ContractBase.model_validate(contract) for contract in invoice.contracts]
         ).model_dump()
 
+
 class InvoiceResponse(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
     invoice_id: Optional[UUID] = None
     invoice_number: str

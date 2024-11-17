@@ -18,20 +18,21 @@ from app.modules.common.schema.schemas import InvoiceSchema
 # Core
 from app.core.lifespan import get_db
 
+
 class InvoiceRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao = InvoiceDAO()
         InvoiceSchema["create_schema"] = InvoiceCreateSchema
         InvoiceSchema["update_schema"] = InvoiceUpdateSchema
 
-        super().__init__(dao=self.dao,
-                        schemas=InvoiceSchema,
-                        prefix=prefix,
-                        tags=tags,
-                        route_overrides=["get_all"],
-                         )
+        super().__init__(
+            dao=self.dao,
+            schemas=InvoiceSchema,
+            prefix=prefix,
+            tags=tags,
+            route_overrides=["get_all"],
+        )
         self.register_routes()
-
 
     def register_routes(self):
         @self.router.get("/statistics/trends")
@@ -39,13 +40,13 @@ class InvoiceRouter(BaseCRUDRouter):
             month: Optional[int] = Query(None, ge=1, le=12),
             year: Optional[int] = Query(None, ge=1900),
             db_session: AsyncSession = Depends(get_db),
-        )-> DAOResponse:
+        ) -> DAOResponse:
             return await self.dao.get_invoice_trends(
                 db_session=db_session,
                 month=month,
                 year=year,
             )
-        
+
         @self.router.get("/")
         async def filter_invoices(
             invoice_number: Optional[str] = Query(None),

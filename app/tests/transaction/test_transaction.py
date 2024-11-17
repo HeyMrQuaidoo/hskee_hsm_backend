@@ -6,14 +6,18 @@ from app.tests.invoice.test_invoice import TestInvoice
 from app.tests.transaction.test_transaction_type import TestTransactionType
 from app.tests.users.test_users import TestUsers
 
+
 class TestTransaction:
     default_transaction: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestInvoice::create_invoice",
-                 "TestUsers::create_user", 
-                "TestPaymentType::create_payment_type"], name="create_transaction"
+        depends=[
+            "TestInvoice::create_invoice",
+            "TestUsers::create_user",
+            "TestPaymentType::create_payment_type",
+        ],
+        name="create_transaction",
     )
     async def test_create_transaction(self, client: AsyncClient):
         # Ensure the invoice is created and available
@@ -30,7 +34,9 @@ class TestTransaction:
                 "client_requested": TestUsers.default_user.get("user_id"),
                 "transaction_date": "2024-07-31T23:59:59",
                 "transaction_details": "Payment for services",
-                "transaction_type": TestTransactionType.default_transaction_type.get("transaction_type_id"),  
+                "transaction_type": TestTransactionType.default_transaction_type.get(
+                    "transaction_type_id"
+                ),
                 "transaction_status": "pending",
                 "invoice_number": invoice_number,
                 "amount_gte": 150.00,
@@ -63,7 +69,6 @@ class TestTransaction:
             if tx.get("invoice") and tx["invoice"].get("invoice_amount") is not None
         )
 
-
     @pytest.mark.asyncio(loop_scope="session")
     async def test_filter_transactions_by_amount(self, client: AsyncClient):
         # Test filtering transactions by amount less than or equal
@@ -75,7 +80,7 @@ class TestTransaction:
             for tx in data["data"]
             if tx.get("invoice") and tx["invoice"].get("invoice_amount") is not None
         )
-        
+
     @pytest.mark.asyncio(loop_scope="session")
     async def test_filter_transactions_by_date(self, client: AsyncClient):
         # Test filtering transactions by date greater than or equal
@@ -98,13 +103,16 @@ class TestTransaction:
         assert response.status_code == 200
         data = response.json()
         assert all(
-            datetime.fromisoformat(tx["transaction_date"]) <= datetime(2024, 7, 31, 23, 59, 59)
+            datetime.fromisoformat(tx["transaction_date"])
+            <= datetime(2024, 7, 31, 23, 59, 59)
             for tx in data["data"]
         )
 
     @pytest.mark.asyncio(loop_scope="session")
     async def test_filter_transactions_by_transaction_type(self, client: AsyncClient):
-        response = await client.get("/transaction/", params={"transaction_type": 1})  # Use integer ID
+        response = await client.get(
+            "/transaction/", params={"transaction_type": 1}
+        )  # Use integer ID
         assert response.status_code == 200
         data = response.json()
         assert all(tx["transaction_type"] == 1 for tx in data["data"])

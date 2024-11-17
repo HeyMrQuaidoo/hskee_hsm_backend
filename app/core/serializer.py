@@ -4,6 +4,7 @@ import json
 
 T = TypeVar("T", bound=BaseModel)
 
+
 class JSONSerializer:
     """
     Utility class for serializing Pydantic models and deserializing data from JSON.
@@ -40,7 +41,7 @@ class JSONSerializer:
         """
         if data == "null" or data is None:
             return None  # Handle null or None data input
-        
+
         if "::" in data:
             # Split into model name and JSON data
             model_name, json_data = data.split("::", 1)
