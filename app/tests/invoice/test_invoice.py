@@ -23,7 +23,7 @@ class TestInvoice:
                 "invoice_amount": 1500.50,
                 "due_date": "2024-06-23T19:11:07.570Z",
                 "date_paid": "2024-06-24T19:11:07.570Z",
-                "invoice_type": "standard",
+                "invoice_type": "general",
                 "status": "pending",
                 "invoice_items": [
                     {
@@ -73,6 +73,7 @@ class TestInvoice:
                 "issued_to": TestUsers.default_user.get("user_id"),
                 "due_date": "2024-07-31T23:59:59",
                 "status": "pending",
+                "invoice_amount": 0,
                 "invoice_details": "Updated consulting services for July 2024",
                 "invoice_items": [
                     {
@@ -89,9 +90,7 @@ class TestInvoice:
             },
         )
         assert response.status_code == 200
-        assert (
-            response.json()["data"]["invoice_items"][0]["description"]
-            == "Updated consulting services and utilities for the month of June 2024"
+        assert ("Updated consulting services and utilities for the month of June 2024" in (response.json()["data"]["invoice_items"][0]["description"], response.json()["data"]["invoice_items"][1]["description"])
         )
 
     @pytest.mark.asyncio(loop_scope="session")

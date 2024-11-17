@@ -22,5 +22,5 @@ class InvoiceDAO(BaseDAO[Invoice]):
             model=self.model,
             detail_mappings=self.detail_mappings,
             excludes=excludes or [],
-            primary_key="invoice_id",
+            primary_key="invoice_number",
         )

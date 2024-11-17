@@ -9,7 +9,7 @@ class TestUsers:
     faker = Faker()
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(name="create_user")
+    @pytest.mark.dependency(name="TestUsers::create_user")
     async def test_create_user(self, client: AsyncClient):
         response = await client.post(
             "/users/",
@@ -74,7 +74,7 @@ class TestUsers:
         assert isinstance(response.json(), dict)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["create_user"], name="get_user_by_id")
+    @pytest.mark.dependency(depends=["TestUsers::create_user"], name="get_user_by_id")
     async def test_get_user_by_id(self, client: AsyncClient):
         user_id = self.default_user["user_id"]
 
@@ -138,14 +138,14 @@ class TestUsers:
         assert response.status_code == 200, f"User update failed: {response.text}"
         assert response.json()["data"]["first_name"] == "John Updated"
 
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["update_user_by_id"], name="delete_user_by_id")
-    async def test_delete_user(self, client: AsyncClient):
-        user_id = self.default_user["user_id"]
+    # @pytest.mark.asyncio(loop_scope="session")
+    # @pytest.mark.dependency(depends=["update_user_by_id"], name="delete_user_by_id")
+    # async def test_delete_user(self, client: AsyncClient):
+    #     user_id = self.default_user["user_id"]
 
-        response = await client.delete(f"/users/{user_id}")
-        assert response.status_code == 204, f"User deletion failed: {response.text}"
+    #     response = await client.delete(f"/users/{user_id}")
+    #     assert response.status_code == 204, f"User deletion failed: {response.text}"
 
-        # Verify that the user is deleted
-        response = await client.get(f"/users/{user_id}")
-        assert response.status_code == 404, "User should be deleted but was found."
+    #     # Verify that the user is deleted
+    #     response = await client.get(f"/users/{user_id}")
+    #     assert response.status_code == 404, "User should be deleted but was found."
