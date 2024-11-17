@@ -46,6 +46,8 @@ class Settings(BaseSettings):
 
     REDIS_URL: str
 
+    DEBUG_MODE: bool
+
     model_config = ConfigDict(
         from_attributes=True, env_file=".env", env_file_encoding="utf-8"
     )

@@ -92,7 +92,7 @@ class TestUsers:
             json={
                 "first_name": "John Updated",
                 "last_name": "Doe Updated",
-                "email": "john.updated@example.com",
+                "email": self.faker.unique.email(),
                 "phone_number": "9876543210",
                 "identification_number": "654321",
                 "photo_url": "",

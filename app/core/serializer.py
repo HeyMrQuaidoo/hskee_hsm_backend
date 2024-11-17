@@ -16,6 +16,7 @@ class JSONSerializer:
 
         If the input is a Pydantic model, it includes the model class name as metadata.
         """
+        print("Here 1", obj)
         if obj is None:
             return json.dumps(None)  # Handle None input
         if isinstance(obj, BaseModel):

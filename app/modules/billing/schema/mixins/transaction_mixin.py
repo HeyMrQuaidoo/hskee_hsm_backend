@@ -44,34 +44,32 @@ class TransactionInfoMixin:
     _invoice_number = f"INV{BaseFaker.random_number(digits=8)}"
 
     _transaction_create_json = {
-        "payment_type_id": _payment_type_id,
-        "client_offered": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
-        "client_requested": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
+        "client_offered": "5a3a08e6-bc66-4462-a106-ee5ce2a9f558",
+        "client_requested": "743a954e-1fa8-4e09-b537-7d34e301e04d",
+        "invoice": {
+            "date_paid": _transaction_date.isoformat(),
+            "due_date": _transaction_date.isoformat(),
+            "invoice_details": BaseFaker.text(max_nb_chars=200),
+            "invoice_amount": round(BaseFaker.random_number(digits=5), 2),
+            "invoice_items": [
+            {
+                "description": BaseFaker.sentence(),
+                "quantity": BaseFaker.random_int(min=1, max=10),
+                "unit_price": round(BaseFaker.random_number(digits=5), 2),
+                "reference_id": str(BaseFaker.uuid4())
+            }
+            ],
+            "invoice_type": "general",
+            "issued_by": "c4a65b04-7573-410e-a2c3-7d31dc88c444",
+            "issued_to": "f2d08615-147b-4682-b898-851315e6c3e5",
+            "status": BaseFaker.random_element([e.value for e in PaymentStatusEnum])
+        },
+        "payment_type_id": 3,
         "transaction_date": _transaction_date.isoformat(),
         "transaction_details": _transaction_details,
-        "transaction_type": _transaction_type,
-        "transaction_status": _transaction_status,
-        "invoice": {
-            "issued_by": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
-            "issued_to": "1ae69b5f-b1fb-4974-a2ba-e7162fd29412",
-            "invoice_details": BaseFaker.text(max_nb_chars=200),
-            "invoice_amount": round(BaseFaker.random_number(digits=2), 2),
-            "due_date": BaseFaker.future_datetime().isoformat(),
-            "invoice_type": BaseFaker.random_element(
-                [e.value for e in InvoiceTypeEnum]
-            ),
-            "status": BaseFaker.random_element([e.value for e in PaymentStatusEnum]),
-            "invoice_items": [
-                {
-                    "description": BaseFaker.sentence(),
-                    "quantity": BaseFaker.random_int(min=1, max=10),
-                    "unit_price": round(BaseFaker.random_number(digits=5), 2),
-                    "reference_id": str(BaseFaker.uuid4()),
-                }
-            ],
-        },
+        "transaction_type": 9,
+        "transaction_status": _transaction_status
     }
-
     _transaction_update_json = {
         "payment_type_id": _payment_type_id,
         "client_offered": _client_offered,

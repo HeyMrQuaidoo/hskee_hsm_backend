@@ -12,6 +12,7 @@ from app.db.dbCrud import DBOperations
 from app.core.lifespan import get_db
 from app.core.response import DAOResponse
 from app.core.errors import RecordNotFoundException
+from app.db.dbCrud import DBOperations
 
 DBModelType = TypeVar("DBModelType")
 

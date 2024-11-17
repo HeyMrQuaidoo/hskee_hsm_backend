@@ -34,7 +34,7 @@ class PropertyRouter(BaseCRUDRouter):
 
     def register_routes(self):
         @self.router.post(
-            "/{property_id}/upload_media", status_code=status.HTTP_201_CREATED
+            "/{property_id}/upload-media", status_code=status.HTTP_201_CREATED
         )
         async def upload_media_to_property(
             property_id: UUID4,
