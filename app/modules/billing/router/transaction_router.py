@@ -25,6 +25,7 @@ from app.modules.billing.schema.transaction_schema import (
 # Core
 from app.core.lifespan import get_db
 
+
 class TransactionRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
         self.dao: TransactionDAO = TransactionDAO(excludes=[])
@@ -41,7 +42,6 @@ class TransactionRouter(BaseCRUDRouter):
         )
         self.register_routes()
 
-
     def register_routes(self):
         @self.router.get("/")
         async def get_all_transactions(
@@ -50,10 +50,10 @@ class TransactionRouter(BaseCRUDRouter):
             transaction_number: Optional[str] = Query(None),
             invoice_number: Optional[str] = Query(None),
             transaction_type: Optional[int] = Query(None),
-            amount_gte: Optional[float] = Query(None),  
-            amount_lte: Optional[float] = Query(None), 
-            date_gte: Optional[datetime] = Query(None),  
-            date_lte: Optional[datetime] = Query(None), 
+            amount_gte: Optional[float] = Query(None),
+            amount_lte: Optional[float] = Query(None),
+            date_gte: Optional[datetime] = Query(None),
+            date_lte: Optional[datetime] = Query(None),
             limit: int = Query(default=10, ge=1),
             offset: int = Query(default=0, ge=0),
             db_session: AsyncSession = Depends(get_db),
@@ -72,4 +72,3 @@ class TransactionRouter(BaseCRUDRouter):
                 limit=limit,
                 offset=offset,
             )
-                

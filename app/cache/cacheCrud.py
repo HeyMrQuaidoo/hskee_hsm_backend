@@ -45,8 +45,8 @@ class DBOperationsWithCache(DBOperations):
     async def _initialize_cache(self):
         """Ensure cache_crud is properly initialized asynchronously."""
         if not self.cache_crud:
-            cache_module = await cache_manager.cache_module 
-            self.cache_crud = cache_module  
+            cache_module = await cache_manager.cache_module
+            self.cache_crud = cache_module
 
     def handle_special_types(self, value):
         """Helper function to handle special non-serializable types."""

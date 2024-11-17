@@ -30,6 +30,7 @@ from app.modules.resources.router.media_router import MediaRouter
 
 router = APIRouter()
 
+
 def configure_routes(app: FastAPI):
     app.include_router(router)
 

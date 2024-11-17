@@ -26,6 +26,7 @@ from app.services.upload_service import MediaUploaderService
 # Core
 from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
 
+
 class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = MaintenanceRequest
@@ -69,13 +70,23 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
                 "user_id": self.model.requested_by == user_id if user_id else None,
                 "status": self.model.status == status if status else None,
                 "priority": self.model.priority == priority if priority else None,
-                "task_number": self.model.task_number == task_number if task_number else None,
-                "scheduled_date_gte": self.model.scheduled_date >= scheduled_date_gte if scheduled_date_gte else None,
-                "scheduled_date_lte": self.model.scheduled_date <= scheduled_date_lte if scheduled_date_lte else None,
+                "task_number": self.model.task_number == task_number
+                if task_number
+                else None,
+                "scheduled_date_gte": self.model.scheduled_date >= scheduled_date_gte
+                if scheduled_date_gte
+                else None,
+                "scheduled_date_lte": self.model.scheduled_date <= scheduled_date_lte
+                if scheduled_date_lte
+                else None,
             }
 
             # Apply filters dynamically
-            filters = [condition for condition in filter_conditions.values() if condition is not None]
+            filters = [
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
+            ]
             if filters:
                 query = query.where(*filters)
 
@@ -99,7 +110,7 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
         except Exception as e:
             raise CustomException(str(e))
         except IntegrityError as e:
-                raise e
+            raise e
         except Exception as e:
             raise CustomException(str(e))
 

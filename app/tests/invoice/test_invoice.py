@@ -48,7 +48,9 @@ class TestInvoice:
     async def test_get_all_invoices(self, client: AsyncClient):
         response = await client.get("/invoice/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
-        print("Response is", response.json(), "response type is:", type(response.json()))
+        print(
+            "Response is", response.json(), "response type is:", type(response.json())
+        )
         assert isinstance(response.json(), list)
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -91,7 +93,12 @@ class TestInvoice:
             },
         )
         assert response.status_code == 200
-        assert ("Updated consulting services and utilities for the month of June 2024" in (response.json()["data"]["invoice_items"][0]["description"], response.json()["data"]["invoice_items"][1]["description"])
+        assert (
+            "Updated consulting services and utilities for the month of June 2024"
+            in (
+                response.json()["data"]["invoice_items"][0]["description"],
+                response.json()["data"]["invoice_items"][1]["description"],
+            )
         )
 
     @pytest.mark.asyncio(loop_scope="session")

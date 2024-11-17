@@ -41,7 +41,6 @@ class MaintenanceRequestRouter(BaseCRUDRouter):
         self.register_routes()
 
     def register_routes(self):
-
         @self.router.get("/")
         async def get_requests(
             user_id: Optional[UUID] = Query(None),
@@ -65,7 +64,7 @@ class MaintenanceRequestRouter(BaseCRUDRouter):
                 limit=limit,
                 offset=offset,
             )
-    
+
         @self.router.post("/{id}/upload_media", status_code=status.HTTP_201_CREATED)
         async def upload_media_to_request(
             id: UUID,

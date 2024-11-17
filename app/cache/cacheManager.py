@@ -4,6 +4,7 @@ import asyncio
 from app.cache.cacheModule import CacheModule
 from app.core.config import settings
 
+
 class CacheManager:
     _instance = None
     _lock = threading.Lock()
@@ -14,7 +15,9 @@ class CacheManager:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls, *args, **kwargs)
                     cls._instance._cache_module = None
-                    cls._instance._cache_initialized = False  # Flag to check initialization status
+                    cls._instance._cache_initialized = (
+                        False  # Flag to check initialization status
+                    )
         return cls._instance
 
     @property
@@ -30,7 +33,7 @@ class CacheManager:
             "port": settings.CACHE_PORT,
             "user": settings.CACHE_USER,
             "password": settings.CACHE_PASSWORD,
-            "debug_mode": settings.DEBUG_MODE 
+            "debug_mode": settings.DEBUG_MODE,
         }
 
     async def _initialize_cache_module(self):
@@ -40,8 +43,8 @@ class CacheManager:
             try:
                 self._cache_module = CacheModule(**credentials)
                 print(f"Cache has been set {self._cache_module}")
-                await self._cache_module.connect()  
-                self._cache_initialized = True  
+                await self._cache_module.connect()
+                self._cache_initialized = True
             except Exception as e:
                 raise RuntimeError(f"Failed to initialize CacheModule: {e}")
 
