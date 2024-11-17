@@ -14,10 +14,10 @@ class TestContract:
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=[
-            "TestProperties::test_create_property",
-            "TestPaymentType::test_create_payment_type",
-            "TestContractType::test_create_contract_type",
-            "TestUsers::test_create_user",
+            "TestProperties::create_property",
+            "TestPaymentType::create_payment_type",
+            "TestContractType::create_contract_type",
+            "TestUsers::create_user",
             "TestInvoice::create_invoice",
         ],
         name="create_contract",
