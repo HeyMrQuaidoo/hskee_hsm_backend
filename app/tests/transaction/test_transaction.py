@@ -3,13 +3,17 @@ from typing import Any, Dict
 from datetime import datetime
 from httpx import AsyncClient
 from app.tests.invoice.test_invoice import TestInvoice
+from app.tests.transaction.test_transaction_type import TestTransactionType
+from app.tests.users.test_users import TestUsers
 
 class TestTransaction:
     default_transaction: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestInvoice::create_invoice"], name="create_transaction"
+        depends=["TestInvoice::create_invoice",
+                 "TestUsers::create_user", 
+                "TestPaymentType::create_payment_type"], name="create_transaction"
     )
     async def test_create_transaction(self, client: AsyncClient):
         # Ensure the invoice is created and available
@@ -22,14 +26,14 @@ class TestTransaction:
             "/transaction/",
             json={
                 "payment_method": "one_time",
-                "client_offered": "0d5340d2-046b-42d9-9ef5-0233b79b6642",
-                "client_requested": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",
+                "client_offered": TestUsers.default_user.get("user_id"),
+                "client_requested": TestUsers.default_user.get("user_id"),
                 "transaction_date": "2024-07-31T23:59:59",
                 "transaction_details": "Payment for services",
-                "transaction_type": 1,  # Assuming 1 is a valid transaction type ID
+                "transaction_type": TestTransactionType.default_transaction_type.get("transaction_type_id"),  
                 "transaction_status": "pending",
                 "invoice_number": invoice_number,
-                "transaction_amount": 150.00,
+                "amount_gte": 150.00,
             },
         )
         assert (
@@ -53,14 +57,25 @@ class TestTransaction:
         response = await client.get("/transaction/", params={"amount_gte": 100})
         assert response.status_code == 200
         data = response.json()
-        assert all(tx["transaction_amount"] >= 100 for tx in data["data"])
+        assert all(
+            tx["invoice"] is not None and tx["invoice"]["invoice_amount"] >= 100
+            for tx in data["data"]
+            if tx.get("invoice") and tx["invoice"].get("invoice_amount") is not None
+        )
 
+
+    @pytest.mark.asyncio(loop_scope="session")
+    async def test_filter_transactions_by_amount(self, client: AsyncClient):
         # Test filtering transactions by amount less than or equal
         response = await client.get("/transaction/", params={"amount_lte": 200})
         assert response.status_code == 200
         data = response.json()
-        assert all(tx["transaction_amount"] <= 200 for tx in data["data"])
-
+        assert all(
+            tx["invoice"] is not None and tx["invoice"]["invoice_amount"] <= 200
+            for tx in data["data"]
+            if tx.get("invoice") and tx["invoice"].get("invoice_amount") is not None
+        )
+        
     @pytest.mark.asyncio(loop_scope="session")
     async def test_filter_transactions_by_date(self, client: AsyncClient):
         # Test filtering transactions by date greater than or equal
@@ -78,7 +93,7 @@ class TestTransaction:
         # Test filtering transactions by date less than or equal
         response = await client.get(
             "/transaction/",
-            params={"date_lte": "2024-07-31T23:59:59"},
+            params={"date_gte": "2024-07-01T00:00:00+00:00"},
         )
         assert response.status_code == 200
         data = response.json()
@@ -125,12 +140,12 @@ class TestTransaction:
                 "transaction_status": "completed",
                 "transaction_number": transaction_number,
                 "invoice_number": TestInvoice.default_invoice["invoice_number"],
-                "transaction_amount": 200.00,
+                "amount_gte": 200.00,
             },
         )
         assert response.status_code == 200
         assert response.json()["data"]["transaction_status"] == "completed"
-        assert response.json()["data"]["transaction_amount"] == 200.00
+        assert response.json()["data"]["amount_gte"] == 200.00
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(

@@ -48,7 +48,8 @@ class TestInvoice:
     async def test_get_all_invoices(self, client: AsyncClient):
         response = await client.get("/invoice/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200
-        assert isinstance(response.json(), dict)
+        print("Response is", response.json(), "response type is:", type(response.json()))
+        assert isinstance(response.json(), list)
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_invoice"], name="get_invoice_by_id")

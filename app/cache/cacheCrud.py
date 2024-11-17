@@ -45,8 +45,8 @@ class DBOperationsWithCache(DBOperations):
     async def _initialize_cache(self):
         """Ensure cache_crud is properly initialized asynchronously."""
         if not self.cache_crud:
-            cache_module = await cache_manager.cache_module  # Properly await the async property
-            self.cache_crud = cache_module.redis
+            cache_module = await cache_manager.cache_module 
+            self.cache_crud = cache_module  
 
     def handle_special_types(self, value):
         """Helper function to handle special non-serializable types."""
@@ -76,15 +76,15 @@ class DBOperationsWithCache(DBOperations):
             for c in inspect(obj).mapper.column_attrs:
                 value = getattr(obj, c.key)
                 obj_dict[c.key] = self.handle_special_types(value)
-            return json.dumps(obj_dict)
+            return obj_dict  # Return as dict instead of JSON string
         elif isinstance(obj, list):
-            return json.dumps([self.serialize(item) for item in obj])
+            return [self.serialize(item) for item in obj]
         else:
-            return json.dumps(self.handle_special_types(obj))
+            return self.handle_special_types(obj)
 
     def unserialize(self, data, model_class=None):
         """Custom function to unserialize data back to SQLAlchemy model instances or Python dictionaries."""
-        data_dict = json.loads(data)
+        data_dict = data  # Data is already a dict
 
         if model_class and isinstance(data_dict, dict):
             for key, value in data_dict.items():
@@ -107,11 +107,9 @@ class DBOperationsWithCache(DBOperations):
         skip: int = 0,
         limit: int = 100,
     ) -> Optional[DBModelType]:
-        await self._initialize_cache() 
-        print("Here 2 get by id")
+        await self._initialize_cache()
         cache_key = f"{self.model.__name__}:{id}"
         cached_data = None
-        print("About to et all from cache using key:", cache_key)
 
         if self.cache_crud:
             cached_object = await self.cache_crud.get(cache_key)
@@ -120,14 +118,8 @@ class DBOperationsWithCache(DBOperations):
             )
 
         if cached_data:
-            print(f"Cache hit for {cache_key}")
-            return (
-                [self.unserialize(obj) for obj in cached_data]
-                if isinstance(cached_data, list)
-                else self.unserialize(cached_data)
-            )
+            return self.unserialize(cached_data, model_class=self.model)
 
-        print(f"Cache miss for {cache_key}")
         db_obj = await super().get(db_session, id, skip, limit)
 
         if self.cache_crud and db_obj:
@@ -135,7 +127,7 @@ class DBOperationsWithCache(DBOperations):
             await self.cache_crud.set(
                 cache_key,
                 JSONSerializer.serialize(serialized_data),
-                ex=self.cache_expiry,
+                expire=self.cache_expiry,
             )
 
         return db_obj
@@ -143,36 +135,46 @@ class DBOperationsWithCache(DBOperations):
     async def get_all(
         self, db_session: AsyncSession, offset: int = 0, limit: int = 100
     ) -> List[DBModelType]:
-        await self._initialize_cache() 
-        print("Here  get all2")
-        cache_key = f"{self.model.__name__}:all:{offset}:{limit}"
-        cached_data = None
+        await self._initialize_cache()
+        ids_cache_key = f"{self.model.__name__}:ids"
 
         if self.cache_crud:
-            cached_object = await self.cache_crud.get(cache_key)
-            cached_data = (
-                JSONSerializer.deserialize(cached_object) if cached_object else None
-            )
+            cached_ids = await self.cache_crud.smembers(ids_cache_key)
+            if cached_ids:
+                # Fetch items from cache
+                cached_objs = []
+                missing_ids = []
+                for id in cached_ids:
+                    cache_key = f"{self.model.__name__}:{id}"
+                    cached_object = await self.cache_crud.get(cache_key)
+                    if cached_object:
+                        cached_data = JSONSerializer.deserialize(cached_object)
+                        cached_objs.append(
+                            self.unserialize(cached_data, model_class=self.model)
+                        )
+                    else:
+                        missing_ids.append(id)
 
-        if cached_data:
-            print(f"Cache hit for {cache_key}")
-            return (
-                [self.unserialize(obj) for obj in cached_data]
-                if isinstance(cached_data, list)
-                else self.unserialize(cached_data)
-            )
+                if not missing_ids:
+                    # All items found in cache
+                    return cached_objs[offset : offset + limit]
 
-        print(f"Cache miss for {cache_key}")
+        # Cache miss or partial miss
         db_objs = await super().get_all(db_session, offset, limit)
 
         if self.cache_crud and db_objs:
-            serialized_data = [self.serialize(obj) for obj in db_objs]
-
-            await self.cache_crud.set(
-                cache_key,
-                JSONSerializer.serialize(serialized_data),
-                ex=self.cache_expiry,
-            )
+            # Update cache
+            for obj in db_objs:
+                obj_id = getattr(obj, self.primary_key)
+                cache_key = f"{self.model.__name__}:{obj_id}"
+                serialized_data = self.serialize(obj)
+                await self.cache_crud.set(
+                    cache_key,
+                    JSONSerializer.serialize(serialized_data),
+                    expire=self.cache_expiry,
+                )
+                await self.cache_crud.sadd(ids_cache_key, obj_id)
+            await self.cache_crud.expire(ids_cache_key, self.cache_expiry)
 
         return db_objs
 
@@ -181,54 +183,53 @@ class DBOperationsWithCache(DBOperations):
         db_session: AsyncSession,
         obj_in: Union[Dict[str, Any], BaseModel, Any],
     ) -> DBModelType:
-        await self._initialize_cache() 
-        print("Here 7")
-        print("About to create for type: ", type(obj_in))
+        await self._initialize_cache()
         db_obj = await super().create(db_session, obj_in)
-        # print("Created")
-        # if self.cache_crud:
-        #     cache_key = f"{self.model.__name__}:{getattr(db_obj, self.primary_key)}"
-        #     print("About to serialize", cache_key)
-        #     serialized_data = self.serialize(db_obj)
-        #     print("About to cache")
-        #     await self.cache_crud.set(
-        #         cache_key,
-        #         JSONSerializer.serialize(serialized_data),
-        #         ex=self.cache_expiry,
-        #     )
-
+        if self.cache_crud and db_obj:
+            obj_id = getattr(db_obj, self.primary_key)
+            cache_key = f"{self.model.__name__}:{obj_id}"
+            serialized_data = self.serialize(db_obj)
+            await self.cache_crud.set(
+                cache_key,
+                JSONSerializer.serialize(serialized_data),
+                expire=self.cache_expiry,
+            )
+            ids_cache_key = f"{self.model.__name__}:ids"
+            await self.cache_crud.sadd(ids_cache_key, obj_id)
+            await self.cache_crud.expire(ids_cache_key, self.cache_expiry)
         return db_obj
 
     async def update(
         self, db_session: AsyncSession, db_obj: DBModelType, obj_in: Dict[str, Any]
     ) -> DBModelType:
-        await self._initialize_cache() 
-        print("Here 2 update")
+        await self._initialize_cache()
         db_obj = await super().update(db_session, db_obj, obj_in)
 
-        if self.cache_crud:
-            cache_key = f"{self.model.__name__}:{getattr(db_obj, self.primary_key)}"
-            print("About to serialize", cache_key)
+        if self.cache_crud and db_obj:
+            obj_id = getattr(db_obj, self.primary_key)
+            cache_key = f"{self.model.__name__}:{obj_id}"
             serialized_data = self.serialize(db_obj)
-            print("About to cache")
             await self.cache_crud.set(
                 cache_key,
                 JSONSerializer.serialize(serialized_data),
-                ex=self.cache_expiry,
+                expire=self.cache_expiry,
             )
+            ids_cache_key = f"{self.model.__name__}:ids"
+            await self.cache_crud.sadd(ids_cache_key, obj_id)
+            await self.cache_crud.expire(ids_cache_key, self.cache_expiry)
 
         return db_obj
 
     async def delete(
         self, db_session: AsyncSession, db_obj: DBModelType
     ) -> DBModelType:
-        await self._initialize_cache() 
-        print("Here 2 delete")
-
-        if self.cache_crud:
-            cache_key = f"{self.model.__name__}:{getattr(db_obj, self.primary_key)}"
+        await self._initialize_cache()
+        if self.cache_crud and db_obj:
+            obj_id = getattr(db_obj, self.primary_key)
+            cache_key = f"{self.model.__name__}:{obj_id}"
             await self.cache_crud.delete(cache_key)
-
+            ids_cache_key = f"{self.model.__name__}:ids"
+            await self.cache_crud.srem(ids_cache_key, obj_id)
         return await super().delete(db_session, db_obj)
 
     async def create_or_update(
@@ -238,20 +239,23 @@ class DBOperationsWithCache(DBOperations):
         filters: Optional[Dict[str, Any]] = None,
         update_existing: bool = True,
     ) -> DBModelType:
-        await self._initialize_cache() 
-        print("Here 2 create or update")
+        await self._initialize_cache()
         db_obj = await super().create_or_update(
             db_session, obj_in, filters, update_existing
         )
-        print("Here 3")
 
-        if self.cache_crud:
-            cache_key = f"{self.model.__name__}:{getattr(db_obj, self.primary_key)}"
-            print("Here 4")
-            serialized_data = JSONSerializer.serialize(db_obj)
-            print("Here 5")
-            await self.cache_crud.set(cache_key, serialized_data, ex=self.cache_expiry)
-            print("Here 6")
+        if self.cache_crud and db_obj:
+            obj_id = getattr(db_obj, self.primary_key)
+            cache_key = f"{self.model.__name__}:{obj_id}"
+            serialized_data = self.serialize(db_obj)
+            await self.cache_crud.set(
+                cache_key,
+                JSONSerializer.serialize(serialized_data),
+                expire=self.cache_expiry,
+            )
+            ids_cache_key = f"{self.model.__name__}:ids"
+            await self.cache_crud.sadd(ids_cache_key, obj_id)
+            await self.cache_crud.expire(ids_cache_key, self.cache_expiry)
         return db_obj
 
     async def query(
@@ -262,37 +266,40 @@ class DBOperationsWithCache(DBOperations):
         options: Optional[List[InstrumentedAttribute]] = None,
         order_by: Optional[List[InstrumentedAttribute]] = None,
     ) -> Union[List[DBModelType], Optional[DBModelType]]:
-        await self._initialize_cache() 
-        print("Here 2 query")
-        cache_key = f"{self.model.__name__}:query:{str(filters)}:{single}:{str(options)}:{str(order_by)}"
-        self.cache_crud = await cache_manager.cache_module.redis
+        await self._initialize_cache()
+        # Generate a cache key based on filters
+        filters_str = json.dumps(filters, sort_keys=True)
+        cache_key = f"{self.model.__name__}:query:{filters_str}:{single}"
 
         if self.cache_crud:
             cached_object = await self.cache_crud.get(cache_key)
-            cached_data = (
-                JSONSerializer.deserialize(cached_object) if cached_object else None
-            )
+            if cached_object:
+                cached_data = JSONSerializer.deserialize(cached_object)
+                if single:
+                    return self.unserialize(cached_data, model_class=self.model)
+                else:
+                    return [
+                        self.unserialize(obj, model_class=self.model)
+                        for obj in cached_data
+                    ]
 
-        if cached_data:
-            print(f"Cache hit for {cache_key}")
-            return (
-                [self.unserialize(obj) for obj in cached_data]
-                if isinstance(cached_data, list)
-                else self.unserialize(cached_data)
-            )
+        db_objs = await super().query(db_session, filters, single, options, order_by)
 
-        print(f"Cache miss for {cache_key}")
-        db_obj = await super().query(db_session, filters, single, options, order_by)
-        print(f"I AM HERE: {db_obj}")
-
-        if self.cache_crud and db_obj:
-            serialized_data = self.serialize(db_obj)
-            await self.cache_crud.set(
-                cache_key,
-                JSONSerializer.serialize(serialized_data),
-                ex=self.cache_expiry,
-            )
-
+        if self.cache_crud and db_objs:
+            if single:
+                serialized_data = self.serialize(db_objs)
+                await self.cache_crud.set(
+                    cache_key,
+                    JSONSerializer.serialize(serialized_data),
+                    expire=self.cache_expiry,
+                )
+            else:
+                serialized_data = [self.serialize(obj) for obj in db_objs]
+                await self.cache_crud.set(
+                    cache_key,
+                    JSONSerializer.serialize(serialized_data),
+                    expire=self.cache_expiry,
+                )
         return db_objs
 
     async def query_on_joins(
@@ -306,38 +313,51 @@ class DBOperationsWithCache(DBOperations):
         skip: int = 0,
         limit: int = 100,
     ) -> Union[List[DBModelType], Optional[DBModelType]]:
-        await self._initialize_cache()  # Ensure cache is initialized
-        cache_key = f"{self.model.__name__}:joins:{filters}:{skip}:{limit}"
-        
-        # Check cache first
-        if self.cache_crud:
-            cached_data = await self.cache_crud.get(cache_key)
-            if cached_data:
-                print(f"Cache hit for {cache_key}")
-                deserialized_data = JSONSerializer.deserialize(cached_data, self.model_registry)
-                return deserialized_data if not single else (deserialized_data[0] if deserialized_data else None)
+        await self._initialize_cache()
+        # Generate a cache key based on filters
+        filters_str = json.dumps(filters, sort_keys=True)
+        cache_key = f"{self.model.__name__}:joins:{filters_str}:{single}:{skip}:{limit}"
 
-        # Call the parent class's method if needed
-        base_query = await super().query_on_joins(
-            db_session=db_session,
-            filters=filters,
-            single=single,
-            options=options,
-            order_by=order_by,
-            join_conditions=join_conditions,
-            skip=skip,
-            limit=limit
+        if self.cache_crud:
+            cached_object = await self.cache_crud.get(cache_key)
+            if cached_object:
+                cached_data = JSONSerializer.deserialize(cached_object)
+                if single:
+                    return self.unserialize(cached_data, model_class=self.model)
+                else:
+                    return [
+                        self.unserialize(obj, model_class=self.model)
+                        for obj in cached_data
+                    ]
+
+        db_objs = await super().query_on_joins(
+            db_session,
+            filters,
+            single,
+            options,
+            order_by,
+            join_conditions,
+            skip,
+            limit,
         )
 
-        # If a result was returned by the parent, cache it
-        if self.cache_crud and base_query:
-            serialized_data = JSONSerializer.serialize(base_query)
-            await self.cache_crud.set(
-                cache_key, serialized_data, expire=self.cache_expiry
-            )
+        if self.cache_crud and db_objs:
+            if single:
+                serialized_data = self.serialize(db_objs)
+                await self.cache_crud.set(
+                    cache_key,
+                    JSONSerializer.serialize(serialized_data),
+                    expire=self.cache_expiry,
+                )
+            else:
+                serialized_data = [self.serialize(obj) for obj in db_objs]
+                await self.cache_crud.set(
+                    cache_key,
+                    JSONSerializer.serialize(serialized_data),
+                    expire=self.cache_expiry,
+                )
 
-        return base_query
-
+        return db_objs
 
     async def query_on_create(
         self,
@@ -347,34 +367,34 @@ class DBOperationsWithCache(DBOperations):
         options: Optional[List[InstrumentedAttribute]] = None,
         create_if_not_exist: bool = False,
     ) -> Optional[DBModelType]:
-        await self._initialize_cache()  # Ensure cache is initialized
-        cache_key = f"{self.model.__name__}:query_on_create:{filters}:{single}:{options}:{create_if_not_exist}"
-        
-        # Check cache first
-        if self.cache_crud:
-            cached_data = await self.cache_crud.get(cache_key)
-            if cached_data:
-                print(f"Cache hit for {cache_key}")
-                deserialized_data = JSONSerializer.deserialize(cached_data, self.model_registry)
-                return deserialized_data if not single else (deserialized_data[0] if deserialized_data else None)
+        await self._initialize_cache()
+        # Generate a cache key based on filters
+        filters_str = json.dumps(filters, sort_keys=True)
+        cache_key = (
+            f"{self.model.__name__}:query_on_create:{filters_str}:{single}:"
+            f"{create_if_not_exist}"
+        )
 
-        # Call the parent method to perform DB operations
-        try:
-            result = await super().query_on_create(
-                db_session=db_session,
-                filters=filters,
-                single=single,
-                options=options,
-                create_if_not_exist=create_if_not_exist
+        if self.cache_crud:
+            cached_object = await self.cache_crud.get(cache_key)
+            if cached_object:
+                cached_data = JSONSerializer.deserialize(cached_object)
+                return self.unserialize(cached_data, model_class=self.model)
+
+        db_obj = await super().query_on_create(
+            db_session,
+            filters,
+            single,
+            options,
+            create_if_not_exist,
+        )
+
+        if self.cache_crud and db_obj:
+            serialized_data = self.serialize(db_obj)
+            await self.cache_crud.set(
+                cache_key,
+                JSONSerializer.serialize(serialized_data),
+                expire=self.cache_expiry,
             )
 
-            # Cache the result if it exists
-            if self.cache_crud and result:
-                serialized_data = JSONSerializer.serialize(result)
-                await self.cache_crud.set(
-                    cache_key, serialized_data, expire=self.cache_expiry
-                )
-
-            return result
-        except Exception as e:
-            raise Exception(f"Error in query_on_create: {e}")
+        return db_obj

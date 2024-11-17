@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # dao
 from app.core.response import DAOResponse
 from app.modules.billing.enums.billing_enums import PaymentStatusEnum
+from app.modules.billing.models.invoice import Invoice
 from app.modules.common.dao.base_dao import BaseDAO
 
 # models
@@ -24,6 +25,7 @@ from app.core.errors import CustomException, IntegrityError, RecordNotFoundExcep
 class TransactionDAO(BaseDAO[Transaction]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Transaction
+        self.invoice_model = Invoice
 
         # DAOs for related entities
         self.invoice_dao = InvoiceDAO()
@@ -74,8 +76,8 @@ class TransactionDAO(BaseDAO[Transaction]):
                     "transaction_number": self.model.transaction_number == transaction_number if transaction_number else None,
                     "invoice_number": self.model.invoice_number == invoice_number if invoice_number else None,
                     "transaction_type": self.model.transaction_type == transaction_type if transaction_type else None,
-                    "amount_gte": self.model.transaction_amount >= amount_gte if amount_gte is not None else None,
-                    "amount_lte": self.model.transaction_amount <= amount_lte if amount_lte is not None else None,
+                    "amount_gte": self.invoice_model.invoice_amount >= amount_gte if amount_gte is not None else None,
+                    "amount_lte": self.invoice_model.invoice_amount <= amount_lte if amount_lte is not None else None,
                     "date_gte": self.model.transaction_date >= date_gte if date_gte else None,
                     "date_lte": self.model.transaction_date <= date_lte if date_lte else None,
                 }
