@@ -18,7 +18,7 @@ from app.modules.communication.models.message_recipient import MessageRecipient
 # schemas
 from app.modules.communication.schema.message_schema import (
     MessageCreate,
-    MessageResponseModel,
+    MessageResponse,
 )
 
 EMAIL = settings.EMAIL
@@ -42,7 +42,7 @@ class MessageDAO(BaseDAO[Message]):
     @override
     async def create(
         self, db_session: AsyncSession, obj_in: MessageCreate
-    ) -> DAOResponse[MessageResponseModel]:
+    ) -> DAOResponse[MessageResponse]:
         try:
             obj_in: dict = obj_in
             message_items = {
@@ -83,8 +83,8 @@ class MessageDAO(BaseDAO[Message]):
                 await self.commit_and_refresh(db_session=db_session, obj=obj)
 
             await self.commit_and_refresh(db_session=db_session, obj=new_message)
-            return DAOResponse[MessageResponseModel](
-                success=True, data=MessageResponseModel.from_orm_model(new_message)
+            return DAOResponse[MessageResponse](
+                success=True, data=MessageResponse.model_validate(new_message)
             )
         except NoResultFound:
             msg = "MessageDAO Create Failure"
@@ -97,22 +97,22 @@ class MessageDAO(BaseDAO[Message]):
     @override
     async def get_all(
         self, db_session: AsyncSession, offset=0, limit=100
-    ) -> DAOResponse[List[MessageResponseModel]]:
+    ) -> DAOResponse[List[MessageResponse]]:
         result = await super().get_all(
             db_session=db_session, offset=offset, limit=limit
         )
 
-        return DAOResponse[List[MessageResponseModel]](
-            success=True, data=[MessageResponseModel.from_orm_model(r) for r in result]
+        return DAOResponse[List[MessageResponse]](
+            success=True, data=[MessageResponse.model_validate(r) for r in result]
         )
 
     @override
     async def get(
         self, db_session: AsyncSession, id: Union[UUID | Any | int]
-    ) -> DAOResponse[MessageResponseModel]:
+    ) -> DAOResponse[MessageResponse]:
         result: Message = await super().get(db_session=db_session, id=id)
 
-        return DAOResponse[MessageResponseModel](
+        return DAOResponse[MessageResponse](
             success=bool(result),
-            data={} if result is None else MessageResponseModel.from_orm_model(result),
+            data={} if result is None else MessageResponse.model_validate(result),
         )
