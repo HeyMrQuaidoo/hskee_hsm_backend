@@ -17,6 +17,15 @@ from app.modules.billing.dao.invoice_item_dao import InvoiceItemDAO
 
 # core
 from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
+from app.modules.billing.enums.billing_enums import PaymentStatusEnum
+from app.modules.billing.schema.invoice_schema import InvoiceResponse
+from app.modules.contract.enums.contract_enums import ContractStatusEnum
+from app.modules.contract.models.contract import Contract
+from app.modules.contract.models.contract_invoice import ContractInvoice
+from app.modules.contract.models.contract_type import ContractType
+from app.modules.contract.models.under_contract import UnderContract
+
+CONTRACT_LEASE = "lease"
 
 
 class InvoiceDAO(BaseDAO[Invoice]):
@@ -75,9 +84,9 @@ class InvoiceDAO(BaseDAO[Invoice]):
             limit=limit,
         )
 
-        return DAOResponse[List[InvoiceDueResponse]](
+        return DAOResponse[List[InvoiceResponse]](
             success=True,
-            data=[InvoiceDueResponse.from_orm_model(r) for r in query_result],
+            data=[InvoiceResponse.from_orm_model(r) for r in query_result],
         )
 
     async def get_invoice_trends(
