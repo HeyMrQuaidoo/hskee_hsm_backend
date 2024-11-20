@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
-from fastapi import Depends, Query
+from fastapi import Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -72,3 +72,29 @@ class InvoiceRouter(BaseCRUDRouter):
                 due_date_from=due_date_from,
                 due_date_to=due_date_to,
             )
+        
+        @self.router.get("/all_lease_due/")
+        async def all_lease_due(
+            request: Request,
+            limit: int = Query(default=10, ge=1),
+            offset: int = Query(default=0, ge=0),
+            db: AsyncSession = Depends(self.get_db),
+        ):
+            lease = await self.dao.get_leases_due(
+                db_session=db, offset=offset, limit=limit
+            )
+
+            if lease is None:
+                raise HTTPException(status_code=404, detail="Error retrieving leases.")
+
+            return lease
+
+        @self.router.get("/user_lease_due/")
+        async def user_lease_due(user_id: str, db: AsyncSession = Depends(self.get_db)):
+            lease = await self.dao.get_leases_due(db_session=db, user_id=user_id)
+
+            if lease is None:
+                raise HTTPException(status_code=404, detail="Error retrieving leases.")
+
+            return lease
+
