@@ -72,7 +72,7 @@ class InvoiceRouter(BaseCRUDRouter):
                 due_date_from=due_date_from,
                 due_date_to=due_date_to,
             )
-        
+
         @self.router.get("/all_lease_due/")
         async def all_lease_due(
             request: Request,
@@ -97,4 +97,3 @@ class InvoiceRouter(BaseCRUDRouter):
                 raise HTTPException(status_code=404, detail="Error retrieving leases.")
 
             return lease
-

@@ -11,11 +11,9 @@ from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.billing.models.invoice import Invoice
 
 # dao
-from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.billing.dao.invoice_item_dao import InvoiceItemDAO
 
 # models
-from app.modules.billing.models.invoice import Invoice
 
 # core
 from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
@@ -81,7 +79,7 @@ class InvoiceDAO(BaseDAO[Invoice]):
             success=True,
             data=[InvoiceDueResponse.from_orm_model(r) for r in query_result],
         )
-    
+
     async def get_invoice_trends(
         self,
         db_session: AsyncSession,

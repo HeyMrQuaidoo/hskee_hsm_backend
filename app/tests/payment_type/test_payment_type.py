@@ -21,7 +21,9 @@ class TestPaymentType:
         TestPaymentType.default_payment_type = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestPaymentType::create_payment_type"], name="get_payment_type")
+    @pytest.mark.dependency(
+        depends=["TestPaymentType::create_payment_type"], name="get_payment_type"
+    )
     async def test_get_payment_type(self, client: AsyncClient):
         print("Default Payment type: ", self.default_payment_type)
         payment_type_id = self.default_payment_type["payment_type_id"]

@@ -49,7 +49,8 @@ class TestContractType:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestContractType::create_contract_type"], name="get_contract_type_by_id"
+        depends=["TestContractType::create_contract_type"],
+        name="get_contract_type_by_id",
     )
     async def test_get_contract_type_by_id(self, client: AsyncClient):
         print("Contract Type is", self.default_contract_type)

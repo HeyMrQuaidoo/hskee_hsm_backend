@@ -20,7 +20,7 @@ from app.modules.billing.dao.transaction_type_dao import TransactionTypeDAO
 from app.modules.auth.dao.user_dao import UserDAO
 
 # core
-from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
+from app.core.errors import CustomException, IntegrityError
 
 
 class TransactionDAO(BaseDAO[Transaction]):

@@ -99,7 +99,9 @@ class TestProperties:
         assert isinstance(response.json(), dict)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestProperties::create_property"], name="get_property_by_id")
+    @pytest.mark.dependency(
+        depends=["TestProperties::create_property"], name="get_property_by_id"
+    )
     async def test_get_property_by_id(self, client: AsyncClient):
         property_id = self.default_property["property_unit_assoc_id"]
 
