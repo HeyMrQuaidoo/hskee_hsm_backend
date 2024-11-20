@@ -7,7 +7,7 @@ from pydantic import ConfigDict, model_validator
 # schemas
 from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
 from app.modules.auth.schema.mixins.user_mixin import UserBase
-from app.modules.properties.schema.mixins.property_mixin import (
+from app.modules.properties.schema.mixins.property_mixin_schema import (
     PropertyDetailsMixin,  # Use directly instead of inheriting
 )
 
@@ -85,7 +85,7 @@ class PropertyAssignmentMixin:
         result = []
 
         if not isinstance(property_assignment, list):
-            return cls(
+            return PropertyAssignment(
                 property_assignment_id=property_assignment.property_assignment_id,
                 property_unit_assoc_id=property_assignment.property_unit_assoc_id,
                 user_id=property_assignment.user_id,
@@ -101,7 +101,7 @@ class PropertyAssignmentMixin:
         else:
             for item in property_assignment:
                 result.append(
-                    cls(
+                    PropertyAssignment(
                         property_assignment_id=item.property_assignment_id,
                         property_unit_assoc_id=item.property_unit_assoc_id,
                         user_id=item.user_id,

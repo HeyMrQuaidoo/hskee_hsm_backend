@@ -1,11 +1,15 @@
 # app/modules/communication/dao/maintenance_request_dao.py
 
+from datetime import datetime
 from typing import Optional, List
+from uuid import UUID
 from fastapi import UploadFile
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Base DAO
 from app.core.errors import RecordNotFoundException
+from app.core.response import DAOResponse
 from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 from app.modules.associations.models.entity_media import EntityMedia
 from app.modules.common.dao.base_dao import BaseDAO
@@ -18,6 +22,9 @@ from app.modules.resources.dao.media_dao import MediaDAO
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest
 from app.modules.resources.enums.resource_enums import MediaType
 from app.services.upload_service import MediaUploaderService
+
+# Core
+from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
 
 
 class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
@@ -42,6 +49,70 @@ class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):
             excludes=excludes or [],
             primary_key="maintenance_request_id",
         )
+
+    async def get_requests(
+        self,
+        db_session: AsyncSession,
+        user_id: Optional[UUID] = None,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+        task_number: Optional[str] = None,
+        scheduled_date_gte: Optional[datetime] = None,
+        scheduled_date_lte: Optional[datetime] = None,
+        limit: int = 10,
+        offset: int = 0,
+    ) -> DAOResponse:
+        try:
+            query = select(self.model)
+
+            # Create a mapping for dynamic filter conditions
+            filter_conditions = {
+                "user_id": self.model.requested_by == user_id if user_id else None,
+                "status": self.model.status == status if status else None,
+                "priority": self.model.priority == priority if priority else None,
+                "task_number": self.model.task_number == task_number
+                if task_number
+                else None,
+                "scheduled_date_gte": self.model.scheduled_date >= scheduled_date_gte
+                if scheduled_date_gte
+                else None,
+                "scheduled_date_lte": self.model.scheduled_date <= scheduled_date_lte
+                if scheduled_date_lte
+                else None,
+            }
+
+            # Apply filters dynamically
+            filters = [
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
+            ]
+            if filters:
+                query = query.where(*filters)
+
+            # Limit and offset for pagination
+            query = query.limit(limit).offset(offset)
+            result = await db_session.execute(query)
+            items = result.scalars().all()
+
+            # Build pagination metadata
+            total_items = await db_session.execute(
+                select(func.count()).select_from(query.subquery())
+            )
+            total_count = total_items.scalar()
+            meta = {
+                "total_items": total_count,
+                "limit": limit,
+                "offset": offset,
+            }
+
+            return DAOResponse(success=True, data=items, meta=meta)
+        except Exception as e:
+            raise CustomException(str(e))
+        except IntegrityError as e:
+            raise e
+        except Exception as e:
+            raise CustomException(str(e))
 
     async def upload_request_media(
         self,

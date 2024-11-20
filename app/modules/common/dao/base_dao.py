@@ -4,10 +4,15 @@ from fastapi import Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Generic, Union
 
-from app.core.lifespan import get_db
+# cache
+from app.cache.cacheCrud import DBOperationsWithCache
 from app.db.dbCrud import DBOperations
+
+# core
+from app.core.lifespan import get_db
 from app.core.response import DAOResponse
 from app.core.errors import RecordNotFoundException
+from app.db.dbCrud import DBOperations
 
 DBModelType = TypeVar("DBModelType")
 
@@ -19,18 +24,18 @@ class BaseDAO(DBOperations, Generic[DBModelType]):
         excludes: Optional[List[str]] = [],
         detail_mappings: Optional[Dict[str, Any]] = {},
         model_entity_params: Optional[Dict[str, Any]] = {},
+        model_registry: Optional[Dict[str, Type[BaseModel]]] = None,
+        cache_expiry: Optional[int] = 300,
         *args,
         **kwargs,
     ):
-        self.model = model
-        self.excludes = excludes
-        self.detail_mappings = detail_mappings
-
         super().__init__(
-            self.model,
-            excludes=excludes,
+            model=model,
             detail_mappings=detail_mappings,
             model_entity_params=model_entity_params,
+            excludes=excludes,
+            model_registry=model_registry,
+            cache_expiry=cache_expiry,
             *args,
             **kwargs,
         )
@@ -69,7 +74,7 @@ class BaseDAO(DBOperations, Generic[DBModelType]):
     async def validate_ids(
         self,
         db_session: AsyncSession,
-        validations: List[Tuple[DBOperations, Dict]],
+        validations: List[Tuple[DBOperationsWithCache, Dict]],
     ) -> Union[None, DAOResponse]:
         """not used: validate ids"""
         queries = [
@@ -91,10 +96,13 @@ class BaseDAO(DBOperations, Generic[DBModelType]):
         request: Request,
         limit: int,
         offset: int,
+        filter_condition: Dict[str, Any] = None,
         db_session: AsyncSession = Depends(get_db),
     ) -> Dict[str, Any]:
         base_url = request.url.path
-        total = await self.query_count(db_session=db_session)
+        total = await self.query_count(
+            db_session=db_session, filter_condition=filter_condition
+        )
 
         next_offset = offset + limit
         previous_offset = max(0, offset - limit)
