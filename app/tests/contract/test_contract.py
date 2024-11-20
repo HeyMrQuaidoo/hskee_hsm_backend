@@ -5,7 +5,6 @@ from app.tests.users.test_users import TestUsers
 from app.tests.properties.test_property import TestProperties
 from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.contract.test_contract_type import TestContractType
-from app.tests.invoice.test_invoice import TestInvoice
 
 
 class TestContract:

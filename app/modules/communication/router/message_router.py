@@ -20,11 +20,15 @@ from app.modules.communication.schema.calendar_event_schema import (
     CalendarEventUpdateSchema,
     CalendarEventResponse,
 )
-from app.modules.communication.schema.message_schema import MessageCreate, MessageReply, MessageResponse
+from app.modules.communication.schema.message_schema import (
+    MessageReply,
+    MessageResponse,
+)
 from app.core.response import DAOResponse
 from app.modules.contract.models.under_contract import UnderContract
 from app.modules.properties.models.property_unit_association import PropertyUnitAssoc
 from app.modules.communication.models.message_recipient import MessageRecipient
+
 
 # Core
 class MessageRouter(BaseCRUDRouter):
@@ -269,4 +273,3 @@ class MessageRouter(BaseCRUDRouter):
                 success=True,
                 data=[MessageResponse.model_validate(r) for r in inbox_messages],
             )
-

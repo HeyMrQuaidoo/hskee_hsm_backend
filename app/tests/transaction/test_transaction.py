@@ -70,7 +70,7 @@ class TestTransaction:
         )
 
     @pytest.mark.asyncio(loop_scope="session")
-    async def test_filter_transactions_by_amount(self, client: AsyncClient):
+    async def test_filter_transactions_by_amount2(self, client: AsyncClient):
         # Test filtering transactions by amount less than or equal
         response = await client.get("/transaction/", params={"amount_lte": 200})
         assert response.status_code == 200

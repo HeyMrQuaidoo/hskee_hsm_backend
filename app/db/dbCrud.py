@@ -133,6 +133,7 @@ class BaseMixin:
                         print(
                             f"\tNo parent key found for {key} in entity_parent_params_attr"
                         )
+
     async def create_or_update_relationships(
         self,
         db_session: AsyncSession,
@@ -293,6 +294,8 @@ class BaseMixin:
 
         except Exception as e:
             raise Exception(f"Error in create_or_update_relationships: {str(e)}")
+
+
 class CreateMixin(BaseMixin):
     async def create(
         self,

@@ -8,7 +8,9 @@ class TestInvoice:
     default_invoice: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestUsers::create_user"], name="TestInvoice::create_invoice")
+    @pytest.mark.dependency(
+        depends=["TestUsers::create_user"], name="TestInvoice::create_invoice"
+    )
     async def test_create_invoice(self, client: AsyncClient):
         # Ensure the user is created and available
         user_id = TestUsers.default_user.get("user_id")
@@ -54,7 +56,9 @@ class TestInvoice:
         assert isinstance(response.json(), list)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestInvoice::create_invoice"], name="get_invoice_by_id")
+    @pytest.mark.dependency(
+        depends=["TestInvoice::create_invoice"], name="get_invoice_by_id"
+    )
     async def test_get_invoice_by_id(self, client: AsyncClient):
         invoice_number = self.default_invoice["invoice_number"]
 
