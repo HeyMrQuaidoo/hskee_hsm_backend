@@ -29,7 +29,6 @@ SERVER = settings.EMAIL_SERVER
 class MessageDAO(BaseDAO[Message]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Message
-        self.message_dao = MessageDAO()
         self.detail_mappings = {}
 
         super().__init__(
