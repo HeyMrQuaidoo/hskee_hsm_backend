@@ -22,10 +22,11 @@ class MessageRecipient(Base):
     recipient_group_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("property_unit_assoc.property_unit_assoc_id"),
-        nullable=True,
+        nullable=True, 
     )
     message_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("message.message_id")
+        UUID(as_uuid=True), ForeignKey("message.message_id"),
+        nullable=True
     )
     is_read: Mapped[Optional[bool]] = mapped_column(Boolean)
     msg_send_date: Mapped[datetime] = mapped_column(

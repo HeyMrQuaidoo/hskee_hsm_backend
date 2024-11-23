@@ -7,7 +7,7 @@ from app.modules.billing.dao.utility_dao import UtilityDAO
 from app.modules.common.router.base_router import BaseCRUDRouter
 
 # schemas
-from app.modules.common.schema.schemas import UtilitySchema
+from app.modules.common.schema.schemas import UtilitiesSchema
 from app.modules.billing.schema.utility_schema import (
     UtilityCreateSchema,
     UtilityUpdateSchema,
@@ -16,11 +16,11 @@ from app.modules.billing.schema.utility_schema import (
 
 class UtilityRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
-        UtilitySchema["create_schema"] = UtilityCreateSchema
-        UtilitySchema["update_schema"] = UtilityUpdateSchema
+        UtilitiesSchema["create_schema"] = UtilityCreateSchema
+        UtilitiesSchema["update_schema"] = UtilityUpdateSchema
         self.dao: UtilityDAO = UtilityDAO(excludes=[])
 
-        super().__init__(dao=self.dao, schemas=UtilitySchema, prefix=prefix, tags=tags)
+        super().__init__(dao=self.dao, schemas=UtilitiesSchema, prefix=prefix, tags=tags)
         self.register_routes()
 
     def register_routes(self):

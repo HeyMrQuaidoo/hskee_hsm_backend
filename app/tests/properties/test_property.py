@@ -22,6 +22,7 @@ class TestProperties:
         response_utility = await client.get(
             "/utilities/", params={"limit": 10, "offset": 0}
         )
+        print("Response is:", response_utility.json())
         utility = response_utility.json()["data"][0]
         self.default_utility = utility
 

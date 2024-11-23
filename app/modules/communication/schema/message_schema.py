@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import datetime
 from typing import Annotated, List, Optional
-from pydantic import UUID4, ConfigDict, EmailStr, constr
+from pydantic import ConfigDict, EmailStr, constr
 
 # schemas
 from app.modules.common.schema.base_schema import BaseSchema
@@ -9,6 +9,7 @@ from app.modules.auth.schema.mixins.user_mixin import UserBase, UserBaseMixin
 
 # model
 from app.modules.communication.models.message import Message as MessageModel
+
 
 class EmailBody(BaseSchema):
     """
@@ -27,7 +28,7 @@ class EmailBody(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MessageCreate(BaseSchema):
+class MessageCreateSchema(BaseSchema):
     """
     Schema for creating a message.
 
@@ -52,7 +53,7 @@ class MessageCreate(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MessageReply(BaseSchema):
+class MessageReplySchema(BaseSchema):
     """
     Schema for replying to a message.
 

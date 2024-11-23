@@ -1,6 +1,8 @@
 # models
+from app.modules.auth.models.favorite_properties import FavoriteProperties
 from app.modules.auth.models.user import User
 from app.modules.auth.models.role import Role
+from app.modules.auth.models.user_interactions import UserInteractions
 from app.modules.billing.models.invoice import Invoice
 from app.modules.billing.models.payment_type import PaymentType
 from app.modules.billing.models.transaction import Transaction
@@ -8,6 +10,7 @@ from app.modules.billing.models.transaction_type import TransactionType
 from app.modules.communication.models.calendar_event import CalendarEvent
 from app.modules.communication.models.message import Message
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest
+from app.modules.communication.models.tour_bookings import TourBookings
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.contract.models.under_contract import UnderContract
 from app.modules.resources.models.amenities import Amenities
@@ -81,7 +84,7 @@ PropertyAssignmentSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model
 )
 
 
-UtilitySchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+UtilitiesSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Utilities, excludes=["billable_assoc_id"]
 )
 
@@ -101,10 +104,22 @@ MediaSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Media, excludes=["media_id"]
 )
 
-PermissionSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+PermissionsSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     Permissions, excludes=["permission_id"]
 )
 
 UserSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
     User, excludes=["user_id"]
+)
+
+TourBookingsSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    TourBookings, excludes=["tour_booking_id"]
+)
+
+FavoritePropertiesSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    FavoriteProperties, excludes=["favorite_id"]
+)
+
+UserInteractionsSchema = CustomBaseModel.generate_schemas_for_sqlalchemy_model(
+    UserInteractions, excludes=["user_interaction_id"]
 )

@@ -6,6 +6,8 @@ from fastapi import APIRouter, FastAPI
 from app.modules.auth.router.auth_router import AuthRouter
 from app.modules.auth.router.permission_router import PermissionRouter
 from app.modules.auth.router.role_router import RoleRouter
+from app.modules.auth.router.favorite_properties_router import FavoritePropertiesRouter
+from app.modules.auth.router.user_interactions_router import UserInteractionsRouter
 from app.modules.auth.router.user_router import UserRouter
 from app.modules.billing.router.account_router import AccountRouter
 from app.modules.billing.router.invoice_router import InvoiceRouter
@@ -17,6 +19,8 @@ from app.modules.common.router.calendar_event_router import CalendarEventRouter
 from app.modules.communication.router.maintenance_request_router import (
     MaintenanceRequestRouter,
 )
+from app.modules.communication.router.message_router import MessageRouter
+from app.modules.communication.router.tour_bookings_router import TourRouter
 from app.modules.contract.router.contract_router import ContractRouter
 from app.modules.contract.router.contract_type_router import ContractTypeRouter
 from app.modules.contract.router.under_contract_router import UnderContractRouter
@@ -42,18 +46,22 @@ def configure_routes(app: FastAPI):
         (CalendarEventRouter, "/calendar-event", ["Calendar Event"]),
         (ContractRouter, "/contract", ["Contract"]),
         (ContractTypeRouter, "/contract-type", ["Contract Type"]),
+        (FavoritePropertiesRouter, "/favorite-properties", ["Favorite Properties"]),
         (InvoiceRouter, "/invoice", ["Invoices"]),
         (MaintenanceRequestRouter, "/maintenance-request", ["Maintenance Request"]),
         (MediaRouter, "/media", ["Media"]),
+        (MessageRouter, "/message", ["Message"]),
         (PaymentTypeRouter, "/payment-type", ["Payment Type"]),
         (PermissionRouter, "/permissions", ["Permissions"]),
         (PropertyRouter, "/property", ["Property"]),
         (PropertyAssignmentRouter, "/assign-properties", ["PropertyAssignments"]),
         (RoleRouter, "/roles", ["Roles"]),
+        (TourRouter, "/tour", ["Tour Bookings"]),
         (TransactionRouter, "/transaction", ["Transaction"]),
         (TransactionTypeRouter, "/transaction-type", ["Transaction Type"]),
         (UnderContractRouter, "/assign-contracts", ["Under Contracts"]),
         (UnitRouter, "/unit", ["Unit"]),
+        (UserInteractionsRouter, "/user-interactions", ["User Interactions"]),
         (UserRouter, "/users", ["Users"]),
         (UtilityRouter, "/utilities", ["Utilities"]),
     ]

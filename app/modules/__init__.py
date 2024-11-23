@@ -2,7 +2,7 @@
 from app.modules.properties.models.property_unit_association import PropertyUnitAssoc  # noqa: F401
 from app.modules.communication.models.message_recipient import MessageRecipient  # noqa: F401
 from app.modules.communication.models.maintenance_requests import MaintenanceRequest  # noqa: F401
-from app.modules.communication.models.tour_bookings import Tour  # noqa: F401
+from app.modules.communication.models.tour_bookings import TourBookings  # noqa: F401
 from app.modules.communication.models.message import Message  # noqa: F401
 from app.modules.communication.models.reminder_frequency import ReminderFrequency  # noqa: F401
 from app.modules.communication.models.calendar_event import CalendarEvent  # noqa: F401
@@ -46,7 +46,7 @@ from app.modules.billing.models.invoice_item import InvoiceItem  # noqa: F401
 from app.modules.auth.models.user_role import UserRoles  # noqa: F401
 from app.modules.auth.models.role_permissions import RolePermissions  # noqa: F401
 from app.modules.auth.models.user_interactions import UserInteractions  # noqa: F401
-from app.modules.auth.models.user_favorites import FavoriteProperties  # noqa: F401
+from app.modules.auth.models.favorite_properties import FavoriteProperties  # noqa: F401
 
 from app.modules.associations.models.entity_billable import EntityBillable  # noqa: F401
 

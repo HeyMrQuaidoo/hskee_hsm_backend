@@ -85,10 +85,10 @@ class Property(PropertyUnitAssoc):
     )
 
     # tour_bookings
-    tour_bookings: Mapped[List["Tour"]] = relationship(
-        "Tour",
-        primaryjoin="Property.property_unit_assoc_id == Tour.property_unit_assoc_id",
-        foreign_keys="[Tour.property_unit_assoc_id]",
+    tour_bookings: Mapped[List["TourBookings"]] = relationship(
+        "TourBookings",
+        primaryjoin="Property.property_unit_assoc_id == TourBookings.property_unit_assoc_id",
+        foreign_keys="[TourBookings.property_unit_assoc_id]",
         lazy="selectin",
         back_populates="property",
         viewonly=True,
