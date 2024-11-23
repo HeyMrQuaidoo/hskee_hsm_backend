@@ -19,12 +19,8 @@ from app.modules.properties.models.property_unit_association import PropertyUnit
 
 # Schemas
 from app.modules.communication.schema.message_schema import (
-<<<<<<< HEAD
     MessageCreateSchema,
     MessageReplySchema,
-=======
-    MessageCreate,
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
     MessageResponse,
 )
 
@@ -34,16 +30,12 @@ from app.core.errors import CustomException, RecordNotFoundException
 class MessageDAO(BaseDAO[Message]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Message
-<<<<<<< HEAD
 
         # Initialize DAOs for related entities if necessary
         self.detail_mappings = {
             # "sender": UserDAO(),
             # "recipients": UserDAO(),
         }
-=======
-        self.detail_mappings = {}
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
 
         super().__init__(
             model=self.model,
@@ -53,13 +45,8 @@ class MessageDAO(BaseDAO[Message]):
         )
 
     async def create(
-<<<<<<< HEAD
         self, db_session: AsyncSession, obj_in: MessageCreateSchema
     ) -> DAOResponse:
-=======
-        self, db_session: AsyncSession, obj_in: MessageCreate
-    ) -> DAOResponse[MessageResponse]:
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
         try:
             message_data = obj_in.dict(exclude_unset=True)
             recipient_ids = message_data.pop("recipient_ids", [])
@@ -93,7 +80,6 @@ class MessageDAO(BaseDAO[Message]):
             db_session.add_all(recipients + recipients_groups)
             await db_session.commit()
 
-<<<<<<< HEAD
             # After committing, we have to now ensure the message with relationships are loaded
             stmt = (
                 select(Message)
@@ -102,15 +88,6 @@ class MessageDAO(BaseDAO[Message]):
                     selectinload(Message.recipients).selectinload(MessageRecipient.recipient),
                 )
                 .where(Message.message_id == new_message.message_id)
-=======
-            # commit transactions.
-            for obj in recipients + recipients_groups:
-                await self.commit_and_refresh(db_session=db_session, obj=obj)
-
-            await self.commit_and_refresh(db_session=db_session, obj=new_message)
-            return DAOResponse[MessageResponse](
-                success=True, data=MessageResponse.model_validate(new_message)
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
             )
             result = await db_session.execute(stmt)
             new_message_with_relationships = result.scalar_one()
@@ -125,7 +102,6 @@ class MessageDAO(BaseDAO[Message]):
             await db_session.rollback()
             raise CustomException(str(e))
 
-<<<<<<< HEAD
     async def reply_to_message(
         self, db_session: AsyncSession, message: MessageReplySchema
     ) -> DAOResponse:
@@ -283,27 +259,3 @@ class MessageDAO(BaseDAO[Message]):
         except Exception as e:
             await db_session.rollback()
             raise CustomException(str(e))
-=======
-    @override
-    async def get_all(
-        self, db_session: AsyncSession, offset=0, limit=100
-    ) -> DAOResponse[List[MessageResponse]]:
-        result = await super().get_all(
-            db_session=db_session, offset=offset, limit=limit
-        )
-
-        return DAOResponse[List[MessageResponse]](
-            success=True, data=[MessageResponse.model_validate(r) for r in result]
-        )
-
-    @override
-    async def get(
-        self, db_session: AsyncSession, id: Union[UUID | Any | int]
-    ) -> DAOResponse[MessageResponse]:
-        result: Message = await super().get(db_session=db_session, id=id)
-
-        return DAOResponse[MessageResponse](
-            success=bool(result),
-            data={} if result is None else MessageResponse.model_validate(result),
-        )
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521

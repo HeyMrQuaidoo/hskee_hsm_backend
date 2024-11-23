@@ -48,20 +48,12 @@ def configure_routes(app: FastAPI):
         (CalendarEventRouter, "/calendar_event", ["Calendar Event"]),
         (ContractRouter, "/contract", ["Contract"]),
         (ContractTypeRouter, "/contract-type", ["Contract Type"]),
-<<<<<<< HEAD
         (FavoritePropertiesRouter, "/favorite-properties", ["Favorite Properties"]),
-=======
-        (ContractTypeRouter, "/contract_type", ["Contract Type"]),
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
         (InvoiceRouter, "/invoice", ["Invoices"]),
         (MaintenanceRequestRouter, "/maintenance-request", ["Maintenance Request"]),
         (MaintenanceRequestRouter, "/maintenance_request", ["Maintenance Request"]),
         (MediaRouter, "/media", ["Media"]),
-<<<<<<< HEAD
         (MessageRouter, "/message", ["Message"]),
-=======
-        (MessageRouter, "/messages", ["Message"]),
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
         (PaymentTypeRouter, "/payment-type", ["Payment Type"]),
         (PaymentTypeRouter, "/payment_type", ["Payment Type"]),
         (PermissionRouter, "/permissions", ["Permissions"]),
@@ -74,11 +66,7 @@ def configure_routes(app: FastAPI):
         (TransactionTypeRouter, "/transaction_type", ["Transaction Type"]),
         (UnderContractRouter, "/assign-contracts", ["Contract Assignments"]),
         (UnitRouter, "/unit", ["Unit"]),
-<<<<<<< HEAD
         (UserInteractionsRouter, "/user-interactions", ["User Interactions"]),
-=======
-        (UnitRouter, "/units", ["Unit"]),
->>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
         (UserRouter, "/users", ["Users"]),
         (UtilityRouter, "/utilities", ["Utilities"]),
     ]
