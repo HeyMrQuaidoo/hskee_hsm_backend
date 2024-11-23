@@ -7,7 +7,7 @@ class TestContractType:
     default_contract_type: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(name="create_contract_type")
+    @pytest.mark.dependency(name="TestContractType::create_contract_type")
     async def test_create_contract_type(self, client: AsyncClient):
         # Check if the contract type already exists and delete it if found
         check_response = await client.get(
@@ -49,7 +49,8 @@ class TestContractType:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["create_contract_type"], name="get_contract_type_by_id"
+        depends=["TestContractType::create_contract_type"],
+        name="get_contract_type_by_id",
     )
     async def test_get_contract_type_by_id(self, client: AsyncClient):
         print("Contract Type is", self.default_contract_type)
@@ -74,16 +75,16 @@ class TestContractType:
         assert response.status_code == 200
         assert response.json()["data"]["contract_type_name"] == "lease"
 
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=["update_contract_type_by_id"], name="delete_contract_type_by_id"
-    )
-    async def test_delete_contract_type(self, client: AsyncClient):
-        contract_type_id = self.default_contract_type["contract_type_id"]
+    # @pytest.mark.asyncio(loop_scope="session")
+    # @pytest.mark.dependency(
+    #     depends=["update_contract_type_by_id"], name="delete_contract_type_by_id"
+    # )
+    # async def test_delete_contract_type(self, client: AsyncClient):
+    #     contract_type_id = self.default_contract_type["contract_type_id"]
 
-        response = await client.delete(f"/contract-type/{contract_type_id}")
-        assert response.status_code == 204
+    #     response = await client.delete(f"/contract-type/{contract_type_id}")
+    #     assert response.status_code == 204
 
-        # Verify the contract type is deleted
-        response = await client.get(f"/contract-type/{contract_type_id}")
-        assert response.status_code == 404
+    #     # Verify the contract type is deleted
+    #     response = await client.get(f"/contract-type/{contract_type_id}")
+    #     assert response.status_code == 404

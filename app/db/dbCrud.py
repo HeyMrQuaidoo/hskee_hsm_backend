@@ -141,104 +141,106 @@ class BaseMixin:
         obj_data: Union[Dict[str, Any], PydanticBaseModel],
     ):
         try:
-            print("Here 12")
-            for mapped_obj_key, mapped_obj_dao in self.detail_mappings.items():
-                print(f"\tmapped_obj_key: {mapped_obj_key}")
+            # Get config registry
+            config = registry.get_config()
 
+            # Get object config
+            obj_config = config.get(db_obj.__tablename__.lower(), {})
+            if not config or not obj_config:
+                raise ValueError("Issue trying to determine db_obj config mapping")
+
+            print(f"Inspect Detail Mapping: {self.detail_mappings}")
+            for mapped_obj_key, mapped_obj_dao in self.detail_mappings.items():
                 # Get the list of objects to check from obj_data
                 detail_obj_list = obj_data.get(mapped_obj_key, [])
-                print(f"\tdetail_obj_list: {detail_obj_list}")
-
-                # Safeguard against None values in the obj_data
-                if detail_obj_list is None:
+                if not detail_obj_list:
+                    print(f"\n\tSkipped {mapped_obj_key}")
                     continue
 
-                # Find entity parent params
-                config = registry.get_config()
+                print(f"\n\tChecking detail mapping key for objects: {mapped_obj_key}")
+                print(f"\tChecking detail objects list: {detail_obj_list}")
 
-                # skip if config is None
-                if not config:
-                    continue
-
+                # Get parent object data for updating None values
                 parent_obj = db_obj.model_dump()
-
-                # skip if parent_obj is None
                 if not parent_obj:
                     continue
 
-                entity_child_attrs = config.get(db_obj.__tablename__.lower(), {}).get(
-                    mapped_obj_key.lower(), {}
-                )
-
-                # skip if entity_child_attrs is None or empty
+                # Retrieve entity attributes and params
+                entity_child_attrs = obj_config.get(mapped_obj_key.lower(), {})
                 if not entity_child_attrs:
                     continue
+                print(
+                    f"\t\tInspect Child Entity attributes on Parent object {entity_child_attrs}"
+                )
 
                 entity_parent_params_attr = entity_child_attrs.get("entity_params_attr")
-
-                # Call the helper method to update the None values
+                print(
+                    f"\t\t\tInspect Child Entity Parent Params {entity_parent_params_attr}"
+                )
                 if isinstance(detail_obj_list, list):
                     self.update_none_values_with_parent(
                         detail_obj_list, entity_parent_params_attr, parent_obj
                     )
 
-                if not detail_obj_list:
-                    continue
-
-                mapped_obj_dao: DBOperations = mapped_obj_dao
-                if not isinstance(detail_obj_list, list):
-                    detail_obj_list = [detail_obj_list]
-
-                model_attr = getattr(db_obj, mapped_obj_key, None)
+                # Initialize variables and process items in detail_obj_list
                 new_items = []
+                model_attr = getattr(db_obj, mapped_obj_key, None)
 
-                print(f"Detail Object is: {detail_obj_list}")
-
+                print(
+                    f"\n\tDetermine any already linked relationship items from DB {model_attr}"
+                )
                 for detail_obj in detail_obj_list:
                     if detail_obj is None:
-                        continue  # skip if detail_obj is None
+                        continue  # Skip if detail_obj is None
 
+                    print(
+                        f"\n\t\tAbout to create a new mapped object item for model: {self.model.__name__}"
+                    )
                     mapped_obj_created_item = await mapped_obj_dao.create_or_update(
                         db_session=db_session, obj_in=detail_obj
                     )
-                    print("Here 13")
+                    print(
+                        f"\t\tDone creating mapped object item for model {self.model.__name__}"
+                    )
+
+                    # Single flush and refresh after each item
                     await db_session.flush()
                     mapped_obj_created_item = await self.commit_and_refresh(
                         db_session=db_session, obj=mapped_obj_created_item
                     )
 
+                    # Entity config parameters
                     if isinstance(mapped_obj_created_item, BaseModel):
-                        # Get the configuration dictionary from registry
-                        entity_config = config.get(db_obj.__tablename__.lower(), {})
-
-                        if not entity_config:
-                            entity_config = config.get(self.model.__name__.lower(), {})
-
-                        # Get keys for relationship fields
+                        entity_config = obj_config or config.get(
+                            self.model.__name__.lower(), {}
+                        )
                         entity_param_keys = (
                             entity_config.get(mapped_obj_key.lower(), {})
                             .get("item_params_attr", {})
                             .keys()
                         )
-
-                        # Filter keys based on what is passed in the detail object
+                        print(
+                            f"\t\t\tInspect Child Entity Item Params {entity_param_keys}"
+                        )
                         if entity_param_keys:
                             filtered_params = {
                                 key: detail_obj[key]
                                 for key in entity_param_keys
                                 if key in detail_obj and detail_obj[key] is not None
                             }
-
                             if filtered_params:
                                 mapped_obj_created_item.set_entity_params(
                                     {mapped_obj_key: filtered_params}
                                 )
+                        print(
+                            f"\t\t\tFiltered Child Entity Item Params {filtered_params}"
+                        )
 
-                    await db_session.flush()
-                    await db_session.refresh(mapped_obj_created_item)
+                    # Add to new items
                     new_items.append(mapped_obj_created_item)
+                    print(f"\t\t\tNew Items Are: {new_items}")
 
-                # Now batch add the items to the collection
+                # Batch add items to the collection
                 if model_attr is not None and isinstance(model_attr, list):
                     if isinstance(model_attr, BaseModelCollection):
                         model_attr = (
@@ -246,10 +248,22 @@ class BaseMixin:
                             if not model_attr._parent
                             else model_attr
                         )
+                        print(
+                            f"\t\tModel is BaseModelCollection {isinstance(model_attr, BaseModelCollection)}"
+                        )
 
                         for item in new_items:
                             if hasattr(item, "_sa_instance_state"):
-                                await model_attr.append_item(item, db_session)
+                                print(
+                                    f"\n\t\tModel is _sa_instance_state {hasattr(item, '_sa_instance_state')}"
+                                )
+                                print(
+                                    f"\t\tAbout to append BaseModelCollection item {item}"
+                                )
+                                item = await model_attr.append_item(item, db_session)
+                                print(
+                                    f"\t\tDone appending BaseModelCollection item {item}"
+                                )
                             else:
                                 raise ValueError(
                                     f"Item {item} is not a valid ORM instance"
@@ -271,8 +285,9 @@ class BaseMixin:
                     else:
                         raise ValueError("Not all items are valid ORM instances")
 
+                # Single flush and refresh after each mapping
                 await db_session.flush()
-                await db_session.refresh(mapped_obj_created_item)
+                await db_session.refresh(db_obj)
                 db_obj = await self.commit_and_refresh(
                     db_session=db_session, obj=db_obj
                 )

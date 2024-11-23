@@ -30,12 +30,18 @@ class ContractRouter(BaseCRUDRouter):
         ContractSchema["update_schema"] = ContractUpdateSchema
         # ContractSchema["response_schema"] = ContractResponse
 
-        super().__init__(dao=self.dao, schemas=ContractSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao,
+            schemas=ContractSchema,
+            prefix=prefix,
+            tags=tags,
+            route_overrides=["get_all"],
+        )
         self.register_routes()
 
-    def add_get_route(self):
+    def register_routes(self):
         @self.router.get("/")
-        async def get_contracts(
+        async def get_contracts_by_user_id(
             user_id: Optional[UUID] = Query(None),
             limit: int = Query(default=10, ge=1),
             offset: int = Query(default=0, ge=0),
@@ -45,7 +51,6 @@ class ContractRouter(BaseCRUDRouter):
                 db_session=db_session, user_id=user_id, limit=limit, offset=offset
             )
 
-    def register_routes(self):
         @self.router.post(
             "/{contract_id}/upload_media", status_code=status.HTTP_201_CREATED
         )

@@ -1,22 +1,31 @@
+from uuid import UUID
 from datetime import datetime
 from typing import Optional, List
-from uuid import UUID
-from sqlalchemy import and_, select, func, extract
+from collections import defaultdict
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, select, func, extract
+
 from app.core.response import DAOResponse
 from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.billing.models.invoice import Invoice
-from collections import defaultdict
 
 # dao
-from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.billing.dao.invoice_item_dao import InvoiceItemDAO
 
 # models
-from app.modules.billing.models.invoice import Invoice
 
 # core
 from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
+from app.modules.billing.enums.billing_enums import PaymentStatusEnum
+from app.modules.billing.schema.invoice_schema import InvoiceResponse
+from app.modules.contract.enums.contract_enums import ContractStatusEnum
+from app.modules.contract.models.contract import Contract
+from app.modules.contract.models.contract_invoice import ContractInvoice
+from app.modules.contract.models.contract_type import ContractType
+from app.modules.contract.models.under_contract import UnderContract
+
+CONTRACT_LEASE = "lease"
 
 
 class InvoiceDAO(BaseDAO[Invoice]):
@@ -34,6 +43,50 @@ class InvoiceDAO(BaseDAO[Invoice]):
             detail_mappings=self.detail_mappings,
             excludes=excludes or [],
             primary_key="invoice_number",
+        )
+
+    async def get_leases_due(
+        self,
+        db_session: AsyncSession,
+        contract_type_name: str = CONTRACT_LEASE,
+        user_id: str = None,
+        offset=0,
+        limit=100,
+    ):
+        filters = {
+            "status": PaymentStatusEnum.pending.name,
+            "ContractType.contract_type_name": contract_type_name,
+            "Contract.contract_status": str(ContractStatusEnum.active.name),
+            "UnderContract.contract_status": str(ContractStatusEnum.active.name),
+        }
+
+        join_conditions = [
+            (ContractInvoice, ContractInvoice.invoice_number == Invoice.invoice_number),
+            (Contract, Contract.contract_id == ContractInvoice.contract_id),
+            (UnderContract, UnderContract.contract_id == Contract.contract_id),
+            (ContractType, ContractType.contract_type_id == Contract.contract_type_id),
+        ]
+
+        if user_id:
+            filters["UnderContract.client_id"] = UUID(user_id)
+
+        options = [
+            joinedload(Invoice.contracts),
+            joinedload(Invoice.transaction),
+            joinedload(Invoice.invoice_items),
+        ]
+        query_result = await self.query_on_joins(
+            db_session=db_session,
+            filters=filters,
+            join_conditions=join_conditions,
+            options=options,
+            skip=offset,
+            limit=limit,
+        )
+
+        return DAOResponse[List[InvoiceResponse]](
+            success=True,
+            data=[InvoiceResponse.from_orm_model(r) for r in query_result],
         )
 
     async def get_invoice_trends(

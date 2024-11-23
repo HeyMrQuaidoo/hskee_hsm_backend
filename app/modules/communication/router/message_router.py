@@ -56,6 +56,18 @@ from app.modules.communication.schema.message_schema import (
     # MessageUpdateSchema,
     MessageReplySchema,
 )
+<<<<<<< HEAD
+=======
+from app.modules.communication.schema.message_schema import (
+    MessageReply,
+    MessageResponse,
+)
+from app.core.response import DAOResponse
+from app.modules.contract.models.under_contract import UnderContract
+from app.modules.properties.models.property_unit_association import PropertyUnitAssoc
+from app.modules.communication.models.message_recipient import MessageRecipient
+>>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521
+
 
 # Core
 from app.core.lifespan import get_db
@@ -159,3 +171,58 @@ class MessageRouter(BaseCRUDRouter):
                 limit=limit,
                 offset=offset,
             )
+<<<<<<< HEAD
+=======
+            contracts_result = await db.execute(user_contracts_stmt)
+            contracts = contracts_result.scalars().all()
+            contract_periods = [
+                (
+                    contract.property_unit_assoc_id,
+                    contract.start_date,
+                    contract.end_date,
+                )
+                for contract in contracts
+            ]
+
+            # Construct a list of group IDs for use in the next query
+            if not contract_periods:
+                contract_periods = []
+
+            # Filter messages based on whether the send date is within any of the contract periods
+            inbox_stmt = (
+                select(Message)
+                .join(
+                    MessageRecipient, Message.message_id == MessageRecipient.message_id
+                )
+                .where(
+                    Message.is_draft is False,
+                    Message.is_scheduled is False,
+                    Message.is_notification is True,
+                    or_(
+                        MessageRecipient.recipient_id == user_id,
+                        and_(
+                            MessageRecipient.recipient_group_id.in_(
+                                [cp[0] for cp in contract_periods]
+                            ),
+                            or_(
+                                *[
+                                    and_(
+                                        MessageRecipient.msg_send_date >= cp[1],
+                                        MessageRecipient.msg_send_date <= cp[2],
+                                    )
+                                    for cp in contract_periods
+                                ]
+                            ),
+                        ),
+                    ),
+                )
+                .order_by(Message.date_created.desc())
+            )
+            inbox_messages_result = await db.execute(inbox_stmt)
+            inbox_messages = inbox_messages_result.scalars().all()
+
+            return DAOResponse[List[MessageResponse]](
+                success=True,
+                data=[MessageResponse.model_validate(r) for r in inbox_messages],
+            )
+>>>>>>> 89e297ba52136afaf7ef590cc9e8f72bf6f7e521

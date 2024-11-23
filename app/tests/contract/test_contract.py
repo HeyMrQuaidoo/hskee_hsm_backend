@@ -5,7 +5,6 @@ from app.tests.users.test_users import TestUsers
 from app.tests.properties.test_property import TestProperties
 from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.contract.test_contract_type import TestContractType
-# from app.tests.invoice.test_invoice import TestInvoice
 
 
 class TestContract:
@@ -36,6 +35,7 @@ class TestContract:
                 "contract_details": "string",
                 "payment_amount": 0,
                 "fee_percentage": 0,
+                "num_invoices": 0,
                 "fee_amount": 0,
                 "date_signed": "2024-06-23T19:11:07.570Z",
                 "start_date": "2024-06-23T19:11:07.570Z",
@@ -52,8 +52,11 @@ class TestContract:
                 ],
                 "utilities": [
                     {
+                        "name": "swimming pool",
+                        "description": "A swimming pool",
                         "payment_type": "one_time",
                         "billable_amount": "100",
+                        "billable_type": "utilities",
                         "apply_to_units": False,
                         "billable_id": TestProperties.default_utility.get("utility_id"),
                     }
