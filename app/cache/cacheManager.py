@@ -1,5 +1,4 @@
 import threading
-import asyncio
 
 from app.cache.cacheModule import CacheModule
 from app.core.config import settings

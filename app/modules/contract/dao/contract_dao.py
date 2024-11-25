@@ -50,7 +50,7 @@ class ContractDAO(BaseDAO[Contract]):
             model=self.model,
             detail_mappings=self.detail_mappings,
             excludes=excludes or [],
-            primary_key="contract_id",
+            primary_key="contract_number",
         )
 
     async def get_contracts(

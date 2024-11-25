@@ -30,6 +30,7 @@ from app.modules.properties.router.property_assignment_router import (
 from app.modules.properties.router.property_router import PropertyRouter
 from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.resources.router.amenities_router import AmenityRouter
+from app.modules.communication.router.message_router import MessageRouter
 from app.modules.resources.router.media_router import MediaRouter
 
 router = APIRouter()
@@ -44,14 +45,17 @@ def configure_routes(app: FastAPI):
         (AmenityRouter, "/amenities", ["Amenities"]),
         (AuthRouter, "/auth", ["Auth"]),
         (CalendarEventRouter, "/calendar-event", ["Calendar Event"]),
+        (CalendarEventRouter, "/calendar_event", ["Calendar Event"]),
         (ContractRouter, "/contract", ["Contract"]),
         (ContractTypeRouter, "/contract-type", ["Contract Type"]),
         (FavoritePropertiesRouter, "/favorite-properties", ["Favorite Properties"]),
         (InvoiceRouter, "/invoice", ["Invoices"]),
         (MaintenanceRequestRouter, "/maintenance-request", ["Maintenance Request"]),
+        (MaintenanceRequestRouter, "/maintenance_request", ["Maintenance Request"]),
         (MediaRouter, "/media", ["Media"]),
         (MessageRouter, "/message", ["Message"]),
         (PaymentTypeRouter, "/payment-type", ["Payment Type"]),
+        (PaymentTypeRouter, "/payment_type", ["Payment Type"]),
         (PermissionRouter, "/permissions", ["Permissions"]),
         (PropertyRouter, "/property", ["Property"]),
         (PropertyAssignmentRouter, "/assign-properties", ["PropertyAssignments"]),
@@ -59,7 +63,8 @@ def configure_routes(app: FastAPI):
         (TourRouter, "/tour", ["Tour Bookings"]),
         (TransactionRouter, "/transaction", ["Transaction"]),
         (TransactionTypeRouter, "/transaction-type", ["Transaction Type"]),
-        (UnderContractRouter, "/assign-contracts", ["Under Contracts"]),
+        (TransactionTypeRouter, "/transaction_type", ["Transaction Type"]),
+        (UnderContractRouter, "/assign-contracts", ["Contract Assignments"]),
         (UnitRouter, "/unit", ["Unit"]),
         (UserInteractionsRouter, "/user-interactions", ["User Interactions"]),
         (UserRouter, "/users", ["Users"]),

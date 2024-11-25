@@ -24,7 +24,7 @@ from app.modules.resources.enums.resource_enums import MediaType
 from app.services.upload_service import MediaUploaderService
 
 # Core
-from app.core.errors import CustomException, IntegrityError, RecordNotFoundException
+from app.core.errors import CustomException, IntegrityError
 
 
 class MaintenanceRequestDAO(BaseDAO[MaintenanceRequest]):

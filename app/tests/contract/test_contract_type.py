@@ -7,7 +7,7 @@ class TestContractType:
     default_contract_type: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(name="create_contract_type")
+    @pytest.mark.dependency(name="TestContractType::create_contract_type")
     async def test_create_contract_type(self, client: AsyncClient):
         # Check if the contract type already exists and delete it if found
         check_response = await client.get(
@@ -49,7 +49,8 @@ class TestContractType:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["create_contract_type"], name="get_contract_type_by_id"
+        depends=["TestContractType::create_contract_type"],
+        name="get_contract_type_by_id",
     )
     async def test_get_contract_type_by_id(self, client: AsyncClient):
         print("Contract Type is", self.default_contract_type)

@@ -7,7 +7,7 @@ class TestPaymentType:
     default_payment_type: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(name="create_payment_type")
+    @pytest.mark.dependency(name="TestPaymentType::create_payment_type")
     async def test_create_payment_type(self, client: AsyncClient):
         response = await client.post(
             "/payment-type/",
@@ -21,7 +21,9 @@ class TestPaymentType:
         TestPaymentType.default_payment_type = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["create_payment_type"], name="get_payment_type")
+    @pytest.mark.dependency(
+        depends=["TestPaymentType::create_payment_type"], name="get_payment_type"
+    )
     async def test_get_payment_type(self, client: AsyncClient):
         print("Default Payment type: ", self.default_payment_type)
         payment_type_id = self.default_payment_type["payment_type_id"]
@@ -31,7 +33,7 @@ class TestPaymentType:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["create_payment_type"], name="get_all_payment_types"
+        depends=["TestPaymentType::create_payment_type"], name="get_all_payment_types"
     )
     async def test_get_all_payment_types(self, client: AsyncClient):
         response = await client.get("/payment-type/", params={"limit": 10, "offset": 0})
@@ -39,7 +41,7 @@ class TestPaymentType:
         assert isinstance(response.json(), dict), response.text
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["create_payment_type"], name="update_payment_type")
+    @pytest.mark.dependency(depends=["get_payment_type"], name="update_payment_type")
     async def test_update_payment_type(self, client: AsyncClient):
         payment_type_id = self.default_payment_type["payment_type_id"]
         response = await client.put(

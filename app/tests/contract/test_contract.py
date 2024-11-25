@@ -32,6 +32,7 @@ class TestContract:
                 "contract_details": "string",
                 "payment_amount": 0,
                 "fee_percentage": 0,
+                "num_invoices": 0,
                 "fee_amount": 0,
                 "date_signed": "2024-06-23T19:11:07.570Z",
                 "start_date": "2024-06-23T19:11:07.570Z",
