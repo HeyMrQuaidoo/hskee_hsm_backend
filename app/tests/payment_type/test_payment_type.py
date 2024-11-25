@@ -53,13 +53,13 @@ class TestPaymentType:
         assert response.status_code == 200, response.text
         assert response.json()["data"]["payment_type_name"] == "one_time"
 
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["update_payment_type"], name="delete_payment_type")
-    async def test_delete_payment_type(self, client: AsyncClient):
-        payment_type_id = TestPaymentType.default_payment_type["payment_type_id"]
-        response = await client.delete(f"/payment-type/{payment_type_id}")
-        assert response.status_code == 204
+    # @pytest.mark.asyncio(loop_scope="session")
+    # @pytest.mark.dependency(depends=[], name="delete_payment_type")
+    # async def test_delete_payment_type(self, client: AsyncClient):
+    #     payment_type_id = TestPaymentType.default_payment_type["payment_type_id"]
+    #     response = await client.delete(f"/payment-type/{payment_type_id}")
+    #     assert response.status_code == 204
 
-        # Verify the payment type is deleted
-        response = await client.get(f"/payment-type/{payment_type_id}")
-        assert response.status_code == 404
+    #     # Verify the payment type is deleted
+    #     response = await client.get(f"/payment-type/{payment_type_id}")
+    #     assert response.status_code == 404

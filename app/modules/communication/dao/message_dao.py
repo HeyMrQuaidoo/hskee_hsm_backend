@@ -133,6 +133,7 @@ class MessageDAO(BaseDAO[Message]):
                 "is_draft": False,
                 "is_scheduled": False,
                 "is_notification": False,
+                "is_enquiry": False,
             }
             print("Message Before:", new_message_data)
             new_message_schema = MessageReplySchema(**new_message_data)
@@ -158,6 +159,7 @@ class MessageDAO(BaseDAO[Message]):
                     self.model.is_draft == True,
                     self.model.is_scheduled == False,
                     self.model.is_notification == False,
+                    self.model.is_enquiry == False,
                 )
             elif folder == "scheduled":
                 query = select(self.model).where(
@@ -165,6 +167,7 @@ class MessageDAO(BaseDAO[Message]):
                     self.model.is_scheduled == True,
                     self.model.is_draft == False,
                     self.model.is_notification == False,
+                    self.model.is_enquiry == False,
                 )
             elif folder == "outbox":
                 query = select(self.model).where(
@@ -172,6 +175,7 @@ class MessageDAO(BaseDAO[Message]):
                     self.model.is_draft == False,
                     self.model.is_scheduled == False,
                     self.model.is_notification == False,
+                    self.model.is_enquiry == False,
                 ).order_by(desc(self.model.date_created))
             elif folder in ["inbox", "notifications"]:
                 is_notification = folder == "notifications"
@@ -215,6 +219,7 @@ class MessageDAO(BaseDAO[Message]):
                     .where(
                         self.model.is_draft == False,
                         self.model.is_scheduled == False,
+                        self.model.is_enquiry == False,
                         self.model.is_notification == is_notification,
                         or_(
                             MessageRecipient.recipient_id == user_id,

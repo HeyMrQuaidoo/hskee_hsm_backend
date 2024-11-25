@@ -29,7 +29,7 @@ class UnderContractBase(BaseSchema):
 
 
 class UnderContract(UnderContractBase):
-    under_contract_id: Optional[UUID]
+    under_contract_id: Optional[UUID] = None
 
 
 class UnderContractInfoMixin:

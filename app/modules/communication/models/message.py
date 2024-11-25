@@ -31,6 +31,9 @@ class Message(Base):
     is_notification: Mapped[Optional[bool]] = mapped_column(
         Boolean, default=False, nullable=True
     )
+    is_enquiry: Mapped[Optional[bool]] = mapped_column(
+        Boolean, default=False, nullable=True
+    )
     is_reminder: Mapped[Optional[bool]] = mapped_column(
         Boolean, default=False, nullable=True
     )

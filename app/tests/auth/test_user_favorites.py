@@ -1,10 +1,14 @@
 import pytest
 from typing import Any, Dict, List
 from httpx import AsyncClient
+from faker import Faker
+
 from app.tests.properties.test_property import TestProperties
 from app.tests.users.test_users import TestUsers
 
 class TestFavoriteProperties:
+    faker = Faker()
+
     default_favorite: Dict[str, Any] = {}
     additional_favorites: List[Dict[str, Any]] = []
     user_ids: List[str] = []
@@ -12,8 +16,8 @@ class TestFavoriteProperties:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestProperties::create_property", "TestUsers::create_user"],
-        name="TestFavoriteProperties::create_favorite_property",
+        depends=[],
+        name="test_create_favorite_property",
     )
     async def test_create_favorite_property(self, client: AsyncClient):
         response = await client.post(
@@ -29,8 +33,10 @@ class TestFavoriteProperties:
         self.property_ids.append(TestProperties.default_property.get("property_unit_assoc_id"))
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestFavoriteProperties::create_favorite_property"], 
-                            name="TestFavoriteProperties::create_additional_favorites")
+    @pytest.mark.dependency(
+        depends=["test_create_favorite_property"],
+        name="test_create_additional_favorites",
+    )
     async def test_create_additional_favorites(self, client: AsyncClient):
         # Create additional users and properties
         for i in range(2):
@@ -41,24 +47,14 @@ class TestFavoriteProperties:
                     "date_of_birth": "1990-01-01",
                     "first_name": f"User{i}",
                     "last_name": f"Test{i}",
-                    "email": f"user{i}@example.com",
-                    "phone_number": f"100000000{i}",
-                    "identification_number": f"ID{i}",
+                    "email": self.faker.unique.email(),
+                    "phone_number": self.faker.phone_number(),
+                    "identification_number": str(
+                        self.faker.random_number(digits=6, fix_len=True)
+                    ),
                     "photo_url": "",
                     "gender": "male",
                     "address": [],
-                    "user_auth_info": {
-                        "password": "password123",
-                        "login_provider": "local",
-                        "reset_token": "",
-                        "verification_token": "",
-                        "is_subscribed_token": "",
-                        "is_disabled": False,
-                        "is_verified": True,
-                        "is_subscribed": True,
-                        "current_login_time": None,
-                        "last_login_time": None,
-                    },
                     "user_emergency_info": {},
                     "user_employer_info": {},
                     "role": "user",
@@ -80,7 +76,7 @@ class TestFavoriteProperties:
                     "floor_space": 100 + i * 50,
                     "num_units": 1,
                     "num_bathrooms": 1,
-                    "num_garages": False,
+                    "num_garages": 0,
                     "has_balconies": False,
                     "has_parking_space": False,
                     "pets_allowed": True,
@@ -109,8 +105,10 @@ class TestFavoriteProperties:
             self.additional_favorites.append(favorite_data)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestFavoriteProperties::create_additional_favorites"], 
-                            name="TestFavoriteProperties::get_favorite_property_by_id")
+    @pytest.mark.dependency(
+        depends=["test_create_additional_favorites"],
+        name="test_get_all_favorite_properties",
+    )
     async def test_get_all_favorite_properties(self, client: AsyncClient):
         response = await client.get("/favorite-properties/", params={"limit": 10, "offset": 0})
         assert response.status_code == 200, f"Failed to fetch favorite properties: {response.text}"
@@ -119,7 +117,10 @@ class TestFavoriteProperties:
         assert len(data) >= 3, "Expected at least 3 favorite properties"
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestFavoriteProperties::create_favorite_property"], name="TestFavoriteProperties::get_favorite_property_by_id")
+    @pytest.mark.dependency(
+        depends=["test_create_favorite_property"],
+        name="test_get_favorite_property_by_id",
+    )
     async def test_get_favorite_property_by_id(self, client: AsyncClient):
         favorite_id = self.default_favorite["favorite_id"]
         response = await client.get(f"/favorite-properties/{favorite_id}")
@@ -127,7 +128,10 @@ class TestFavoriteProperties:
         assert response.json()["data"]["favorite_id"] == favorite_id
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestFavoriteProperties::create_favorite_property"], name="TestFavoriteProperties::filter_favorites")
+    @pytest.mark.dependency(
+        depends=["test_create_favorite_property"],
+        name="test_filter_favorites",
+    )
     async def test_filter_favorites(self, client: AsyncClient):
         # Filter by user_id
         user_id = self.user_ids[0]
@@ -144,7 +148,10 @@ class TestFavoriteProperties:
         assert all(fav["property_unit_assoc_id"] == property_id for fav in data), "Filtering by property_unit_assoc_id failed"
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestFavoriteProperties::get_favorite_property_by_id"], name="TestFavoriteProperties::delete_favorite_property_by_id")
+    @pytest.mark.dependency(
+        depends=[],
+        name="test_delete_favorite_property",
+    )
     async def test_delete_favorite_property(self, client: AsyncClient):
         favorite_id = self.default_favorite["favorite_id"]
         response = await client.delete(f"/favorite-properties/{favorite_id}")
@@ -152,5 +159,5 @@ class TestFavoriteProperties:
 
         # Verify that the favorite property is deleted
         response = await client.get(f"/favorite-properties/{favorite_id}")
-        assert response.status_code == 200, f"Failed to get favorite property by ID after deletion: {response.text}"
-        assert response.json()["data"] == {}
+        assert response.status_code == 404, f"Failed to get favorite property by ID after deletion: {response.text}"
+        assert response.json()["data"] == None

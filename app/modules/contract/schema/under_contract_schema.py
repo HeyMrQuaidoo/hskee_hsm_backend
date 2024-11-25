@@ -70,18 +70,18 @@ class UnderContractResponse(UnderContractBase):
             next_payment_due=under_contract.next_payment_due,
             properties=PropertyBase.model_validate(under_contract.properties)
             if under_contract.properties
-            else None,
+            else [],
             contract=ContractBase.model_validate(under_contract.contract)
             if under_contract.contract
-            else None,
+            else [],
             client_representative=UserBase.model_validate(
                 under_contract.client_representative
             )
             if under_contract.client_representative
-            else None,
+            else [],
             employee_representative=UserBase.model_validate(
                 under_contract.employee_representative
             )
             if under_contract.employee_representative
-            else None,
+            else [],
         ).model_dump()

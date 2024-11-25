@@ -15,7 +15,7 @@ class TestUserInteractions:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestUsers::create_user"],
+        depends=[],
         name="TestUserInteractions::create_employee_user",
     )
     async def test_create_employee_user(self, client: AsyncClient):
@@ -55,7 +55,7 @@ class TestUserInteractions:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestUserInteractions::create_employee_user", "TestProperties::create_property"],
+        depends=[],
         name="TestUserInteractions::create_user_interaction",
     )
     async def test_create_user_interaction(self, client: AsyncClient):
@@ -171,5 +171,5 @@ class TestUserInteractions:
 
         # Verify that the interaction is deleted
         response = await client.get(f"/user-interactions/{interaction_id}")
-        assert response.status_code == 200, f"Failed to get user interaction by ID after deletion: {response.text}"
-        assert response.json()["data"] == {}
+        assert response.status_code == 404, f"Failed to get user interaction by ID after deletion: {response.text}"
+        assert response.json()["data"] == None

@@ -1,24 +1,28 @@
 from typing import Optional, List
 from uuid import UUID
-from sqlalchemy import func, select
+from sqlalchemy import func, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.response import DAOResponse
-from app.modules.billing.dao.invoice_dao import InvoiceDAO
-from app.modules.billing.dao.utility_dao import UtilityDAO
-from app.modules.common.dao.base_dao import BaseDAO
+from datetime import datetime
 
-# enums
+# DAOs
+from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.contract.dao.under_contract_dao import UnderContractDAO
 from app.modules.resources.dao.media_dao import MediaDAO
-from app.modules.resources.enums.resource_enums import MediaType
-from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
+from app.modules.billing.dao.utility_dao import UtilityDAO
+from app.modules.billing.dao.invoice_dao import InvoiceDAO
 
 # Models
 from app.modules.contract.models.contract import Contract
+from app.modules.contract.enums.contract_enums import ContractStatusEnum
 from app.modules.resources.models.media import Media
 from app.modules.associations.models.entity_media import EntityMedia
 
-# Errors
+# Enums
+from app.modules.resources.enums.resource_enums import MediaType
+from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
+
+# Core
+from app.core.response import DAOResponse
 from app.core.errors import CustomException, RecordNotFoundException
 
 # Services
@@ -50,28 +54,94 @@ class ContractDAO(BaseDAO[Contract]):
         )
 
     async def get_contracts(
-        self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
+        self,
+        db_session: AsyncSession,
+        contract_number: Optional[str] = None,
+        contract_type_id: Optional[int] = None,
+        payment_type_id: Optional[int] = None,
+        contract_status: Optional[ContractStatusEnum] = None,
+        date_signed_gte: Optional[datetime] = None,
+        date_signed_lte: Optional[datetime] = None,
+        start_date_gte: Optional[datetime] = None,
+        start_date_lte: Optional[datetime] = None,
+        end_date_gte: Optional[datetime] = None,
+        end_date_lte: Optional[datetime] = None,
+        payment_amount_gte: Optional[float] = None,
+        payment_amount_lte: Optional[float] = None,
+        num_invoices: Optional[int] = None,
+        limit: int = 10,
+        offset: int = 0,
     ) -> DAOResponse:
         try:
             query = select(self.model)
-            if user_id:
-                query = query.where(self.model.user_id == user_id)
-            query = query.limit(limit).offset(offset)
-            result = await db_session.execute(query)
-            items = result.scalars().all()
 
-            # Build pagination metadata
-            total_items = await db_session.execute(
-                select(func.count()).select_from(query.subquery())
-            )
-            total_count = total_items.scalar()
+            filter_conditions = {
+                "contract_number": self.model.contract_number.ilike(f"%{contract_number}%")
+                if contract_number
+                else None,
+                "contract_type_id": self.model.contract_type_id == contract_type_id
+                if contract_type_id
+                else None,
+                "payment_type_id": self.model.payment_type_id == payment_type_id
+                if payment_type_id
+                else None,
+                "contract_status": self.model.contract_status == contract_status
+                if contract_status
+                else None,
+                "date_signed_gte": self.model.date_signed >= date_signed_gte
+                if date_signed_gte
+                else None,
+                "date_signed_lte": self.model.date_signed <= date_signed_lte
+                if date_signed_lte
+                else None,
+                "start_date_gte": self.model.start_date >= start_date_gte
+                if start_date_gte
+                else None,
+                "start_date_lte": self.model.start_date <= start_date_lte
+                if start_date_lte
+                else None,
+                "end_date_gte": self.model.end_date >= end_date_gte
+                if end_date_gte
+                else None,
+                "end_date_lte": self.model.end_date <= end_date_lte
+                if end_date_lte
+                else None,
+                "payment_amount_gte": self.model.payment_amount >= payment_amount_gte
+                if payment_amount_gte is not None
+                else None,
+                "payment_amount_lte": self.model.payment_amount <= payment_amount_lte
+                if payment_amount_lte is not None
+                else None,
+                "num_invoices": self.model.num_invoices == num_invoices
+                if num_invoices is not None
+                else None,
+            }
+
+            filters = [
+                condition for condition in filter_conditions.values() if condition is not None
+            ]
+
+            if filters:
+                query = query.where(and_(*filters))
+
+            query = query.order_by(self.model.contract_number.asc())
+
+            total_query = select(func.count()).select_from(query.subquery())
+            query = query.limit(limit).offset(offset)
+
+            result = await db_session.execute(query)
+            contracts = result.scalars().all()
+
+            total_items_result = await db_session.execute(total_query)
+            total_count = total_items_result.scalar()
+
             meta = {
                 "total_items": total_count,
                 "limit": limit,
                 "offset": offset,
             }
 
-            return DAOResponse(success=True, data=items, meta=meta)
+            return DAOResponse(success=True, data=contracts, meta=meta)
         except Exception as e:
             raise CustomException(str(e))
 
@@ -90,21 +160,34 @@ class ContractDAO(BaseDAO[Contract]):
 
         for idx, file in enumerate(files):
             content = await file.read()
-            base64_image = f"data:{file.content_type};base64,{content.decode('latin1')}"
+            base64_content = f"data:{file.content_type};base64,{content.decode('latin1')}"
             file_name = file.filename
-            media_type = "contract"
+            media_type_str = "contract"
 
             # Use MediaUploaderService
-            uploader = MediaUploaderService(base64_image, file_name, media_type)
+            uploader = MediaUploaderService(base64_content, file_name, media_type_str)
             response = uploader.upload()
 
             if not response.success:
                 raise Exception(f"Upload failed: {response.error}")
 
-            # Save media record and association
+            # Determine media type based on file content type
+            content_type = file.content_type
+            if "image" in content_type:
+                media_type = MediaType.image
+            elif "video" in content_type:
+                media_type = MediaType.video
+            elif "audio" in content_type:
+                media_type = MediaType.audio
+            elif "application" in content_type:
+                media_type = MediaType.document
+            else:
+                media_type = MediaType.other
+
+            # Create Media instance
             media_data = {
                 "media_name": file_name,
-                "media_type": MediaType.document,  # Assuming documents for contracts
+                "media_type": media_type,
                 "content_url": response.data["content_url"],
                 "is_thumbnail": False,
                 "caption": captions[idx] if captions and idx < len(captions) else None,

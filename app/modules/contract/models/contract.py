@@ -120,6 +120,7 @@ class Contract(Base):
         back_populates="contract",
         overlaps="entity_billables,property,utilities,",
         lazy="selectin",
+        cascade="all, delete-orphan",
         collection_class=BaseModelCollection,
     )
 

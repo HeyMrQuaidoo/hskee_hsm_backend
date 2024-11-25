@@ -105,6 +105,7 @@ class MessageResponse(BaseSchema, UserBaseMixin):
     thread_id: Optional[UUID] = None
     is_draft: Optional[bool] = False
     is_notification: Optional[bool] = False
+    is_enquiry: Optional[bool] = False
     is_reminder: Optional[bool] = False
     is_scheduled: Optional[bool] = False
     is_read: Optional[bool] = False
@@ -146,6 +147,7 @@ class MessageResponse(BaseSchema, UserBaseMixin):
             thread_id=message.thread_id,
             is_draft=message.is_draft,
             is_notification=message.is_notification,
+            is_enquiry=message.is_enquiry,
             is_reminder=message.is_reminder,
             is_scheduled=message.is_scheduled,
             is_read=message.is_read,

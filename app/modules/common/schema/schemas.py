@@ -9,7 +9,7 @@ from app.modules.billing.models.transaction import Transaction
 from app.modules.billing.models.transaction_type import TransactionType
 from app.modules.communication.models.calendar_event import CalendarEvent
 from app.modules.communication.models.message import Message
-from app.modules.communication.models.maintenance_requests import MaintenanceRequest
+from app.modules.communication.models.maintenance_request import MaintenanceRequest
 from app.modules.communication.models.tour_bookings import TourBookings
 from app.modules.contract.models.contract_type import ContractType
 from app.modules.contract.models.under_contract import UnderContract

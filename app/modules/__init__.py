@@ -1,7 +1,7 @@
 # address
 from app.modules.properties.models.property_unit_association import PropertyUnitAssoc  # noqa: F401
 from app.modules.communication.models.message_recipient import MessageRecipient  # noqa: F401
-from app.modules.communication.models.maintenance_requests import MaintenanceRequest  # noqa: F401
+from app.modules.communication.models.maintenance_request import MaintenanceRequest  # noqa: F401
 from app.modules.communication.models.tour_bookings import TourBookings  # noqa: F401
 from app.modules.communication.models.message import Message  # noqa: F401
 from app.modules.communication.models.reminder_frequency import ReminderFrequency  # noqa: F401

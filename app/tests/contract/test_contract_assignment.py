@@ -1,47 +1,88 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
+from app.modules.contract.enums.contract_enums import ContractStatusEnum
+from app.tests.contract.test_contract_type import TestContractType
+from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.properties.test_property import (
     TestProperties,
-)  # Assuming these exist and follow the established structure
+)
 from app.tests.contract.test_contract import TestContract
 
+from app.modules.common.schema.base_schema import BaseFaker
+from app.tests.users.test_users import TestUsers
 
 class TestContractAssignments:
     default_contract_assignment: Dict[str, Any] = {}
+    default_contract: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=[
-            "TestProperties::test_create_property",
-            "TestContract::test_create_contract",
-        ],
+        depends=[],
         name="create_contract_assignment",
     )
     async def test_create_contract_assignment(self, client: AsyncClient):
         # Fetch necessary data from the dependencies
-        contract_id = TestContract.default_contract.get("contract_number")
+
+        contract_response = await client.post(
+            "/contract/",
+            json={
+                "contract_type_id": TestContractType.default_contract_type.get(
+                    "contract_type_id"
+                ),
+                "payment_type_id": TestPaymentType.default_payment_type.get(
+                    "payment_type_id"
+                ),
+                "contract_status": "active",
+                "contract_details": "string",
+                "payment_amount": 0,
+                "fee_percentage": 0,
+                "fee_amount": 0,
+                "date_signed": "2024-06-23T19:11:07.570Z",
+                "start_date": "2024-06-23T19:11:07.570Z",
+                "end_date": "2024-06-23T19:11:07.570Z",
+                "contract_info": [
+                    {
+                        "property_unit_assoc": TestProperties.default_property.get(
+                            "property_unit_assoc_id"
+                        ),
+                        "contract_status": "active",
+                        "client_id": TestUsers.default_user.get("user_id"),
+                        "employee_id": TestUsers.default_user.get("user_id"),
+                    }
+                ],
+            },
+        )
+        assert contract_response.status_code == 201
+        self.default_contract = contract_response.json()["data"]
+        print("DEFAULT:", self.default_contract.get("contract_number"))
+        contract_number = self.default_contract.get("contract_number")
         property_unit_assoc_id = TestProperties.default_property.get(
             "property_unit_assoc_id"
         )
 
         # Ensure required values are available
         assert (
-            contract_id
+            contract_number
         ), "Contract ID is not available. Ensure the contract creation test runs first."
         assert property_unit_assoc_id, "Property Unit Association ID is not available. Ensure the property creation test runs first."
+
+        _contract_status = BaseFaker.random_element([e.value for e in ContractStatusEnum])
+        _start_date = BaseFaker.date_this_year()
+        _end_date = BaseFaker.future_date()
+        _next_payment_due = BaseFaker.future_datetime()
 
         response = await client.post(
             "assign-contracts/",
             json={
-                "contract_id": contract_id,
-                "client_id": "0d5340d2-046b-42d9-9ef5-0233b79b6642",  # Replace with dynamic value if necessary
-                "employee_id": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",  # Replace with dynamic value if necessary
-                "contract_status": "active",
-                "property_unit_assoc": property_unit_assoc_id,
-                "start_date": "2024-06-23T19:11:07.570Z",
-                "end_date": "2024-06-23T19:11:07.570Z",
-                "next_payment_due": "2024-06-23T19:11:07.570Z",
+                  "property_unit_assoc_id": property_unit_assoc_id,
+                    "contract_status": _contract_status,
+                    "contract_number": contract_number,
+                    "client_id": TestUsers.default_user.get("user_id"),
+                    "employee_id": TestUsers.default_user.get("user_id"),
+                    "start_date": _start_date.isoformat(),
+                    "end_date": _end_date.isoformat(),
+                    "next_payment_due": _next_payment_due.isoformat()
             },
         )
         assert (

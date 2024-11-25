@@ -18,7 +18,7 @@ from app.modules.communication.schema.mixins.maintenance_request_mixin import (
 from app.modules.resources.schema.media_schema import MediaCreateSchema
 
 # Models
-from app.modules.communication.models.maintenance_requests import MaintenanceRequest
+from app.modules.communication.models.maintenance_request import MaintenanceRequest
 
 
 class MaintenanceRequestCreateSchema(
@@ -48,9 +48,6 @@ class MaintenanceRequestUpdateSchema(
 
 
 class MaintenanceRequestResponse(MaintenanceRequestBase, MaintenanceRequestInfoMixin):
-    id: UUID
-    task_number: str
-
     @classmethod
     def model_validate(cls, maintenance_requests: MaintenanceRequest):
         return super().model_validate(maintenance_requests)

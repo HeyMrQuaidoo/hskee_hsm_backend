@@ -12,7 +12,7 @@ class TestTourBookings:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestProperties::create_property", "TestUsers::create_user"],
+        depends=[],
         name="TestTourBookings::create_tour_booking",
     )
     async def test_create_tour_booking(self, client: AsyncClient):
@@ -157,5 +157,5 @@ class TestTourBookings:
 
         # Verify that the tour booking is deleted
         response = await client.get(f"/tour/{tour_id}")
-        assert response.status_code == 200, f"Failed to get tour by ID after deletion: {response.text}"
-        assert response.json()["data"] == {}
+        assert response.status_code == 404, f"Failed to get tour by ID after deletion: {response.text}"
+        assert response.json()["data"] == None
