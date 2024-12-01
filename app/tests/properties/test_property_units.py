@@ -93,7 +93,9 @@ class TestUnits:
         response = await client.put(
             f"/unit/{unit_id}",
             json={
-                "property_id": TestProperties.default_property.get("property_unit_assoc_id"),
+                "property_id": TestProperties.default_property.get(
+                    "property_unit_assoc_id"
+                ),
                 "property_unit_code": "Updated Unit",
                 "property_unit_floor_space": 120,
                 "property_unit_amount": 1200,
@@ -108,12 +110,12 @@ class TestUnits:
                 "amenities": [],
                 "utilities": [
                     {
-                        "billable_id": TestUnits.default_units["unit_data"]["utilities"][0].get(
-                            "utility_id", ""
-                        ),
-                        "utility_id": TestUnits.default_units["unit_data"]["utilities"][0].get(
-                            "utility_id", ""
-                        ),
+                        "billable_id": TestUnits.default_units["unit_data"][
+                            "utilities"
+                        ][0].get("utility_id", ""),
+                        "utility_id": TestUnits.default_units["unit_data"]["utilities"][
+                            0
+                        ].get("utility_id", ""),
                         "payment_type": 10,
                         "billable_amount": 250,
                         "apply_to_units": False,

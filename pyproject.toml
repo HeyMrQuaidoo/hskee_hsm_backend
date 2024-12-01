@@ -1,2 +1,2 @@
 [tool.ruff.lint]
-ignore = ["F821"]
+ignore = ["F821", "E711", "F601", "E712"]

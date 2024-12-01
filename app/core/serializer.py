@@ -2,6 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from typing import Any, Type, Optional
 import json
 
+
 class JSONSerializer:
     """
     Utility class for serializing and deserializing data to/from JSON, handling special types.
@@ -19,10 +20,7 @@ class JSONSerializer:
             raise e
 
     @staticmethod
-    def deserialize(
-        data: str,
-        model_class: Optional[Type[Any]] = None
-    ) -> Any:
+    def deserialize(data: str, model_class: Optional[Type[Any]] = None) -> Any:
         """
         Deserialize a JSON string back into data, optionally into a Pydantic model instance.
         """
@@ -31,6 +29,6 @@ class JSONSerializer:
 
         obj = json.loads(data)
 
-        if model_class and hasattr(model_class, 'parse_obj'):
+        if model_class and hasattr(model_class, "parse_obj"):
             return model_class.parse_obj(obj)
         return obj

@@ -29,8 +29,8 @@ class TransactionBase(BaseSchema):
 
 
 class Transaction(TransactionBase):
-    transaction_id: Optional[UUID]=None
-    transaction_number: Optional[str]=None
+    transaction_id: Optional[UUID] = None
+    transaction_number: Optional[str] = None
 
 
 class TransactionInfoMixin:

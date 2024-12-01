@@ -5,7 +5,7 @@ from app.modules.billing.enums.billing_enums import TransactionTypeEnum
 
 # schema
 from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
-from app.modules.billing.schema.transaction_schema import TransactionBase
+from app.modules.billing.schema.mixins.transaction_mixin import TransactionBase
 
 # models
 from app.modules.billing.models.transaction_type import (

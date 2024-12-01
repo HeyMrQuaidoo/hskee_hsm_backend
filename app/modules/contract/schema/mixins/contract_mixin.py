@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Optional
 
 # enums
-from app.modules.contract.enums.contract_enums import ContractStatusEnum, ContractTypeEnum
+from app.modules.contract.enums.contract_enums import ContractStatusEnum
 from app.modules.billing.enums.billing_enums import InvoiceTypeEnum, PaymentStatusEnum
 
 # schema

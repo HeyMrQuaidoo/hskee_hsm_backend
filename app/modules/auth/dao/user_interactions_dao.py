@@ -49,13 +49,22 @@ class UserInteractionsDAO(BaseDAO[UserInteractions]):
 
             filter_conditions = {
                 "user_id": self.model.user_id == user_id if user_id else None,
-                "employee_id": self.model.employee_id == employee_id if employee_id else None,
-                "property_unit_assoc_id": self.model.property_unit_assoc_id == property_unit_assoc_id if property_unit_assoc_id else None,
+                "employee_id": self.model.employee_id == employee_id
+                if employee_id
+                else None,
+                "property_unit_assoc_id": self.model.property_unit_assoc_id
+                == property_unit_assoc_id
+                if property_unit_assoc_id
+                else None,
                 "date_gte": self.model.contact_time >= date_gte if date_gte else None,
                 "date_lte": self.model.contact_time <= date_lte if date_lte else None,
             }
 
-            filters = [condition for condition in filter_conditions.values() if condition is not None]
+            filters = [
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
+            ]
             if filters:
                 query = query.where(*filters)
 

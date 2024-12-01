@@ -10,9 +10,7 @@ class TestMaintenanceRequest:
     default_maintenance_request: Dict[str, Any] = {}
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=[], name="create_maintenance_request"
-    )
+    @pytest.mark.dependency(depends=[], name="create_maintenance_request")
     async def test_create_maintenance_request(self, client: AsyncClient):
         # Fetching user ID from TestUsers
         user_id = TestUsers.default_user.get("user_id")
@@ -50,14 +48,18 @@ class TestMaintenanceRequest:
     )
     async def test_get_maintenance_request_by_id(self, client: AsyncClient):
         print("Maintenance Response:", self.default_maintenance_request)
-        maintenance_request_id = self.default_maintenance_request["maintenance_request_id"]
+        maintenance_request_id = self.default_maintenance_request[
+            "maintenance_request_id"
+        ]
 
         response = await client.get(f"/maintenance-request/{maintenance_request_id}")
 
         assert (
             response.status_code == 200
         ), f"Failed to get maintenance request by ID: {response.text}"
-        assert response.json()["data"]["maintenance_request_id"] == maintenance_request_id
+        assert (
+            response.json()["data"]["maintenance_request_id"] == maintenance_request_id
+        )
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
@@ -65,7 +67,9 @@ class TestMaintenanceRequest:
         name="update_maintenance_request_by_id",
     )
     async def test_update_maintenance_request(self, client: AsyncClient):
-        maintenance_request_id = self.default_maintenance_request["maintenance_request_id"]
+        maintenance_request_id = self.default_maintenance_request[
+            "maintenance_request_id"
+        ]
         user_id = TestUsers.default_user.get("user_id")
         assert user_id, "User ID is not set. Ensure the user creation test runs first."
 
@@ -93,7 +97,9 @@ class TestMaintenanceRequest:
         name="delete_maintenance_request_by_id",
     )
     async def test_delete_maintenance_request(self, client: AsyncClient):
-        maintenance_request_id = self.default_maintenance_request["maintenance_request_id"]
+        maintenance_request_id = self.default_maintenance_request[
+            "maintenance_request_id"
+        ]
 
         response = await client.delete(f"/maintenance-request/{maintenance_request_id}")
         assert (

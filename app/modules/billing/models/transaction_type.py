@@ -26,6 +26,5 @@ class TransactionType(Base):
 
     # transactions
     transactions: Mapped[list["Transaction"]] = relationship(
-        "Transaction", back_populates="transaction_types",
-        cascade="all, delete-orphan"
+        "Transaction", back_populates="transaction_types", cascade="all, delete-orphan"
     )

@@ -20,7 +20,9 @@ class UtilityRouter(BaseCRUDRouter):
         UtilitiesSchema["update_schema"] = UtilityUpdateSchema
         self.dao: UtilityDAO = UtilityDAO(excludes=[])
 
-        super().__init__(dao=self.dao, schemas=UtilitiesSchema, prefix=prefix, tags=tags)
+        super().__init__(
+            dao=self.dao, schemas=UtilitiesSchema, prefix=prefix, tags=tags
+        )
         self.register_routes()
 
     def register_routes(self):

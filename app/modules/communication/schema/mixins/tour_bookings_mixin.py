@@ -33,13 +33,14 @@ class TourBookings(TourBase):
 
 # 2. Add Schema Mixin with BaseFaker Examples
 
+
 class TourInfoMixin:
     # BaseFaker attributes for generating example data
     _name = BaseFaker.name()
     _email = BaseFaker.email()
     _phone_number = BaseFaker.phone_number()
-    _tour_type = BaseFaker.random_choices(['in_person', 'video_chat'], length=1)
-    _status = BaseFaker.random_choices(['incoming', 'cancelled', 'completed'], length=1)
+    _tour_type = BaseFaker.random_choices(["in_person", "video_chat"], length=1)
+    _status = BaseFaker.random_choices(["incoming", "cancelled", "completed"], length=1)
     _tour_date = BaseFaker.future_datetime()
     _property_unit_assoc_id = BaseFaker.uuid4()
     _user_id = BaseFaker.uuid4()

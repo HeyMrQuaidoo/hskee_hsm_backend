@@ -27,6 +27,7 @@ from app.modules.communication.schema.message_schema import (
 # Core
 from app.core.errors import CustomException, RecordNotFoundException
 
+
 class MessageDAO(BaseDAO[Message]):
     def __init__(self, excludes: Optional[List[str]] = None):
         self.model = Message
@@ -85,7 +86,9 @@ class MessageDAO(BaseDAO[Message]):
                 select(Message)
                 .options(
                     selectinload(Message.sender),
-                    selectinload(Message.recipients).selectinload(MessageRecipient.recipient),
+                    selectinload(Message.recipients).selectinload(
+                        MessageRecipient.recipient
+                    ),
                 )
                 .where(Message.message_id == new_message.message_id)
             )
@@ -94,7 +97,8 @@ class MessageDAO(BaseDAO[Message]):
             print("RESULTS", new_message_with_relationships)
 
             return DAOResponse(
-                success=True, data=MessageResponse.model_validate(new_message_with_relationships)
+                success=True,
+                data=MessageResponse.model_validate(new_message_with_relationships),
             )
         except IntegrityError as e:
             await db_session.rollback()
@@ -112,7 +116,9 @@ class MessageDAO(BaseDAO[Message]):
                 select(self.model)
                 .options(
                     selectinload(Message.sender),
-                    selectinload(Message.recipients).selectinload(MessageRecipient.recipient),
+                    selectinload(Message.recipients).selectinload(
+                        MessageRecipient.recipient
+                    ),
                 )
                 .where(self.model.message_id == message.parent_message_id)
             )
@@ -171,13 +177,17 @@ class MessageDAO(BaseDAO[Message]):
                     self.model.is_enquiry == False,
                 )
             elif folder == "outbox":
-                query = select(self.model).where(
-                    self.model.sender_id == user_id,
-                    self.model.is_draft == False,
-                    self.model.is_scheduled == False,
-                    self.model.is_notification == False,
-                    self.model.is_enquiry == False,
-                ).order_by(desc(self.model.date_created))
+                query = (
+                    select(self.model)
+                    .where(
+                        self.model.sender_id == user_id,
+                        self.model.is_draft == False,
+                        self.model.is_scheduled == False,
+                        self.model.is_notification == False,
+                        self.model.is_enquiry == False,
+                    )
+                    .order_by(desc(self.model.date_created))
+                )
             elif folder in ["inbox", "notifications"]:
                 is_notification = folder == "notifications"
 
@@ -242,7 +252,9 @@ class MessageDAO(BaseDAO[Message]):
             # Executing queries with relationships eagerly loaded
             query = query.options(
                 selectinload(self.model.sender),
-                selectinload(self.model.recipients).selectinload(MessageRecipient.recipient),
+                selectinload(self.model.recipients).selectinload(
+                    MessageRecipient.recipient
+                ),
             )
             result = await db_session.execute(query)
             messages = result.scalars().all()

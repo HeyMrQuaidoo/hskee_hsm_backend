@@ -1,6 +1,4 @@
-from typing import Optional
 from pydantic import ConfigDict
-from uuid import UUID
 
 # schema imports
 from app.modules.properties.schema.mixins.property_mixin_schema import (
@@ -8,7 +6,6 @@ from app.modules.properties.schema.mixins.property_mixin_schema import (
 )
 from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignment,
-    PropertyAssignmentBase,
     PropertyAssignmentMixin,
 )
 
@@ -72,7 +69,6 @@ class PropertyAssignmentUpdate(PropertyAssignment):
 
 
 class PropertyAssignmentResponse(PropertyAssignment):
-
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
         return cls(
