@@ -1,5 +1,4 @@
 from typing import Optional, List
-from uuid import UUID
 from sqlalchemy import func, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
@@ -76,7 +75,9 @@ class ContractDAO(BaseDAO[Contract]):
             query = select(self.model)
 
             filter_conditions = {
-                "contract_number": self.model.contract_number.ilike(f"%{contract_number}%")
+                "contract_number": self.model.contract_number.ilike(
+                    f"%{contract_number}%"
+                )
                 if contract_number
                 else None,
                 "contract_type_id": self.model.contract_type_id == contract_type_id
@@ -118,7 +119,9 @@ class ContractDAO(BaseDAO[Contract]):
             }
 
             filters = [
-                condition for condition in filter_conditions.values() if condition is not None
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
             ]
 
             if filters:
@@ -160,7 +163,9 @@ class ContractDAO(BaseDAO[Contract]):
 
         for idx, file in enumerate(files):
             content = await file.read()
-            base64_content = f"data:{file.content_type};base64,{content.decode('latin1')}"
+            base64_content = (
+                f"data:{file.content_type};base64,{content.decode('latin1')}"
+            )
             file_name = file.filename
             media_type_str = "contract"
 

@@ -7,12 +7,8 @@ from pydantic import ConfigDict
 from app.modules.contract.enums.contract_enums import ContractStatusEnum
 
 # schemas
-from app.modules.auth.schema.user_schema import UserBase
-from app.modules.properties.schema.property_schema import PropertyBase
-from app.modules.contract.schema.mixins.contract_mixin import ContractBase
 from app.modules.contract.schema.mixins.under_contract_mixin import (
     UnderContract,
-    UnderContractBase,
     UnderContractInfoMixin,
 )
 

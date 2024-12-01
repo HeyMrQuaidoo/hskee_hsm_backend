@@ -1,5 +1,4 @@
 from typing import Optional, List
-from uuid import UUID
 from sqlalchemy import func, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.response import DAOResponse
 from app.modules.properties.models.property import Property
 from app.modules.properties.enums.property_enums import PropertyType, PropertyStatus
-from app.modules.contract.models.under_contract import UnderContract
 
 # DAOs
 from app.modules.common.dao.base_dao import BaseDAO
@@ -115,13 +113,16 @@ class PropertyDAO(BaseDAO[Property]):
                 "property_status": self.model.property_status == property_status
                 if property_status
                 else None,
-                "is_contract_active": self.model.is_contract_active == is_contract_active
+                "is_contract_active": self.model.is_contract_active
+                == is_contract_active
                 if is_contract_active is not None
                 else None,
             }
 
             filters = [
-                condition for condition in filter_conditions.values() if condition is not None
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
             ]
 
             if filters:

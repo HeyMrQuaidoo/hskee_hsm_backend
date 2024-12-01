@@ -10,7 +10,6 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTy
 from app.modules.auth.schema.mixins.user_mixin import UserBase, UserBaseMixin
 from app.modules.billing.schema.mixins.invoice_mixin import (
     Invoice,
-    InvoiceBase,
     InvoiceInfoMixin,
 )
 from app.modules.billing.schema.mixins.invoice_item_mixin import (
@@ -91,7 +90,7 @@ class InvoiceUpdateSchema(Invoice, InvoiceInfoMixin, UserBaseMixin):
 
 class InvoiceResponse(Invoice, InvoiceInfoMixin, UserBaseMixin):
     invoice_id: Optional[UUID] = None
-    invoice_number: Optional[str]=None
+    invoice_number: Optional[str] = None
     invoice_amount: float
     date_paid: Optional[datetime] = None
     invoice_items: Optional[List[InvoiceItem]] = []

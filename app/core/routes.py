@@ -30,7 +30,6 @@ from app.modules.properties.router.property_assignment_router import (
 from app.modules.properties.router.property_router import PropertyRouter
 from app.modules.properties.router.unit_router import UnitRouter
 from app.modules.resources.router.amenities_router import AmenityRouter
-from app.modules.communication.router.message_router import MessageRouter
 from app.modules.resources.router.media_router import MediaRouter
 
 router = APIRouter()

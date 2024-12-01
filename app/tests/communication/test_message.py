@@ -6,6 +6,7 @@ from httpx import AsyncClient
 from app.tests.users.test_users import TestUsers
 from faker import Faker
 
+
 class TestMessages:
     default_message: Dict[str, Any] = {}
     default_reply: Dict[str, Any] = {}
@@ -30,7 +31,9 @@ class TestMessages:
                 "last_name": "User",
                 "email": self.faker.unique.email(),
                 "phone_number": self.faker.phone_number(),
-                "identification_number": str(self.faker.random_number(digits=6, fix_len=True)),
+                "identification_number": str(
+                    self.faker.random_number(digits=6, fix_len=True)
+                ),
                 "photo_url": "",
                 "gender": "female",
                 "address": [
@@ -71,7 +74,9 @@ class TestMessages:
                 "role": "user",
             },
         )
-        assert response.status_code == 201, f"Recipient user creation failed: {response.text}"
+        assert (
+            response.status_code == 201
+        ), f"Recipient user creation failed: {response.text}"
         TestMessages.recipient_user = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -97,7 +102,10 @@ class TestMessages:
         TestMessages.default_message = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::create_draft_message")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"],
+        name="TestMessages::create_draft_message",
+    )
     async def test_create_draft_message(self, client: AsyncClient):
         # Create a draft message
         response = await client.post(
@@ -113,11 +121,16 @@ class TestMessages:
                 "is_notification": False,
             },
         )
-        assert response.status_code == 201, f"Draft message creation failed: {response.text}"
+        assert (
+            response.status_code == 201
+        ), f"Draft message creation failed: {response.text}"
         TestMessages.default_draft = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::create_scheduled_message")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"],
+        name="TestMessages::create_scheduled_message",
+    )
     async def test_create_scheduled_message(self, client: AsyncClient):
         # Create a scheduled message
         response = await client.post(
@@ -133,11 +146,16 @@ class TestMessages:
                 "is_notification": False,
             },
         )
-        assert response.status_code == 201, f"Scheduled message creation failed: {response.text}"
+        assert (
+            response.status_code == 201
+        ), f"Scheduled message creation failed: {response.text}"
         TestMessages.default_scheduled = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::create_notification_message")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"],
+        name="TestMessages::create_notification_message",
+    )
     async def test_create_notification_message(self, client: AsyncClient):
         # Create a notification message
         response = await client.post(
@@ -153,7 +171,9 @@ class TestMessages:
                 "is_notification": True,
             },
         )
-        assert response.status_code == 201, f"Notification message creation failed: {response.text}"
+        assert (
+            response.status_code == 201
+        ), f"Notification message creation failed: {response.text}"
         TestMessages.default_notification = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -163,16 +183,22 @@ class TestMessages:
         assert isinstance(response.json(), dict)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::get_message_by_id")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"], name="TestMessages::get_message_by_id"
+    )
     async def test_get_message_by_id(self, client: AsyncClient):
         print("Response is:", self.default_message)
-        message_id = self.default_message['data']["message_id"]
+        message_id = self.default_message["data"]["message_id"]
         response = await client.get(f"/message/{message_id}")
-        assert response.status_code == 200, f"Failed to get message by ID: {response.text}"
+        assert (
+            response.status_code == 200
+        ), f"Failed to get message by ID: {response.text}"
         assert response.json()["data"]["message_id"] == message_id
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::reply_to_message")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"], name="TestMessages::reply_to_message"
+    )
     async def test_reply_to_message(self, client: AsyncClient):
         message_id = self.default_message["data"]["message_id"]
         print("Message ID:", message_id)
@@ -191,61 +217,101 @@ class TestMessages:
         assert TestMessages.default_reply["parent_message_id"] == message_id
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_draft_message"], name="TestMessages::get_user_drafts")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_draft_message"],
+        name="TestMessages::get_user_drafts",
+    )
     async def test_get_user_drafts(self, client: AsyncClient):
         user_id = TestUsers.default_user.get("user_id")
-        response = await client.get(f"/message/users/{user_id}/drafts", params={"limit": 10, "offset": 0})
-        assert response.status_code == 200, f"Failed to get user drafts: {response.text}"
+        response = await client.get(
+            f"/message/users/{user_id}/drafts", params={"limit": 10, "offset": 0}
+        )
+        assert (
+            response.status_code == 200
+        ), f"Failed to get user drafts: {response.text}"
         messages = response.json()["data"]
-        assert any(m["message_id"] == self.default_draft["data"]["message_id"] for m in messages), "Draft message not found in drafts"
-
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_scheduled_message"], name="TestMessages::get_user_scheduled")
-    async def test_get_user_scheduled(self, client: AsyncClient):
-        user_id = TestUsers.default_user.get("user_id")
-        response = await client.get(f"/message/users/{user_id}/scheduled", params={"limit": 10, "offset": 0})
-        assert response.status_code == 200, f"Failed to get user scheduled messages: {response.text}"
-        messages = response.json()["data"]
-        assert any(m["message_id"] == self.default_scheduled["data"]["message_id"] for m in messages), "Scheduled message not found"
-
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::get_user_outbox")
-    async def test_get_user_outbox(self, client: AsyncClient):
-        user_id = TestUsers.default_user.get("user_id")
-        response = await client.get(f"/message/users/{user_id}/outbox", params={"limit": 10, "offset": 0})
-        assert response.status_code == 200, f"Failed to get user outbox: {response.text}"
-        messages = response.json()["data"]
-        assert any(m["message_id"] == self.default_message["data"]["message_id"] for m in messages), "Message not found in outbox"
+        assert any(
+            m["message_id"] == self.default_draft["data"]["message_id"]
+            for m in messages
+        ), "Draft message not found in drafts"
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=[
-            "TestMessages::reply_to_message"],
-        name="TestMessages::get_user_inbox"
+        depends=["TestMessages::create_scheduled_message"],
+        name="TestMessages::get_user_scheduled",
+    )
+    async def test_get_user_scheduled(self, client: AsyncClient):
+        user_id = TestUsers.default_user.get("user_id")
+        response = await client.get(
+            f"/message/users/{user_id}/scheduled", params={"limit": 10, "offset": 0}
+        )
+        assert (
+            response.status_code == 200
+        ), f"Failed to get user scheduled messages: {response.text}"
+        messages = response.json()["data"]
+        assert any(
+            m["message_id"] == self.default_scheduled["data"]["message_id"]
+            for m in messages
+        ), "Scheduled message not found"
+
+    @pytest.mark.asyncio(loop_scope="session")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"], name="TestMessages::get_user_outbox"
+    )
+    async def test_get_user_outbox(self, client: AsyncClient):
+        user_id = TestUsers.default_user.get("user_id")
+        response = await client.get(
+            f"/message/users/{user_id}/outbox", params={"limit": 10, "offset": 0}
+        )
+        assert (
+            response.status_code == 200
+        ), f"Failed to get user outbox: {response.text}"
+        messages = response.json()["data"]
+        assert any(
+            m["message_id"] == self.default_message["data"]["message_id"]
+            for m in messages
+        ), "Message not found in outbox"
+
+    @pytest.mark.asyncio(loop_scope="session")
+    @pytest.mark.dependency(
+        depends=["TestMessages::reply_to_message"], name="TestMessages::get_user_inbox"
     )
     async def test_get_user_inbox(self, client: AsyncClient):
         user_id = TestUsers.default_user.get("user_id")
-        response = await client.get(f"/message/users/{user_id}/inbox", params={"limit": 10, "offset": 0})
+        response = await client.get(
+            f"/message/users/{user_id}/inbox", params={"limit": 10, "offset": 0}
+        )
         assert response.status_code == 200, f"Failed to get user inbox: {response.text}"
         messages = response.json()["data"]
         # Check if the reply message is in the inbox
-        assert any(m["message_id"] == self.default_reply["message_id"] for m in messages), "Reply not found in inbox"
+        assert any(
+            m["message_id"] == self.default_reply["message_id"] for m in messages
+        ), "Reply not found in inbox"
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=[
-            "TestMessages::create_notification_message"],
-        name="TestMessages::get_user_notifications"
+        depends=["TestMessages::create_notification_message"],
+        name="TestMessages::get_user_notifications",
     )
     async def test_get_user_notifications(self, client: AsyncClient):
         user_id = TestMessages.recipient_user.get("user_id")
-        response = await client.get(f"/message/users/{user_id}/notifications", params={"limit": 10, "offset": 0})
-        assert response.status_code == 200, f"Failed to get user notifications: {response.text}"
+        response = await client.get(
+            f"/message/users/{user_id}/notifications", params={"limit": 10, "offset": 0}
+        )
+        assert (
+            response.status_code == 200
+        ), f"Failed to get user notifications: {response.text}"
         messages = response.json()["data"]
-        assert any(m["message_id"] == self.default_notification["data"]["message_id"] for m in messages), "Notification message not found"
+        assert any(
+            m["message_id"] == self.default_notification["data"]["message_id"]
+            for m in messages
+        ), "Notification message not found"
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::update_message_by_id")
+    @pytest.mark.dependency(
+        depends=["TestMessages::create_message"],
+        name="TestMessages::update_message_by_id",
+    )
     async def test_update_message(self, client: AsyncClient):
         message_id = self.default_message["data"]["message_id"]
         response = await client.put(

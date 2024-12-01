@@ -1,6 +1,5 @@
 # app/modules/maintenance/schema/maintenance_request_schema.py
 
-from uuid import UUID
 from typing import List, Optional
 from pydantic import ConfigDict
 

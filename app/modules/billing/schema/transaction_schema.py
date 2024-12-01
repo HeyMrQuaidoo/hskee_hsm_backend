@@ -10,7 +10,6 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum
 from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 from app.modules.billing.schema.mixins.transaction_mixin import (
     Transaction,
-    TransactionBase,
     TransactionInfoMixin,
 )
 
@@ -65,7 +64,6 @@ class TransactionUpdateSchema(Transaction):
 
 
 class TransactionResponse(Transaction, TransactionInfoMixin):
-
     @classmethod
     def model_validate(cls, transaction: TransactionModel):
         return cls(

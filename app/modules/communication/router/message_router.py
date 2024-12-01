@@ -35,10 +35,7 @@
 #         MessageSchema["response_schema"] = CalendarEventResponse
 
 
-
-
-
-from typing import List, Optional
+from typing import List
 from pydantic import UUID4
 from fastapi import Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,7 +57,7 @@ from app.modules.communication.schema.message_schema import (
 
 # Core
 from app.core.lifespan import get_db
-from app.core.response import DAOResponse
+
 
 class MessageRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
@@ -81,7 +78,9 @@ class MessageRouter(BaseCRUDRouter):
         async def reply_to_message(
             message: MessageReplySchema, db_session: AsyncSession = Depends(get_db)
         ):
-            result = await self.dao.reply_to_message(db_session=db_session, message=message)
+            result = await self.dao.reply_to_message(
+                db_session=db_session, message=message
+            )
             if not result.success:
                 raise HTTPException(status_code=400, detail=result.error)
             return result

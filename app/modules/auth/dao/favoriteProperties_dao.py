@@ -45,11 +45,18 @@ class FavoritePropertiesDAO(BaseDAO[FavoriteProperties]):
             # Create a mapping for dynamic filter conditions
             filter_conditions = {
                 "user_id": self.model.user_id == user_id if user_id else None,
-                "property_unit_assoc_id": self.model.property_unit_assoc_id == property_unit_assoc_id if property_unit_assoc_id else None,
+                "property_unit_assoc_id": self.model.property_unit_assoc_id
+                == property_unit_assoc_id
+                if property_unit_assoc_id
+                else None,
             }
 
             # Apply filters dynamically
-            filters = [condition for condition in filter_conditions.values() if condition is not None]
+            filters = [
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
+            ]
             if filters:
                 query = query.where(*filters)
 

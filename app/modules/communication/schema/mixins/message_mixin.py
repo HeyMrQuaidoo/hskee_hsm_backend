@@ -6,7 +6,7 @@ from app.modules.common.schema.base_schema import BaseSchema
 
 
 class MessageBase(BaseSchema):
-    message_id: Optional[UUID4]=None
+    message_id: Optional[UUID4] = None
     subject: Optional[str] = None
     sender_id: Optional[UUID4] = None
     message_body: Optional[str] = None

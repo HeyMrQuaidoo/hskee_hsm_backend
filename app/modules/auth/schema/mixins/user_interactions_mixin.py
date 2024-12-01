@@ -5,7 +5,10 @@ from datetime import datetime
 from app.modules.common.schema.base_schema import BaseFaker
 
 # Models
-from app.modules.auth.models.user_interactions import UserInteractions as UserInteractionsModel
+from app.modules.auth.models.user_interactions import (
+    UserInteractions as UserInteractionsModel,
+)
+
 
 class UserInteractionsBase(BaseModel):
     user_id: UUID4
@@ -23,6 +26,7 @@ class UserInteractions(UserInteractionsBase):
 
 
 # Step 2: Add Schema Mixin with BaseFaker Examples
+
 
 class UserInteractionsInfoMixin:
     _user_id = BaseFaker.uuid4()
@@ -48,7 +52,9 @@ class UserInteractionsInfoMixin:
     }
 
     @classmethod
-    def get_user_interactions_info(cls, interaction: UserInteractionsModel) -> UserInteractions:
+    def get_user_interactions_info(
+        cls, interaction: UserInteractionsModel
+    ) -> UserInteractions:
         return UserInteractions(
             user_interaction_id=interaction.user_interaction_id,
             user_id=interaction.user_id,

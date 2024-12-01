@@ -2,8 +2,6 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import or_
-from sqlalchemy import String
 
 # DAO
 from app.core.response import DAOResponse
@@ -56,14 +54,20 @@ class TourDAO(BaseDAO[TourBookings]):
                 "user_id": self.model.user_id == user_id if user_id else None,
                 "email": self.model.email.ilike(f"%{email}%") if email else None,
                 "name": self.model.name.ilike(f"%{name}%") if name else None,
-                "phone_number": self.model.phone_number.ilike(f"%{phone_number}%") if phone_number else None,
+                "phone_number": self.model.phone_number.ilike(f"%{phone_number}%")
+                if phone_number
+                else None,
                 "status": self.model.status == status if status else None,
                 "tour_type": self.model.tour_type == tour_type if tour_type else None,
                 "date_gte": self.model.tour_date >= date_gte if date_gte else None,
                 "date_lte": self.model.tour_date <= date_lte if date_lte else None,
             }
 
-            filters = [condition for condition in filter_conditions.values() if condition is not None]
+            filters = [
+                condition
+                for condition in filter_conditions.values()
+                if condition is not None
+            ]
             if filters:
                 query = query.where(*filters)
 

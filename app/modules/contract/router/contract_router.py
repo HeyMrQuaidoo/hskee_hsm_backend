@@ -15,7 +15,6 @@ from app.modules.common.schema.schemas import ContractSchema
 from app.modules.contract.schema.contract_schema import (
     ContractCreateSchema,
     ContractUpdateSchema,
-    ContractResponse,
 )
 
 # Enums

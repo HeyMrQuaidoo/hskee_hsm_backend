@@ -91,7 +91,6 @@ class ContractUpdateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
 
 
 class ContractResponse(Contract, ContractInfoMixin):
-
     @classmethod
     def model_validate(cls, contract: ContractModel):
         return cls(

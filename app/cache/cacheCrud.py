@@ -1,10 +1,6 @@
 import json
 from uuid import UUID
-from sqlalchemy import Enum
-from decimal import Decimal
-from datetime import datetime
 from pydantic import BaseModel
-from sqlalchemy.inspection import inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 from typing import Any, Dict, Optional, Union, Type, List
@@ -68,7 +64,9 @@ class DBOperationsWithCache(DBOperations):
         if self.cache_crud:
             cached_object = await self.cache_crud.get(cache_key)
             cached_data = (
-                JSONSerializer.deserialize(cached_object, model_class=self.model) if cached_object else None
+                JSONSerializer.deserialize(cached_object, model_class=self.model)
+                if cached_object
+                else None
             )
 
         if cached_data:
@@ -95,7 +93,10 @@ class DBOperationsWithCache(DBOperations):
             cached_ids = await self.cache_crud.smembers(ids_cache_key)
             if cached_ids:
                 # Convert cached_ids to a set of strings
-                cached_ids = {id.decode('utf-8') if isinstance(id, bytes) else str(id) for id in cached_ids}
+                cached_ids = {
+                    id.decode("utf-8") if isinstance(id, bytes) else str(id)
+                    for id in cached_ids
+                }
                 # Fetch items from cache
                 cached_objs = []
                 missing_ids = []
@@ -103,7 +104,9 @@ class DBOperationsWithCache(DBOperations):
                     cache_key = f"{self.model.__name__}:{id}"
                     cached_object = await self.cache_crud.get(cache_key)
                     if cached_object:
-                        cached_data = JSONSerializer.deserialize(cached_object, model_class=self.model)
+                        cached_data = JSONSerializer.deserialize(
+                            cached_object, model_class=self.model
+                        )
                         cached_objs.append(cached_data)
                     else:
                         missing_ids.append(id)

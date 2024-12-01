@@ -4,7 +4,9 @@ from pydantic import BaseModel, UUID4
 from app.modules.common.schema.base_schema import BaseFaker
 
 # Models
-from app.modules.auth.models.favorite_properties import FavoriteProperties as FavoritePropertiesModel
+from app.modules.auth.models.favorite_properties import (
+    FavoriteProperties as FavoritePropertiesModel,
+)
 
 
 class FavoritePropertiesBase(BaseModel):
@@ -34,13 +36,15 @@ class FavoritePropertiesInfoMixin:
     }
 
     @classmethod
-    def get_favorite_properties_info(cls, favorite: FavoritePropertiesModel) -> FavoriteProperties:
+    def get_favorite_properties_info(
+        cls, favorite: FavoritePropertiesModel
+    ) -> FavoriteProperties:
         return FavoriteProperties(
             favorite_id=favorite.favorite_id,
             user_id=favorite.user_id,
             property_unit_assoc_id=favorite.property_unit_assoc_id,
         )
-    
+
     @classmethod
     def model_validate(cls, favorite: FavoritePropertiesModel):
         return cls(
@@ -48,4 +52,3 @@ class FavoritePropertiesInfoMixin:
             user_id=favorite.user_id,
             property_unit_assoc_id=favorite.property_unit_assoc_id,
         )
-    

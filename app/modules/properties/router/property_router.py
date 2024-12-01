@@ -2,7 +2,6 @@ from typing import List, Optional
 from pydantic import UUID4
 from fastapi import Depends, Query, UploadFile, File, Form, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
 
 # DAO
 from app.modules.properties.dao.property_dao import PropertyDAO

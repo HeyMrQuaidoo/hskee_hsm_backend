@@ -4,15 +4,12 @@ from httpx import AsyncClient
 from faker import Faker
 
 
-
 class TestInvoice:
     default_user: Dict[str, Any] = {}
     faker = Faker()
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=[], name="TestInvoice::create_invoice"
-    )
+    @pytest.mark.dependency(depends=[], name="TestInvoice::create_invoice")
     async def test_create_invoice(self, client: AsyncClient):
         # Ensure the user is created and available
         user_response = await client.post(
@@ -66,7 +63,9 @@ class TestInvoice:
                 "role": "user",
             },
         )
-        assert user_response.status_code == 201, f"User creation failed: {user_response.text}"
+        assert (
+            user_response.status_code == 201
+        ), f"User creation failed: {user_response.text}"
 
         # Save the created user data for future tests
         self.default_user = user_response.json()["data"]

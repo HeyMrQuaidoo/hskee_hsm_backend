@@ -11,6 +11,7 @@ from app.tests.properties.test_property import (
 from app.modules.common.schema.base_schema import BaseFaker
 from app.tests.users.test_users import TestUsers
 
+
 class TestContractAssignments:
     default_contract_assignment: Dict[str, Any] = {}
     default_contract: Dict[str, Any] = {}
@@ -66,7 +67,9 @@ class TestContractAssignments:
         ), "Contract ID is not available. Ensure the contract creation test runs first."
         assert property_unit_assoc_id, "Property Unit Association ID is not available. Ensure the property creation test runs first."
 
-        _contract_status = BaseFaker.random_element([e.value for e in ContractStatusEnum])
+        _contract_status = BaseFaker.random_element(
+            [e.value for e in ContractStatusEnum]
+        )
         _start_date = BaseFaker.date_this_year()
         _end_date = BaseFaker.future_date()
         _next_payment_due = BaseFaker.future_datetime()
@@ -74,14 +77,14 @@ class TestContractAssignments:
         response = await client.post(
             "assign-contracts/",
             json={
-                  "property_unit_assoc_id": property_unit_assoc_id,
-                    "contract_status": _contract_status,
-                    "contract_number": contract_number,
-                    "client_id": TestUsers.default_user.get("user_id"),
-                    "employee_id": TestUsers.default_user.get("user_id"),
-                    "start_date": _start_date.isoformat(),
-                    "end_date": _end_date.isoformat(),
-                    "next_payment_due": _next_payment_due.isoformat()
+                "property_unit_assoc_id": property_unit_assoc_id,
+                "contract_status": _contract_status,
+                "contract_number": contract_number,
+                "client_id": TestUsers.default_user.get("user_id"),
+                "employee_id": TestUsers.default_user.get("user_id"),
+                "start_date": _start_date.isoformat(),
+                "end_date": _end_date.isoformat(),
+                "next_payment_due": _next_payment_due.isoformat(),
             },
         )
         assert (
@@ -113,8 +116,8 @@ class TestContractAssignments:
             f"assign-contracts/{under_contract_id}",
             json={
                 "contract_id": self.default_contract_assignment["contract_number"],
-                "client_id": TestUsers.default_user.get("user_id"),  
-                "employee_id": TestUsers.default_user.get("user_id"),  
+                "client_id": TestUsers.default_user.get("user_id"),
+                "employee_id": TestUsers.default_user.get("user_id"),
                 "contract_status": "inactive",
                 "property_unit_assoc_id": TestProperties.default_property.get(
                     "property_unit_assoc_id"

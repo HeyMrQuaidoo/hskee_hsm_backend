@@ -152,9 +152,7 @@ class PropertyUnitInfoMixin:
         print("Entity Utility:", entity_utilities)
         return (
             [
-                UtilitiesResponse.model_validate(
-                    {**entity_utility.to_dict()}
-                )
+                UtilitiesResponse.model_validate({**entity_utility.to_dict()})
                 for entity_utility in entity_utilities
             ]
             if entity_utilities
