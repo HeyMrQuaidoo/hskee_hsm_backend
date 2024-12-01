@@ -9,6 +9,7 @@ from app.modules.auth.schema.mixins.user_mixin import UserBase, UserBaseMixin
 
 # model
 from app.modules.communication.models.message import Message as MessageModel
+from app.modules.communication.schema.mixins.message_mixin import MessageBase
 
 
 class EmailBody(BaseSchema):
@@ -28,7 +29,7 @@ class EmailBody(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MessageCreateSchema(BaseSchema):
+class MessageCreateSchema(MessageBase):
     """
     Schema for creating a message.
 

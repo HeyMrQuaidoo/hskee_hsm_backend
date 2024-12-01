@@ -21,7 +21,7 @@ class TourCreateSchema(TourBase, TourInfoMixin):
 
     @classmethod
     def model_validate(cls, tour: TourModel):
-        return cls.get_tour_info(tour)
+        return cls.get_tour_info(tour).model_dump()
 
 
 class TourUpdateSchema(TourBase, TourInfoMixin):
@@ -43,10 +43,10 @@ class TourUpdateSchema(TourBase, TourInfoMixin):
 
     @classmethod
     def model_validate(cls, tour: TourModel):
-        return cls.get_tour_info(tour)
+        return cls.get_tour_info(tour).model_dump()
 
 
-class TourResponse(TourModel, TourInfoMixin):
+class TourBookingsResponse(TourModel, TourInfoMixin):
     @classmethod
     def model_validate(cls, tour: TourModel):
-        return cls.get_tour_info(tour)
+        return cls.get_tour_info(tour).model_dump()

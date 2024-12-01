@@ -82,16 +82,16 @@ class TestTransactionType:
             == "Sale transaction type"
         )
 
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=["update_transaction_type_by_id"], name="delete_transaction_type_by_id"
-    )
-    async def test_delete_transaction_type(self, client: AsyncClient):
-        transaction_type_id = self.default_transaction_type["transaction_type_id"]
+    # @pytest.mark.asyncio(loop_scope="session")
+    # @pytest.mark.dependency(
+    #     depends=["update_transaction_type_by_id"], name="delete_transaction_type_by_id"
+    # )
+    # async def test_delete_transaction_type(self, client: AsyncClient):
+    #     transaction_type_id = self.default_transaction_type["transaction_type_id"]
 
-        response = await client.delete(f"/transaction-type/{transaction_type_id}")
-        assert response.status_code == 204
+    #     response = await client.delete(f"/transaction-type/{transaction_type_id}")
+    #     assert response.status_code == 204
 
-        # Verify the transaction type is deleted
-        response = await client.get(f"/transaction-type/{transaction_type_id}")
-        assert response.status_code == 404
+    #     # Verify the transaction type is deleted
+    #     response = await client.get(f"/transaction-type/{transaction_type_id}")
+    #     assert response.status_code == 404

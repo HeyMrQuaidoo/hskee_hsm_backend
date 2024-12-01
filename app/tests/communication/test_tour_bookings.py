@@ -41,8 +41,8 @@ class TestTourBookings:
                 "name": "Jane Smith",
                 "email": "janesmith@example.com",
                 "phone_number": "0987654321",
-                "tour_type": "virtual",
-                "status": "confirmed",
+                "tour_type": "video_chat",
+                "status": "incoming",
                 "tour_date": (datetime.now() + timedelta(days=1)).isoformat() + 'Z',
                 "property_unit_assoc_id": TestProperties.default_property.get("property_unit_assoc_id"),
                 "user_id": TestUsers.default_user.get("user_id"),
@@ -92,28 +92,28 @@ class TestTourBookings:
         response = await client.put(
             f"/tour/{tour_id}",
             json={
-                "status": "confirmed",
+                "status": "completed",
                 "tour_date": new_date,
             },
         )
         assert response.status_code == 200, f"Tour update failed: {response.text}"
-        assert response.json()["data"]["status"] == "confirmed"
+        assert response.json()["data"]["status"] == "completed"
         assert response.json()["data"]["tour_date"] == new_date
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["TestTourBookings::create_tour_booking"], name="TestTourBookings::filter_tours")
     async def test_filter_tours(self, client: AsyncClient):
         # Filter by status
-        response = await client.get("/tour/", params={"status": "confirmed"})
+        response = await client.get("/tour/", params={"status": "incoming"})
         assert response.status_code == 200, f"Failed to filter tours by status: {response.text}"
         data = response.json()["data"]
-        assert all(tour["status"] == "confirmed" for tour in data), "Filtering by status failed"
+        assert all(tour["status"] == "incoming" for tour in data), "Filtering by status failed"
 
         # Filter by tour_type
-        response = await client.get("/tour/", params={"tour_type": "virtual"})
+        response = await client.get("/tour/", params={"tour_type": "video_chat"})
         assert response.status_code == 200, f"Failed to filter tours by tour_type: {response.text}"
         data = response.json()["data"]
-        assert all(tour["tour_type"] == "virtual" for tour in data), "Filtering by tour_type failed"
+        assert all(tour["tour_type"] == "video_chat" for tour in data), "Filtering by tour_type failed"
 
         # Filter by date range
         start_date = (datetime.now() - timedelta(days=2)).isoformat() + 'Z'

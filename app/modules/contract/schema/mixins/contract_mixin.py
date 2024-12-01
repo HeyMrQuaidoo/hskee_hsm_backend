@@ -55,7 +55,7 @@ class ContractBase(BaseSchema):
     media: Optional[List[MediaBase]] = None
 
 
-class Contract(BaseSchema):
+class Contract(ContractBase):
     contract_number: Optional[str] = None
     contract_id: UUID
 

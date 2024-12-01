@@ -11,6 +11,7 @@ from app.modules.auth.schema.user_schema import UserBase
 from app.modules.properties.schema.property_schema import PropertyBase
 from app.modules.contract.schema.mixins.contract_mixin import ContractBase
 from app.modules.contract.schema.mixins.under_contract_mixin import (
+    UnderContract,
     UnderContractBase,
     UnderContractInfoMixin,
 )
@@ -21,7 +22,7 @@ from app.modules.contract.models.under_contract import (
 )
 
 
-class UnderContractCreateSchema(UnderContractBase, UnderContractInfoMixin):
+class UnderContractCreateSchema(UnderContract, UnderContractInfoMixin):
     property_unit_assoc_id: UUID
     contract_status: ContractStatusEnum
     contract_number: Optional[str] = None
@@ -38,7 +39,7 @@ class UnderContractCreateSchema(UnderContractBase, UnderContractInfoMixin):
     )
 
 
-class UnderContractUpdateSchema(UnderContractBase):
+class UnderContractUpdateSchema(UnderContract):
     property_unit_assoc_id: Optional[UUID] = None
     contract_status: Optional[ContractStatusEnum] = None
     contract_number: Optional[str] = None
@@ -55,7 +56,7 @@ class UnderContractUpdateSchema(UnderContractBase):
     )
 
 
-class UnderContractResponse(UnderContractBase):
+class UnderContractResponse(UnderContract):
     @classmethod
     def model_validate(cls, under_contract: UnderContractModel):
         return cls(
@@ -68,20 +69,20 @@ class UnderContractResponse(UnderContractBase):
             start_date=under_contract.start_date,
             end_date=under_contract.end_date,
             next_payment_due=under_contract.next_payment_due,
-            properties=PropertyBase.model_validate(under_contract.properties)
-            if under_contract.properties
-            else [],
-            contract=ContractBase.model_validate(under_contract.contract)
-            if under_contract.contract
-            else [],
-            client_representative=UserBase.model_validate(
-                under_contract.client_representative
-            )
-            if under_contract.client_representative
-            else [],
-            employee_representative=UserBase.model_validate(
-                under_contract.employee_representative
-            )
-            if under_contract.employee_representative
-            else [],
+            # properties=PropertyBase.model_validate(under_contract.properties)
+            # if under_contract.properties
+            # else [],
+            # contract=ContractBase.model_validate(under_contract.contract)
+            # if under_contract.contract
+            # else [],
+            # client_representative=UserBase.model_validate(
+            #     under_contract.client_representative
+            # )
+            # if under_contract.client_representative
+            # else [],
+            # employee_representative=UserBase.model_validate(
+            #     under_contract.employee_representative
+            # )
+            # if under_contract.employee_representative
+            # else [],
         ).model_dump()

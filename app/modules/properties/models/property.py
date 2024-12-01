@@ -99,7 +99,7 @@ class Property(PropertyUnitAssoc):
         "Units",
         primaryjoin="Property.property_unit_assoc_id == Units.property_id",
         back_populates="property",
-        cascade="all, delete-orphan",
+        # cascade="all, delete",
         lazy="selectin",
         # viewonly=True,
     )

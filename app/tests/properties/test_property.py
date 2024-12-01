@@ -100,9 +100,7 @@ class TestProperties:
         assert isinstance(response.json(), dict)
 
     @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=["TestProperties::create_property"], name="get_property_by_id"
-    )
+    @pytest.mark.dependency(depends=["TestProperties::create_property"], name="TestProperties::get_property_by_id")
     async def test_get_property_by_id(self, client: AsyncClient):
         property_id = self.default_property["property_unit_assoc_id"]
 
@@ -113,7 +111,7 @@ class TestProperties:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["get_property_by_id"], name="update_property_by_id"
+        depends=["TestProperties::get_property_by_id"], name="TestProperties::update_property_by_id"
     )
     async def test_update_property(self, client: AsyncClient):
         property_id = self.default_property["property_unit_assoc_id"]
@@ -157,7 +155,7 @@ class TestProperties:
 
     # @pytest.mark.asyncio(loop_scope="session")
     # @pytest.mark.dependency(
-    #     depends=["update_property_by_id"], name="delete_property_by_id"
+    #     depends=["TestProperties::update_property_by_id"], name="TestProperties::delete_property_by_id"
     # )
     # async def test_delete_property(self, client: AsyncClient):
     #     property_id = self.default_property["property_unit_assoc_id"]

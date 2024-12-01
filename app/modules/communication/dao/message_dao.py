@@ -91,6 +91,7 @@ class MessageDAO(BaseDAO[Message]):
             )
             result = await db_session.execute(stmt)
             new_message_with_relationships = result.scalar_one()
+            print("RESULTS", new_message_with_relationships)
 
             return DAOResponse(
                 success=True, data=MessageResponse.model_validate(new_message_with_relationships)

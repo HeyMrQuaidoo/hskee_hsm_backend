@@ -67,7 +67,7 @@ class TourBookings(Base):
         secondaryjoin="Units.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         viewonly=True,
         back_populates="tour_bookings",
-        lazy="selectin",
+        # lazy="selectin",
     )
 
     # property_association

@@ -8,7 +8,7 @@ from app.modules.common.router.base_router import BaseCRUDRouter
 
 # schemas
 from app.modules.common.schema.schemas import PropertyAssignmentSchema
-from app.modules.properties.schema.property_assignment import (
+from app.modules.properties.schema.property_assignment_schema import (
     PropertyAssignmentCreate,
     PropertyAssignmentUpdate,
 )

@@ -10,6 +10,7 @@ from app.modules.contract.enums.contract_enums import ContractStatusEnum
 # Schema
 from app.modules.billing.schema.mixins.utility_mixin import UtilitiesMixin
 from app.modules.contract.schema.mixins.contract_mixin import (
+    Contract,
     ContractBase,
     ContractInfoMixin,
 )
@@ -89,9 +90,7 @@ class ContractUpdateSchema(ContractBase, ContractInfoMixin, UtilitiesMixin):
         ).model_dump()
 
 
-class ContractResponse(ContractBase, ContractInfoMixin):
-    contract_id: UUID
-    contract_number: str
+class ContractResponse(Contract, ContractInfoMixin):
 
     @classmethod
     def model_validate(cls, contract: ContractModel):

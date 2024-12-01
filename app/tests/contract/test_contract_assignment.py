@@ -7,7 +7,6 @@ from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.properties.test_property import (
     TestProperties,
 )
-from app.tests.contract.test_contract import TestContract
 
 from app.modules.common.schema.base_schema import BaseFaker
 from app.tests.users.test_users import TestUsers
@@ -107,14 +106,15 @@ class TestContractAssignments:
         name="update_contract_assignment_by_id",
     )
     async def test_update_contract_assignment(self, client: AsyncClient):
+        print("Under contract Object:", self.default_contract_assignment)
         under_contract_id = self.default_contract_assignment["under_contract_id"]
 
         response = await client.put(
             f"assign-contracts/{under_contract_id}",
             json={
                 "contract_id": self.default_contract_assignment["contract_number"],
-                "client_id": "0d5340d2-046b-42d9-9ef5-0233b79b6642",  # Replace with dynamic value if needed
-                "employee_id": "4dbc3019-1884-4a0d-a2e6-feb12d83186e",  # Replace with dynamic value if needed
+                "client_id": TestUsers.default_user.get("user_id"),  
+                "employee_id": TestUsers.default_user.get("user_id"),  
                 "contract_status": "inactive",
                 "property_unit_assoc_id": TestProperties.default_property.get(
                     "property_unit_assoc_id"

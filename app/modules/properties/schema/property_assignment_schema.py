@@ -1,10 +1,13 @@
+from typing import Optional
 from pydantic import ConfigDict
+from uuid import UUID
 
 # schema imports
 from app.modules.properties.schema.mixins.property_mixin_schema import (
     PropertyDetailsMixin,
 )
 from app.modules.properties.schema.mixins.property_assignment_mixin import (
+    PropertyAssignment,
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
 )
@@ -15,7 +18,7 @@ from app.modules.properties.models.property_assignment import (
 )
 
 
-class PropertyAssignmentCreate(PropertyAssignmentBase):
+class PropertyAssignmentCreate(PropertyAssignment):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
@@ -32,6 +35,7 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
         # Using the model fields directly from the property assignment instance
         return cls(
+            property_assignment_id=property_assignment.property_assignment_id,
             property_unit_assoc_id=property_assignment.property_unit_assoc_id,
             user_id=property_assignment.user_id,
             assignment_type=property_assignment.assignment_type,
@@ -41,7 +45,7 @@ class PropertyAssignmentCreate(PropertyAssignmentBase):
         ).model_dump()
 
 
-class PropertyAssignmentUpdate(PropertyAssignmentBase):
+class PropertyAssignmentUpdate(PropertyAssignment):
     model_config = ConfigDict(
         from_attributes=True,
         use_enum_values=True,
@@ -57,6 +61,7 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):
         return cls(
+            property_assignment_id=property_assignment.property_assignment_id,
             property_unit_assoc_id=property_assignment.property_unit_assoc_id,
             user_id=property_assignment.user_id,
             assignment_type=property_assignment.assignment_type,
@@ -66,8 +71,7 @@ class PropertyAssignmentUpdate(PropertyAssignmentBase):
         ).model_dump()
 
 
-class PropertyAssignmentResponse(PropertyAssignmentBase):
-    property_info: PropertyDetailsMixin = None  # Use composition for property details
+class PropertyAssignmentResponse(PropertyAssignment):
 
     @classmethod
     def model_validate(cls, property_assignment: PropertyAssignmentModel):

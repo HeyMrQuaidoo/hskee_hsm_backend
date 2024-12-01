@@ -4,8 +4,6 @@ import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
 from app.tests.users.test_users import TestUsers
-from app.tests.properties.test_property import TestProperties
-from app.tests.contract.test_contract_assignment import TestContractAssignments
 from faker import Faker
 
 class TestMessages:
@@ -222,10 +220,7 @@ class TestMessages:
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=[
-            "TestMessages::reply_to_message",
-            "TestContractAssignments::create_contract_assignment",
-            "TestProperties::create_property"
-        ],
+            "TestMessages::reply_to_message"],
         name="TestMessages::get_user_inbox"
     )
     async def test_get_user_inbox(self, client: AsyncClient):
@@ -239,10 +234,7 @@ class TestMessages:
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=[
-            "TestMessages::create_notification_message",
-            "TestContractAssignments::create_contract_assignment",
-            "TestProperties::create_property"
-        ],
+            "TestMessages::create_notification_message"],
         name="TestMessages::get_user_notifications"
     )
     async def test_get_user_notifications(self, client: AsyncClient):
@@ -250,7 +242,7 @@ class TestMessages:
         response = await client.get(f"/message/users/{user_id}/notifications", params={"limit": 10, "offset": 0})
         assert response.status_code == 200, f"Failed to get user notifications: {response.text}"
         messages = response.json()["data"]
-        assert any(m["message_id"] == self.default_notification["message_id"] for m in messages), "Notification message not found"
+        assert any(m["message_id"] == self.default_notification["data"]["message_id"] for m in messages), "Notification message not found"
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["TestMessages::create_message"], name="TestMessages::update_message_by_id")

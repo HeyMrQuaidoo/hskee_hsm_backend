@@ -49,7 +49,7 @@ class PropertyAssignmentBase(BaseSchema):
 
 
 class PropertyAssignment(PropertyAssignmentBase):
-    property_assignment_id: UUID
+    property_assignment_id: Optional[UUID] = None
 
 
 class PropertyAssignmentMixin:
