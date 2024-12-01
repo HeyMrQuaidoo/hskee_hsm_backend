@@ -2,6 +2,7 @@ import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
 
+
 class TestAmenities:
     default_amenity: Dict[str, Any] = {}
 
@@ -50,7 +51,9 @@ class TestAmenities:
             },
         )
         assert response.status_code == 200, response.text
-        assert response.json().get("data", {}).get("amenity_name") == "Updated Dishwasher"
+        assert (
+            response.json().get("data", {}).get("amenity_name") == "Updated Dishwasher"
+        )
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(

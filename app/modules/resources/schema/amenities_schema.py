@@ -1,6 +1,3 @@
-from uuid import UUID
-from datetime import date
-from typing import Optional
 from pydantic import ConfigDict
 
 # schemas
@@ -17,7 +14,7 @@ class AmenityCreateSchema(AmenityBase, AmenityInfoMixin):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": AmenityInfoMixin._amenity_create_json},
     )
 
@@ -26,13 +23,12 @@ class AmenityUpdateSchema(AmenityBase):
     model_config = ConfigDict(
         from_attributes=True,
         arbitrary_types_allowed=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={"example": AmenityInfoMixin._amenity_update_json},
     )
 
 
 class AmenitiesResponse(AmenityBase):
-
     @classmethod
     def model_validate(cls, amenity: AmenitiesModel) -> "AmenityResponse":
         return cls(

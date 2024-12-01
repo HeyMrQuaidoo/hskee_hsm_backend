@@ -11,7 +11,7 @@ from app.modules.common.models.model_base import BaseModel as Base
 from app.modules.communication.enums.communication_enums import TourStatus, TourType
 
 
-class Tour(Base):
+class TourBookings(Base):
     __tablename__ = "tour"
 
     tour_booking_id: Mapped[uuid.UUID] = mapped_column(
@@ -52,7 +52,7 @@ class Tour(Base):
     property: Mapped["Property"] = relationship(
         "Property",
         secondary="property_unit_assoc",
-        primaryjoin="Tour.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
+        primaryjoin="TourBookings.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         secondaryjoin="Property.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         viewonly=True,
         back_populates="tour_bookings",
@@ -63,11 +63,11 @@ class Tour(Base):
     unit: Mapped["Units"] = relationship(
         "Units",
         secondary="property_unit_assoc",
-        primaryjoin="Tour.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
+        primaryjoin="TourBookings.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         secondaryjoin="Units.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         viewonly=True,
         back_populates="tour_bookings",
-        lazy="selectin",
+        # lazy="selectin",
     )
 
     # property_association
@@ -75,7 +75,7 @@ class Tour(Base):
         "PropertyUnitAssoc",
         back_populates="prop_unit_assoc_tours",
         cascade="save-update, merge",
-        primaryjoin="Tour.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
+        primaryjoin="TourBookings.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id",
         overlaps="property,unit",
         foreign_keys=[property_unit_assoc_id],
         lazy="selectin",

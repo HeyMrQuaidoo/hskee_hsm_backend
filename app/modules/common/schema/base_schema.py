@@ -1,5 +1,4 @@
 from faker import Faker
-from datetime import date
 from sqlalchemy import inspect
 from typing import List, Optional, Type, Dict
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -14,7 +13,7 @@ class BaseSchema(BaseModel):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
     )
 
 

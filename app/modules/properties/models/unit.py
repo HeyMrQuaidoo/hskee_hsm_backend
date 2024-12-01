@@ -33,7 +33,7 @@ class Units(PropertyUnitAssoc):
 
     property_unit_assoc_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("property_unit_assoc.property_unit_assoc_id"),
+        ForeignKey("property_unit_assoc.property_unit_assoc_id", ondelete="CASCADE"),
         primary_key=True,
     )
     property_unit_code: Mapped[str] = mapped_column(String(128))
@@ -81,10 +81,10 @@ class Units(PropertyUnitAssoc):
     )
 
     # tour_bookings
-    tour_bookings: Mapped[List["Tour"]] = relationship(
-        "Tour",
-        primaryjoin="Units.property_unit_assoc_id == Tour.property_unit_assoc_id",
-        foreign_keys="[Tour.property_unit_assoc_id]",
+    tour_bookings: Mapped[List["TourBookings"]] = relationship(
+        "TourBookings",
+        primaryjoin="Units.property_unit_assoc_id == TourBookings.property_unit_assoc_id",
+        foreign_keys="[TourBookings.property_unit_assoc_id]",
         lazy="selectin",
         back_populates="unit",
         viewonly=True,
@@ -105,8 +105,11 @@ class Units(PropertyUnitAssoc):
         "Property",
         primaryjoin="Units.property_id == Property.property_unit_assoc_id",
         back_populates="units",
+        cascade="all, delete",
         lazy="selectin",
     )
+
+    property_unit_assoc = relationship("PropertyUnitAssoc", back_populates="units")
 
     # media
     media: Mapped[List["Media"]] = relationship(

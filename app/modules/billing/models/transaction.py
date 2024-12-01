@@ -52,7 +52,7 @@ class Transaction(Base):
     )
     transaction_details: Mapped[str] = mapped_column(Text)
     transaction_type: Mapped[int] = mapped_column(
-        Integer, ForeignKey("transaction_type.transaction_type_id")
+        Integer, ForeignKey("transaction_type.transaction_type_id",ondelete="CASCADE")
     )
     transaction_status: Mapped[PaymentStatusEnum] = mapped_column(
         Enum(PaymentStatusEnum)

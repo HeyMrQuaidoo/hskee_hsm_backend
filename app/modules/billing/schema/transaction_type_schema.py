@@ -16,6 +16,7 @@ from app.modules.billing.models.transaction_type import (
 
 
 class TransactionTypeBase(BaseModel):
+    transaction_type_id: Optional[int] = None
     transaction_type_name: TransactionTypeEnum
     transaction_type_description: Optional[str]
 

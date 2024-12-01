@@ -31,6 +31,9 @@ class Message(Base):
     is_notification: Mapped[Optional[bool]] = mapped_column(
         Boolean, default=False, nullable=True
     )
+    is_enquiry: Mapped[Optional[bool]] = mapped_column(
+        Boolean, default=False, nullable=True
+    )
     is_reminder: Mapped[Optional[bool]] = mapped_column(
         Boolean, default=False, nullable=True
     )
@@ -47,7 +50,7 @@ class Message(Base):
         DateTime(timezone=True), default=lambda: datetime.now(pytz.utc)
     )
     next_remind_date: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(pytz.utc), nullable=True
+        DateTime(timezone=True), nullable=True
     )
     reminder_frequency_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("reminder_frequency.reminder_frequency_id")
@@ -73,11 +76,12 @@ class Message(Base):
         "Message",
         backref=backref("parent_message", remote_side=[message_id]),
         foreign_keys=[parent_message_id],
-        cascade="all, delete-orphan",
+        cascade="save-update, merge",
     )
     thread: Mapped[List["Message"]] = relationship(
         "Message",
         remote_side=[message_id],
         backref=backref("thread_messages", foreign_keys=[thread_id]),
         foreign_keys=[thread_id],
+        cascade="save-update, merge",
     )

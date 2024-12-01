@@ -26,6 +26,7 @@ class PropertyUnitAssoc(Base):
         primaryjoin="and_(PropertyUnitAssoc.property_unit_type == 'Property', Property.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id)",
         foreign_keys="[Property.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
+        cascade="all, delete-orphan",
         # lazy="selectin",
         # viewonly=True,
     )
@@ -36,6 +37,7 @@ class PropertyUnitAssoc(Base):
         primaryjoin="and_(PropertyUnitAssoc.property_unit_type == 'Units', Units.property_unit_assoc_id == PropertyUnitAssoc.property_unit_assoc_id)",
         foreign_keys="[Units.property_unit_assoc_id]",
         remote_side="[PropertyUnitAssoc.property_unit_assoc_id]",
+        cascade="all, delete-orphan",
         # lazy="selectin",
         # viewonly=True,
     )
@@ -98,11 +100,11 @@ class PropertyUnitAssoc(Base):
     )
 
     # tours
-    prop_unit_assoc_tours: Mapped[List["Tour"]] = relationship(
-        "Tour",
+    prop_unit_assoc_tours: Mapped[List["TourBookings"]] = relationship(
+        "TourBookings",
         back_populates="property_unit_assoc",
         cascade="save-update, merge",
-        foreign_keys="[Tour.property_unit_assoc_id]",
+        foreign_keys="[TourBookings.property_unit_assoc_id]",
     )
 
     entity_billables: Mapped[List["EntityBillable"]] = relationship(

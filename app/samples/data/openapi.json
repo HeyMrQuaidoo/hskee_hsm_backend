@@ -6193,7 +6193,7 @@
           "tour_date": {
             "type": "string",
             "format": "date-time",
-            "title": "Tour Date"
+            "title": "TourBookings Date"
           },
           "property_unit_assoc_id": {
             "type": "string",
@@ -6256,7 +6256,7 @@
               { "type": "string", "format": "date-time" },
               { "type": "null" }
             ],
-            "title": "Tour Date"
+            "title": "TourBookings Date"
           },
           "property_unit_assoc_id": {
             "anyOf": [

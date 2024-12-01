@@ -1,20 +1,15 @@
-from uuid import UUID
-from fastapi import UploadFile
 from typing import Optional, List
-from sqlalchemy import func, select
+from uuid import UUID
+from sqlalchemy import func, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# models
+# Models
 from app.core.response import DAOResponse
-from app.modules.resources.models.media import Media
 from app.modules.properties.models.property import Property
-from app.modules.associations.models.entity_media import EntityMedia
+from app.modules.properties.enums.property_enums import PropertyType, PropertyStatus
+from app.modules.contract.models.under_contract import UnderContract
 
-# enums
-from app.modules.resources.enums.resource_enums import MediaType
-from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
-
-# daos
+# DAOs
 from app.modules.common.dao.base_dao import BaseDAO
 from app.modules.properties.dao.unit_dao import UnitDAO
 from app.modules.resources.dao.media_dao import MediaDAO
@@ -22,11 +17,16 @@ from app.modules.billing.dao.utility_dao import UtilityDAO
 from app.modules.address.dao.address_dao import AddressDAO
 from app.modules.resources.dao.amenity_dao import AmenityDAO
 
-# core
+# Core
 from app.core.errors import CustomException, RecordNotFoundException
 
-# services
+# Services
+from fastapi import UploadFile
 from app.services.upload_service import MediaUploaderService
+from app.modules.associations.models.entity_media import EntityMedia
+from app.modules.resources.models.media import Media
+from app.modules.resources.enums.resource_enums import MediaType
+from app.modules.associations.enums.entity_type_enums import EntityTypeEnum
 
 
 class PropertyDAO(BaseDAO[Property]):
@@ -55,28 +55,96 @@ class PropertyDAO(BaseDAO[Property]):
         )
 
     async def get_properties(
-        self, db_session: AsyncSession, user_id: Optional[UUID], limit: int, offset: int
+        self,
+        db_session: AsyncSession,
+        name: Optional[str] = None,
+        property_type: Optional[PropertyType] = None,
+        amount_gte: Optional[float] = None,
+        amount_lte: Optional[float] = None,
+        floor_space_gte: Optional[float] = None,
+        floor_space_lte: Optional[float] = None,
+        num_units: Optional[int] = None,
+        num_bathrooms: Optional[int] = None,
+        num_garages: Optional[int] = None,
+        has_balconies: Optional[bool] = None,
+        has_parking_space: Optional[bool] = None,
+        pets_allowed: Optional[bool] = None,
+        property_status: Optional[PropertyStatus] = None,
+        is_contract_active: Optional[bool] = None,
+        limit: int = 10,
+        offset: int = 0,
     ) -> DAOResponse:
         try:
             query = select(self.model)
-            if user_id:
-                query = query.where(self.model.user_id == user_id)
-            query = query.limit(limit).offset(offset)
-            result = await db_session.execute(query)
-            items = result.scalars().all()
 
-            # Build pagination metadata
-            total_items = await db_session.execute(
-                select(func.count()).select_from(query.subquery())
-            )
-            total_count = total_items.scalar()
+            filter_conditions = {
+                "name": self.model.name.ilike(f"%{name}%") if name else None,
+                "property_type": self.model.property_type == property_type
+                if property_type
+                else None,
+                "amount_gte": self.model.amount >= amount_gte
+                if amount_gte is not None
+                else None,
+                "amount_lte": self.model.amount <= amount_lte
+                if amount_lte is not None
+                else None,
+                "floor_space_gte": self.model.floor_space >= floor_space_gte
+                if floor_space_gte is not None
+                else None,
+                "floor_space_lte": self.model.floor_space <= floor_space_lte
+                if floor_space_lte is not None
+                else None,
+                "num_units": self.model.num_units == num_units
+                if num_units is not None
+                else None,
+                "num_bathrooms": self.model.num_bathrooms == num_bathrooms
+                if num_bathrooms is not None
+                else None,
+                "num_garages": self.model.num_garages == num_garages
+                if num_garages is not None
+                else None,
+                "has_balconies": self.model.has_balconies == has_balconies
+                if has_balconies is not None
+                else None,
+                "has_parking_space": self.model.has_parking_space == has_parking_space
+                if has_parking_space is not None
+                else None,
+                "pets_allowed": self.model.pets_allowed == pets_allowed
+                if pets_allowed is not None
+                else None,
+                "property_status": self.model.property_status == property_status
+                if property_status
+                else None,
+                "is_contract_active": self.model.is_contract_active == is_contract_active
+                if is_contract_active is not None
+                else None,
+            }
+
+            filters = [
+                condition for condition in filter_conditions.values() if condition is not None
+            ]
+
+            if filters:
+                query = query.where(and_(*filters))
+
+            query = query.order_by(self.model.name.asc())
+
+            total_query = select(func.count()).select_from(query.subquery())
+            query = query.limit(limit).offset(offset)
+
+            result = await db_session.execute(query)
+            properties = result.scalars().all()
+
+            total_items_result = await db_session.execute(total_query)
+            total_count = total_items_result.scalar()
+
             meta = {
                 "total_items": total_count,
                 "limit": limit,
                 "offset": offset,
             }
 
-            return DAOResponse(success=True, data=items, meta=meta)
+            return DAOResponse(success=True, data=properties, meta=meta)
         except Exception as e:
             raise CustomException(str(e))
 

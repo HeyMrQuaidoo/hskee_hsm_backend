@@ -13,7 +13,7 @@ from app.modules.common.enums.common_enums import PriorityEnum
 from app.modules.common.schema.base_schema import BaseFaker, BaseSchema
 
 # Models
-from app.modules.communication.models.maintenance_requests import (
+from app.modules.communication.models.maintenance_request import (
     MaintenanceRequest as MaintenanceRequestModel,
 )
 
@@ -26,6 +26,7 @@ from app.modules.resources.schema.mixins.media_mixin import MediaBase
 
 
 class MaintenanceRequestBase(BaseSchema):
+    maintenance_request_id: Optional[UUID] = None
     title: str
     description: Optional[str] = None
     status: MaintenanceStatusEnum

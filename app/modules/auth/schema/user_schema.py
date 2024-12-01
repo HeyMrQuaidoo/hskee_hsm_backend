@@ -1,6 +1,6 @@
 from uuid import uuid4
 from typing import Any, List, Optional, Union
-from datetime import date, timedelta, datetime
+from datetime import timedelta
 
 from pydantic import ConfigDict, Field, model_validator
 
@@ -46,7 +46,7 @@ from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
 )
-from app.modules.auth.schema.mixins.user_interactions_schema import (
+from app.modules.auth.schema.mixins.user_interactions_mixin import (
     UserInteractionsBase,
 )
 
@@ -84,9 +84,9 @@ class UserResponse(UserHiddenFields, UserSchema):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={
-            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # json_encoders={
+        # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+        # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         # },
         json_schema_extra={
             "example": {
@@ -259,9 +259,9 @@ class UserCreateSchema(UserHiddenFields, UserSchema):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={
-            # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
-            # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
+        # json_encoders={
+        # date: lambda v: v.strftime("%Y-%m-%d") if v else None,
+        # datetime: lambda v: v.strftime("%Y-%m-%dT%H:%M:%S") if v else None,
         # },
         json_schema_extra={
             "example": {
@@ -487,7 +487,7 @@ class UserUpdateSchema(UserHiddenFields, UserSchema):
         from_attributes=True,
         arbitrary_types_allowed=True,
         use_enum_values=True,
-        #json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
+        # json_encoders={date: lambda v: v.strftime("%Y-%m-%d") if v else None},
         json_schema_extra={
             "example": {
                 "first_name": "John",
