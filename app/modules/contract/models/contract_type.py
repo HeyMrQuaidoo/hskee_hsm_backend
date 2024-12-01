@@ -23,5 +23,5 @@ class ContractType(Base):
 
     # contracts
     contracts: Mapped[List["Contract"]] = relationship(
-        "Contract", back_populates="contract_type"
+        "Contract", back_populates="contract_type", cascade="all, delete"
     )

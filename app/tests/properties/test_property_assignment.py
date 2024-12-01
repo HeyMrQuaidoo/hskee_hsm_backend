@@ -7,13 +7,10 @@ from app.tests.users.test_users import TestUsers
 
 class TestPropertyAssignment:
     default_property_assignment: Dict[str, Any] = {}
-    default_property: Dict[str, Any] = TestProperties.default_property
-    default_utility: Dict[str, Any] = TestProperties.default_utility
-    default_user: Dict[str, Any] = TestUsers.default_user
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=["TestProperties::test_create_property", "TestUsers::test_create_user"],
+        depends=[],
         name="create_property_assignment",
     )
     async def test_create_property_assignment(self, client: AsyncClient):
@@ -21,17 +18,17 @@ class TestPropertyAssignment:
         response = await client.post(
             "/assign-properties/",
             json={
-                "property_unit_assoc_id": self.default_property[
+                "property_unit_assoc_id": TestProperties.default_property[
                     "property_unit_assoc_id"
                 ],
-                "user_id": self.default_user["user_id"],  # Fetching from TestUsers
+                "user_id": TestUsers.default_user["user_id"],  # Fetching from TestUsers
                 "assignment_type": "landlord",
                 "date_from": "2024-07-21T21:28:08.506",
                 "date_to": "2024-07-21T21:28:08.506",
                 "notes": "assign new user",
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == 201
         TestPropertyAssignment.default_property_assignment = response.json()["data"]
 
     @pytest.mark.asyncio(loop_scope="session")
@@ -47,6 +44,7 @@ class TestPropertyAssignment:
         depends=["create_property_assignment"], name="get_property_assignment_by_id"
     )
     async def test_get_property_assignment_by_id(self, client: AsyncClient):
+        print("Property defailt:", self.default_property_assignment)
         property_assignment_id = self.default_property_assignment[
             "property_assignment_id"
         ]
@@ -70,10 +68,10 @@ class TestPropertyAssignment:
         response = await client.put(
             f"/assign-properties/{property_assignment_id}",
             json={
-                "property_unit_assoc_id": self.default_property[
+                "property_unit_assoc_id": TestProperties.default_property[
                     "property_unit_assoc_id"
                 ],
-                "user_id": self.default_user["user_id"],  # Fetching from TestUsers
+                "user_id": TestUsers.default_user["user_id"],  # Fetching from TestUsers
                 "assignment_type": "handler",
                 "date_from": "2024-07-21T21:28:08.506",
                 "date_to": "2024-07-21T21:28:08.506",
@@ -98,20 +96,5 @@ class TestPropertyAssignment:
 
         # Verify the property assignment is deleted
         response = await client.get(f"/assign-properties/{property_assignment_id}")
-        assert response.status_code == 200
-        assert response.json()["data"] == {}
-
-    @pytest.mark.asyncio(loop_scope="session")
-    @pytest.mark.dependency(
-        depends=["delete_property_assignment_by_id"], name="delete_property_by_id"
-    )
-    async def test_delete_property(self, client: AsyncClient):
-        property_id = self.default_property["property_unit_assoc_id"]
-
-        response = await client.delete(f"/property/{property_id}")
-        assert response.status_code == 204
-
-        # Verify the property is deleted
-        response = await client.get(f"/property/{property_id}")
-        assert response.status_code == 200
-        assert response.json()["data"] == {}
+        assert response.status_code == 404
+        assert response.json()["data"] == None

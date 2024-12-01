@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 # Base model
 from app.modules.billing.models.billable import BillableAssoc
+from app.modules.common.models.model_base import BaseModel as Base
+
 
 
 class Utilities(BillableAssoc):
@@ -52,3 +54,7 @@ class Utilities(BillableAssoc):
     #     overlaps="entity_billables,entity_billable",
     #     lazy="selectin",
     # )
+
+
+
+Base.setup_model_dynamic_listener("utilities", Utilities)

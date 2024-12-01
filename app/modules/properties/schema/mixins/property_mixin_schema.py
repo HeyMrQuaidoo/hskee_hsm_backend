@@ -26,6 +26,7 @@ from app.modules.associations.models.entity_billable import (
 
 
 class PropertyUnitBase(BaseSchema):
+    property_unit_assoc_id: Optional[UUID] = None
     property_id: Optional[UUID] = None
     property_unit_code: Optional[str] = None
     property_unit_floor_space: Optional[int] = None
@@ -148,12 +149,11 @@ class PropertyUnitInfoMixin:
 
     @classmethod
     def get_utilities_info(cls, entity_utilities: List[EntityBillableModel]):
+        print("Entity Utility:", entity_utilities)
         return (
             [
                 UtilitiesResponse.model_validate(
-                    {**entity_utility.to_dict(), **entity_utility.utility.to_dict()}
-                    if entity_utility.utility
-                    else {**entity_utility.to_dict()}
+                    {**entity_utility.to_dict()}
                 )
                 for entity_utility in entity_utilities
             ]

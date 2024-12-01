@@ -9,6 +9,7 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum, InvoiceTy
 # schema
 from app.modules.auth.schema.mixins.user_mixin import UserBase, UserBaseMixin
 from app.modules.billing.schema.mixins.invoice_mixin import (
+    Invoice,
     InvoiceBase,
     InvoiceInfoMixin,
 )
@@ -21,9 +22,9 @@ from app.modules.billing.schema.mixins.invoice_item_mixin import (
 from app.modules.billing.models.invoice import Invoice as InvoiceModel
 
 
-class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
+class InvoiceCreateSchema(Invoice, InvoiceInfoMixin, UserBaseMixin):
     invoice_id: Optional[UUID] = None
-    invoice_number: Optional[str] = ""
+    invoice_number: Optional[str] = None
     invoice_items: Optional[List[InvoiceItemBase]] = []
 
     model_config = ConfigDict(
@@ -50,7 +51,7 @@ class InvoiceCreateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
         ).model_dump()
 
 
-class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
+class InvoiceUpdateSchema(Invoice, InvoiceInfoMixin, UserBaseMixin):
     issued_by: Optional[Union[UUID | UserBase]] = None
     issued_to: Optional[Union[UUID | UserBase]] = None
     invoice_details: Optional[str] = None
@@ -88,9 +89,9 @@ class InvoiceUpdateSchema(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
         ).model_dump()
 
 
-class InvoiceResponse(InvoiceBase, InvoiceInfoMixin, UserBaseMixin):
+class InvoiceResponse(Invoice, InvoiceInfoMixin, UserBaseMixin):
     invoice_id: Optional[UUID] = None
-    invoice_number: str
+    invoice_number: Optional[str]=None
     invoice_amount: float
     date_paid: Optional[datetime] = None
     invoice_items: Optional[List[InvoiceItem]] = []

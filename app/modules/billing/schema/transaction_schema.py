@@ -9,6 +9,7 @@ from app.modules.billing.enums.billing_enums import PaymentStatusEnum
 # mixins
 from app.modules.billing.schema.mixins.invoice_mixin import InvoiceBase
 from app.modules.billing.schema.mixins.transaction_mixin import (
+    Transaction,
     TransactionBase,
     TransactionInfoMixin,
 )
@@ -17,7 +18,7 @@ from app.modules.billing.schema.mixins.transaction_mixin import (
 from app.modules.billing.models.transaction import Transaction as TransactionModel
 
 
-class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
+class TransactionCreateSchema(Transaction, TransactionInfoMixin):
     invoice: Optional[InvoiceBase] = None
     model_config = ConfigDict(
         json_schema_extra={"example": TransactionInfoMixin._transaction_create_json},
@@ -48,7 +49,7 @@ class TransactionCreateSchema(TransactionBase, TransactionInfoMixin):
         ).model_dump()
 
 
-class TransactionUpdateSchema(TransactionBase):
+class TransactionUpdateSchema(Transaction):
     payment_type_id: Optional[int] = None
     client_offered: Optional[UUID] = None
     client_requested: Optional[UUID] = None
@@ -63,9 +64,7 @@ class TransactionUpdateSchema(TransactionBase):
     )
 
 
-class TransactionResponse(TransactionBase, TransactionInfoMixin):
-    transaction_id: UUID
-    transaction_number: str
+class TransactionResponse(Transaction, TransactionInfoMixin):
 
     @classmethod
     def model_validate(cls, transaction: TransactionModel):

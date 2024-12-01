@@ -46,7 +46,7 @@ from app.modules.properties.schema.mixins.property_assignment_mixin import (
     PropertyAssignmentBase,
     PropertyAssignmentMixin,
 )
-from app.modules.auth.schema.mixins.user_interactions_schema import (
+from app.modules.auth.schema.mixins.user_interactions_mixin import (
     UserInteractionsBase,
 )
 

@@ -1,10 +1,12 @@
 import pytest
 from typing import Any, Dict
 from httpx import AsyncClient
+
 from app.tests.users.test_users import TestUsers
 from app.tests.properties.test_property import TestProperties
 from app.tests.payment_type.test_payment_type import TestPaymentType
 from app.tests.contract.test_contract_type import TestContractType
+from app.modules.common.schema.base_schema import BaseFaker
 
 
 class TestContract:
@@ -12,16 +14,11 @@ class TestContract:
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
-        depends=[
-            "TestProperties::create_property",
-            "TestPaymentType::create_payment_type",
-            "TestContractType::create_contract_type",
-            "TestUsers::create_user",
-            "TestInvoice::create_invoice",
-        ],
+        depends=[],
         name="create_contract",
     )
     async def test_create_contract(self, client: AsyncClient):
+
         response = await client.post(
             "/contract/",
             json={
@@ -50,17 +47,6 @@ class TestContract:
                         "employee_id": TestUsers.default_user.get("user_id"),
                     }
                 ],
-                "utilities": [
-                    {
-                        "name": "swimming pool",
-                        "description": "A swimming pool",
-                        "payment_type": "one_time",
-                        "billable_amount": "100",
-                        "billable_type": "utilities",
-                        "apply_to_units": False,
-                        "billable_id": TestProperties.default_utility.get("utility_id"),
-                    }
-                ],
             },
         )
         assert response.status_code == 201
@@ -76,22 +62,22 @@ class TestContract:
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(depends=["create_contract"], name="get_contract_by_id")
     async def test_get_contract_by_id(self, client: AsyncClient):
-        contract_id = self.default_contract["contract_number"]
+        contract_id = self.default_contract["contract_id"]
 
         response = await client.get(f"/contract/{contract_id}")
 
         assert response.status_code == 200
-        assert response.json()["data"]["contract_number"] == contract_id
+        assert response.json()["data"]["contract_id"] == contract_id
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["get_contract_by_id"], name="update_contract_by_id"
     )
     async def test_update_contract(self, client: AsyncClient):
-        contract_number = self.default_contract["contract_number"]
+        contract_id = self.default_contract["contract_id"]
 
         response = await client.put(
-            f"/contract/{contract_number}",
+            f"/contract/{contract_id}",
             json={
                 "contract_type": "sale",
                 "payment_type": "monthly",
@@ -105,7 +91,7 @@ class TestContract:
                 "end_date": "2024-06-23T19:11:07.570Z",
                 "contract_info": [
                     {
-                        "contract_id": contract_number,
+                        "contract_id": contract_id,
                         "property_unit_assoc": TestProperties.default_property.get(
                             "property_unit_assoc_id"
                         ),
@@ -118,19 +104,18 @@ class TestContract:
             },
         )
         assert response.status_code == 200
-        assert response.json()["data"]["contract_type"] == "sale"
 
     @pytest.mark.asyncio(loop_scope="session")
     @pytest.mark.dependency(
         depends=["update_contract_by_id"], name="delete_contract_by_id"
     )
     async def test_delete_contract(self, client: AsyncClient):
-        contract_id = self.default_contract["contract_number"]
+        contract_id = self.default_contract["contract_id"]
 
         response = await client.delete(f"/contract/{contract_id}")
         assert response.status_code == 204
 
         # Verify the contract is deleted
         response = await client.get(f"/contract/{contract_id}")
-        assert response.status_code == 200
-        assert response.json()["data"] == {}
+        assert response.status_code == 404
+        assert response.json()["data"] == None

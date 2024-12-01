@@ -18,5 +18,5 @@ class TourBase(BaseSchema):
     user_id: Optional[UUID4] = None
 
 
-class Tour(BaseSchema):
+class TourBookings(BaseSchema):
     tour_booking_id: UUID4

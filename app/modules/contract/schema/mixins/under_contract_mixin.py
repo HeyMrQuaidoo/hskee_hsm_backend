@@ -2,6 +2,8 @@ from uuid import UUID
 from datetime import datetime
 from typing import List, Optional, Union
 
+from pydantic import Field
+
 # enums
 from app.modules.contract.enums.contract_enums import ContractStatusEnum
 
@@ -23,13 +25,13 @@ class UnderContractBase(BaseSchema):
     start_date: datetime
     end_date: datetime
     next_payment_due: datetime
-    properties: Optional[Union[List[Property] | List[PropertyUnit]]] = []
-    employee_representative: Optional[Union[List[UserBase] | UserBase]] = []
-    client_representative: Optional[Union[List[UserBase] | UserBase]] = []
+    # properties: Optional[List[Union[Property, PropertyUnit]]] = Field(default_factory=list)
+    # employee_representative: Optional[List[UserBase]] = Field(default_factory=list)
+    # client_representative: Optional[List[UserBase]] = Field(default_factory=list)
 
 
 class UnderContract(UnderContractBase):
-    under_contract_id: Optional[UUID]
+    under_contract_id: Optional[UUID] = None
 
 
 class UnderContractInfoMixin:

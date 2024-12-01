@@ -7,7 +7,7 @@ from app.modules.auth.dao.permission_dao import PermissionDAO
 from app.modules.common.router.base_router import BaseCRUDRouter
 
 # schemas
-from app.modules.common.schema.schemas import PermissionSchema
+from app.modules.common.schema.schemas import PermissionsSchema
 from app.modules.auth.schema.permissions_schema import (
     PermissionCreateSchema,
     PermissionUpdateSchema,
@@ -16,12 +16,12 @@ from app.modules.auth.schema.permissions_schema import (
 
 class PermissionRouter(BaseCRUDRouter):
     def __init__(self, prefix: str = "", tags: List[str] = []):
-        PermissionSchema["create_schema"] = PermissionCreateSchema
-        PermissionSchema["update_schema"] = PermissionUpdateSchema
+        PermissionsSchema["create_schema"] = PermissionCreateSchema
+        PermissionsSchema["update_schema"] = PermissionUpdateSchema
         self.dao: PermissionDAO = PermissionDAO(excludes=[""])
 
         super().__init__(
-            dao=self.dao, schemas=PermissionSchema, prefix=prefix, tags=tags
+            dao=self.dao, schemas=PermissionsSchema, prefix=prefix, tags=tags
         )
         self.register_routes()
 

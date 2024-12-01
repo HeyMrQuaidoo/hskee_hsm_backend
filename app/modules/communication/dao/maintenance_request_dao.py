@@ -19,7 +19,7 @@ from app.modules.communication.dao.calendar_event_dao import CalendarEventDAO
 from app.modules.resources.dao.media_dao import MediaDAO
 
 # Models
-from app.modules.communication.models.maintenance_requests import MaintenanceRequest
+from app.modules.communication.models.maintenance_request import MaintenanceRequest
 from app.modules.resources.enums.resource_enums import MediaType
 from app.services.upload_service import MediaUploaderService
 

@@ -168,7 +168,7 @@ class User(Base):
     )
 
     # tours
-    tours: Mapped[List["Tour"]] = relationship("Tour", back_populates="user")
+    tours: Mapped[List["TourBookings"]] = relationship("TourBookings", back_populates="user")
 
     # events
     events: Mapped[List["CalendarEvent"]] = relationship(

@@ -56,7 +56,7 @@ class TestPaymentType:
         assert response.json()["data"]["payment_type_name"] == "one_time"
 
     # @pytest.mark.asyncio(loop_scope="session")
-    # @pytest.mark.dependency(depends=["update_payment_type"], name="delete_payment_type")
+    # @pytest.mark.dependency(depends=[], name="delete_payment_type")
     # async def test_delete_payment_type(self, client: AsyncClient):
     #     payment_type_id = TestPaymentType.default_payment_type["payment_type_id"]
     #     response = await client.delete(f"/payment-type/{payment_type_id}")

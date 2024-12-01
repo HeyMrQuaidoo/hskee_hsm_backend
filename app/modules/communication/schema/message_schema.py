@@ -9,6 +9,7 @@ from app.modules.auth.schema.mixins.user_mixin import UserBase, UserBaseMixin
 
 # model
 from app.modules.communication.models.message import Message as MessageModel
+from app.modules.communication.schema.mixins.message_mixin import MessageBase
 
 
 class EmailBody(BaseSchema):
@@ -28,7 +29,7 @@ class EmailBody(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MessageCreate(BaseSchema):
+class MessageCreateSchema(MessageBase):
     """
     Schema for creating a message.
 
@@ -53,7 +54,7 @@ class MessageCreate(BaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
 
-class MessageReply(BaseSchema):
+class MessageReplySchema(BaseSchema):
     """
     Schema for replying to a message.
 
@@ -105,6 +106,7 @@ class MessageResponse(BaseSchema, UserBaseMixin):
     thread_id: Optional[UUID] = None
     is_draft: Optional[bool] = False
     is_notification: Optional[bool] = False
+    is_enquiry: Optional[bool] = False
     is_reminder: Optional[bool] = False
     is_scheduled: Optional[bool] = False
     is_read: Optional[bool] = False
@@ -146,6 +148,7 @@ class MessageResponse(BaseSchema, UserBaseMixin):
             thread_id=message.thread_id,
             is_draft=message.is_draft,
             is_notification=message.is_notification,
+            is_enquiry=message.is_enquiry,
             is_reminder=message.is_reminder,
             is_scheduled=message.is_scheduled,
             is_read=message.is_read,

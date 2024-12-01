@@ -6,7 +6,7 @@ from app.modules.common.schema.base_schema import BaseSchema
 
 
 class MessageBase(BaseSchema):
-    message_id: UUID4
+    message_id: Optional[UUID4]=None
     subject: Optional[str] = None
     sender_id: Optional[UUID4] = None
     message_body: Optional[str] = None
@@ -17,8 +17,8 @@ class MessageBase(BaseSchema):
     is_reminder: Optional[bool] = None
     is_scheduled: Optional[bool] = None
     is_read: Optional[bool] = None
-    date_created: datetime
-    scheduled_date: datetime
+    date_created: Optional[datetime] = None
+    scheduled_date: Optional[datetime] = None
     next_remind_date: Optional[datetime] = None
     reminder_frequency_id: Optional[int] = None
 

@@ -28,9 +28,9 @@ class TransactionBase(BaseSchema):
     invoice: Optional[InvoiceBase | Any] = None
 
 
-class Transaction(BaseSchema):
-    transaction_id: UUID
-    transaction_number: str
+class Transaction(TransactionBase):
+    transaction_id: Optional[UUID]=None
+    transaction_number: Optional[str]=None
 
 
 class TransactionInfoMixin:

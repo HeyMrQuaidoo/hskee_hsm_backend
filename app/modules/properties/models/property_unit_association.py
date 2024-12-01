@@ -100,11 +100,11 @@ class PropertyUnitAssoc(Base):
     )
 
     # tours
-    prop_unit_assoc_tours: Mapped[List["Tour"]] = relationship(
-        "Tour",
+    prop_unit_assoc_tours: Mapped[List["TourBookings"]] = relationship(
+        "TourBookings",
         back_populates="property_unit_assoc",
         cascade="save-update, merge",
-        foreign_keys="[Tour.property_unit_assoc_id]",
+        foreign_keys="[TourBookings.property_unit_assoc_id]",
     )
 
     entity_billables: Mapped[List["EntityBillable"]] = relationship(

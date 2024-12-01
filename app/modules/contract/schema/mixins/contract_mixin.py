@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Optional
 
 # enums
-from app.modules.contract.enums.contract_enums import ContractStatusEnum
+from app.modules.contract.enums.contract_enums import ContractStatusEnum, ContractTypeEnum
 from app.modules.billing.enums.billing_enums import InvoiceTypeEnum, PaymentStatusEnum
 
 # schema
@@ -41,7 +41,7 @@ class ContractBase(BaseSchema):
     payment_type_id: int
     contract_status: Optional[ContractStatusEnum]
     contract_details: Optional[str] = None
-    num_invoices: Optional[int]
+    num_invoices: Optional[int] = None
     payment_amount: Optional[Decimal]
     fee_percentage: Optional[Decimal] = None
     fee_amount: Optional[Decimal]
@@ -55,7 +55,7 @@ class ContractBase(BaseSchema):
     media: Optional[List[MediaBase]] = None
 
 
-class Contract(BaseSchema):
+class Contract(ContractBase):
     contract_number: Optional[str] = None
     contract_id: UUID
 

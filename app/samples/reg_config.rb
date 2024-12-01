@@ -73,7 +73,7 @@
             'item_params_attr': {'id': 'id', 'task_number': 'task_number', 'title': 'title', 'description': 'description', 'status': 'status', 'priority': 'priority', 'property_unit_assoc_id': 'property_unit_assoc_id', 'scheduled_date': 'scheduled_date', 'completed_date': 'completed_date', 'is_emergency': 'is_emergency', 'created_at': 'created_at', 'updated_at': 'updated_at'}
         },
         'tours': {
-            'association_class': <class 'app.modules.communication.models.tour_bookings.Tour'>,
+            'association_class': <class 'app.modules.communication.models.tour_bookings.TourBookings'>,
             'entity_param_key': 'tours',
             'entity_params_attr': {'user_id': 'user_id'},
             'item_params_attr': {'tour_booking_id': 'tour_booking_id', 'name': 'name', 'email': 'email', 'phone_number': 'phone_number', 'tour_type': 'tour_type', 'status': 'status', 'tour_date': 'tour_date', 'property_unit_assoc_id': 'property_unit_assoc_id', 'created_at': 'created_at', 'updated_at': 'updated_at'}
