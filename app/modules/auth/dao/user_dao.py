@@ -80,10 +80,10 @@ class UserDAO(BaseDAO[User]):
                 str(uuid.uuid4()),
             )
 
-            #if "password" in obj_in:
-                #obj_in["password"] = Hash.bcrypt(obj_in["password"])
-            #else:
-                #obj_in["password"] = Hash.bcrypt(settings.APP_NAME)
+            if "password" in user_data.model_dump():
+                setattr(obj_in, "password", Hash.bcrypt(user_data.model_dump().get("password")))
+            else:
+                setattr(obj_in, "password", Hash.bcrypt(settings.APP_NAME))
 
             new_user: User = await super().create(
                 db_session=db_session, obj_in=obj_in.model_dump()

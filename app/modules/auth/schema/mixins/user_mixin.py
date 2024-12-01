@@ -103,6 +103,7 @@ class UserHiddenFields(BaseSchema):
 
     # auth info
     login_provider: Optional[str] = Field(None, json_schema_extra={"hidden": True})
+    password: Optional[str] = Field(None, json_schema_extra={"hidden": True})
     reset_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
     verification_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
     is_subscribed_token: Optional[str] = Field(None, json_schema_extra={"hidden": True})
