@@ -28,6 +28,8 @@ from app.core.response import DAOResponse
 
 # services
 from app.services.email_service import EmailService
+from app.core.config import settings
+from app.core.security import Hash
 
 UNSUBSCRIBE_LINK = "https://hskee-hsm-backend-test.onrender.com/auth/mail-unsubscribe?email={}&token={}"
 VERIFICATION_LINK = (
@@ -77,6 +79,11 @@ class UserDAO(BaseDAO[User]):
                 str(uuid.uuid4()),
                 str(uuid.uuid4()),
             )
+
+            if "password" in obj_in:
+                obj_in["password"] = Hash.bcrypt(obj_in["password"])
+            else:
+                obj_in["password"] = Hash.bcrypt(settings.APP_NAME)
 
             new_user: User = await super().create(
                 db_session=db_session, obj_in=obj_in.model_dump()
